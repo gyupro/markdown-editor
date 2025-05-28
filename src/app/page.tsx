@@ -16,6 +16,7 @@ export default function HomePage() {
 - ⚡ **실시간 렌더링**: 타이핑과 동시에 결과를 확인
 - 🔧 **강력한 툴바**: 클릭 한 번으로 포맷팅 적용
 - 🖥️ **전체화면 모드**: 집중해서 작업하고 미리보기
+- 📄 **PDF 출력**: 문서를 PDF로 저장하세요
 
 ## 📊 테이블 예시
 
@@ -25,6 +26,7 @@ export default function HomePage() {
 | 키보드 단축키 | ✅ 완료 | Ctrl+B, Ctrl+I, Ctrl+K |
 | 전체화면 모드 | ✅ 완료 | ESC로 종료 가능 |
 | 테이블 지원 | ✅ 완료 | GitHub Flavored Markdown |
+| PDF 출력 | ✅ 완료 | 고품질 PDF 생성 |
 
 ## 💻 코드 예시
 
@@ -54,7 +56,7 @@ print(f"피보나치 수열: {[fibonacci(i) for i in range(10)]}")
 
 \`인라인 코드\`도 물론 지원됩니다!
 
-## 📖 인용구
+## 💬 인용구
 
 > "프로그래밍은 생각을 코드로 표현하는 예술이다."
 > 
@@ -76,11 +78,235 @@ print(f"피보나치 수열: {[fibonacci(i) for i in range(10)]}")
 
   const [isClient, setIsClient] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const previewRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  // PDF 출력 함수
+  const exportToPDF = async () => {
+    if (!isClient || !previewRef.current) return;
+    
+    setIsExporting(true);
+    
+    try {
+      // html2pdf 동적 임포트
+      const html2pdf = (await import('html2pdf.js')).default;
+      
+      // PDF 옵션 설정
+      const options = {
+        margin: [0.5, 0.5, 0.5, 0.5],
+        filename: 'markdown-document.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+          scale: 2,
+          useCORS: true,
+          letterRendering: true
+        },
+        jsPDF: { 
+          unit: 'in', 
+          format: 'a4', 
+          orientation: 'portrait' 
+        }
+      };
+
+      // 프리뷰 내용을 복제하여 PDF용으로 스타일링
+      const element = previewRef.current.cloneNode(true) as HTMLElement;
+      
+      // 지원되지 않는 CSS 색상 함수들을 제거하고 완전히 스타일을 재설정하는 함수
+      const sanitizeForPDF = (element: HTMLElement) => {
+        const allElements = element.querySelectorAll('*');
+        allElements.forEach((el) => {
+          const htmlEl = el as HTMLElement;
+          
+          // 모든 기존 스타일 제거
+          htmlEl.removeAttribute('style');
+          htmlEl.removeAttribute('class');
+          
+          // 태그별로 기본 스타일만 적용
+          const tagName = htmlEl.tagName.toLowerCase();
+          switch (tagName) {
+            case 'h1':
+              htmlEl.style.cssText = 'font-size: 2em !important; font-weight: bold !important; margin: 1.5em 0 0.5em 0 !important; color: #1f2937 !important;';
+              break;
+            case 'h2':
+              htmlEl.style.cssText = 'font-size: 1.5em !important; font-weight: bold !important; margin: 1.5em 0 0.5em 0 !important; color: #1f2937 !important;';
+              break;
+            case 'h3':
+              htmlEl.style.cssText = 'font-size: 1.25em !important; font-weight: bold !important; margin: 1.25em 0 0.5em 0 !important; color: #1f2937 !important;';
+              break;
+            case 'p':
+              htmlEl.style.cssText = 'margin: 0 0 1em 0 !important; color: #374151 !important; line-height: 1.6 !important;';
+              break;
+            case 'code':
+              htmlEl.style.cssText = 'background-color: #f3f4f6 !important; padding: 0.2em 0.4em !important; border-radius: 4px !important; font-family: Monaco, Consolas, monospace !important; color: #dc2626 !important; font-size: 0.9em !important;';
+              break;
+            case 'pre':
+              htmlEl.style.cssText = 'background-color: #1f2937 !important; color: #f9fafb !important; padding: 1em !important; border-radius: 8px !important; overflow-x: auto !important; margin: 1em 0 !important;';
+              break;
+            case 'blockquote':
+              htmlEl.style.cssText = 'border-left: 4px solid #3b82f6 !important; background-color: #eff6ff !important; padding: 1em !important; margin: 1em 0 !important; border-radius: 0 8px 8px 0 !important;';
+              break;
+            case 'table':
+              htmlEl.style.cssText = 'border-collapse: collapse !important; width: 100% !important; margin: 1em 0 !important; border: 1px solid #d1d5db !important;';
+              break;
+            case 'th':
+              htmlEl.style.cssText = 'background-color: #1f2937 !important; color: white !important; padding: 0.75em !important; text-align: left !important; font-weight: bold !important; border: 1px solid #d1d5db !important;';
+              break;
+            case 'td':
+              htmlEl.style.cssText = 'padding: 0.75em !important; border: 1px solid #d1d5db !important; color: #1f2937 !important;';
+              break;
+            case 'tr':
+              if (htmlEl.parentElement?.tagName.toLowerCase() === 'tbody') {
+                const index = Array.from(htmlEl.parentElement.children).indexOf(htmlEl);
+                if (index % 2 === 1) {
+                  htmlEl.style.cssText = 'background-color: #f9fafb !important;';
+                }
+              }
+              break;
+            case 'strong':
+              htmlEl.style.cssText = 'font-weight: bold !important; color: #1f2937 !important;';
+              break;
+            case 'em':
+              htmlEl.style.cssText = 'font-style: italic !important; color: #7c3aed !important;';
+              break;
+            case 'a':
+              htmlEl.style.cssText = 'color: #2563eb !important; text-decoration: underline !important;';
+              break;
+            case 'ul':
+            case 'ol':
+              htmlEl.style.cssText = 'margin: 1em 0 !important; padding-left: 2em !important;';
+              break;
+            case 'li':
+              htmlEl.style.cssText = 'margin: 0.5em 0 !important; color: #374151 !important;';
+              break;
+            case 'hr':
+              htmlEl.style.cssText = 'border: none !important; height: 2px !important; background: #3b82f6 !important; margin: 2em 0 !important; border-radius: 1px !important;';
+              break;
+          }
+        });
+      };
+      
+      // 스타일 정리 적용
+      sanitizeForPDF(element);
+      
+      // PDF 전용 스타일 추가
+      const style = document.createElement('style');
+      style.textContent = `
+        * {
+          -webkit-print-color-adjust: exact !important;
+          color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+        body { 
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif !important;
+          line-height: 1.6 !important;
+          color: #1f2937 !important;
+        }
+        h1, h2, h3, h4, h5, h6 { 
+          color: #1f2937 !important; 
+          margin-top: 1.5em !important;
+          margin-bottom: 0.5em !important;
+        }
+        h1 { 
+          font-size: 2em !important; 
+          border-bottom: 2px solid #3b82f6 !important;
+          padding-bottom: 0.3em !important;
+        }
+        h2 { 
+          font-size: 1.5em !important; 
+        }
+        h3 { 
+          font-size: 1.25em !important; 
+        }
+        p { 
+          margin-bottom: 1em !important; 
+          color: #374151 !important;
+        }
+        code { 
+          background-color: #f3f4f6 !important; 
+          padding: 0.2em 0.4em !important; 
+          border-radius: 4px !important;
+          font-family: 'Monaco', 'Consolas', monospace !important;
+          color: #dc2626 !important;
+        }
+        pre { 
+          background-color: #1f2937 !important; 
+          color: #f9fafb !important; 
+          padding: 1em !important; 
+          border-radius: 8px !important;
+          overflow-x: auto !important;
+        }
+        blockquote { 
+          border-left: 4px solid #3b82f6 !important; 
+          background-color: #eff6ff !important; 
+          padding: 1em !important; 
+          margin: 1em 0 !important;
+          border-radius: 0 8px 8px 0 !important;
+        }
+        table { 
+          border-collapse: collapse !important; 
+          width: 100% !important; 
+          margin: 1em 0 !important;
+          border: 1px solid #d1d5db !important;
+        }
+        th { 
+          background-color: #1f2937 !important; 
+          color: white !important; 
+          padding: 0.75em !important; 
+          text-align: left !important;
+          font-weight: bold !important;
+        }
+        td { 
+          padding: 0.75em !important; 
+          border-bottom: 1px solid #d1d5db !important;
+          color: #1f2937 !important;
+        }
+        tr:nth-child(even) { 
+          background-color: #f9fafb !important; 
+        }
+        strong { 
+          color: #1f2937 !important; 
+          font-weight: bold !important;
+        }
+        em { 
+          color: #7c3aed !important; 
+        }
+        a { 
+          color: #2563eb !important; 
+          text-decoration: underline !important;
+        }
+        ul, ol { 
+          margin: 1em 0 !important; 
+          padding-left: 2em !important;
+        }
+        li { 
+          margin: 0.5em 0 !important; 
+          color: #374151 !important;
+        }
+        hr { 
+          border: none !important;
+          height: 2px !important;
+          background: linear-gradient(to right, #3b82f6, #8b5cf6, #ec4899) !important;
+          margin: 2em 0 !important;
+          border-radius: 1px !important;
+        }
+      `;
+      element.appendChild(style);
+
+      // PDF 생성
+      await html2pdf().set(options).from(element).save();
+      
+    } catch (error) {
+      console.error('PDF 출력 중 오류가 발생했습니다:', error);
+      alert('PDF 출력 중 오류가 발생했습니다. 다시 시도해 주세요.');
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   // 키보드 단축키 처리
   useEffect(() => {
@@ -98,6 +324,10 @@ print(f"피보나치 수열: {[fibonacci(i) for i in range(10)]}")
           case 'k':
             e.preventDefault();
             insertFormatting('[', '](url)');
+            break;
+          case 'p':
+            e.preventDefault();
+            exportToPDF();
             break;
         }
       }
@@ -176,7 +406,7 @@ print(f"피보나치 수열: {[fibonacci(i) for i in range(10)]}")
   // 더 아름다운 커스텀 컴포넌트들
   const beautifulComponents = {
     h1: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
-      <h1 className="text-4xl font-bold mb-6 text-gray-900 dark:text-white border-b-4 border-gradient-to-r from-blue-500 to-purple-500 pb-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent" {...props}>
+      <h1 className="text-4xl font-bold mb-6 text-gray-900 dark:text-white pb-3" {...props}>
         {children}
       </h1>
     ),
@@ -251,32 +481,32 @@ print(f"피보나치 수열: {[fibonacci(i) for i in range(10)]}")
       </div>
     ),
     thead: ({ children, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) => (
-      <thead className="bg-gradient-to-r from-blue-500 to-purple-600" {...props}>
+      <thead className="bg-gray-800 dark:bg-gray-900" {...props}>
         {children}
       </thead>
     ),
     tbody: ({ children, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) => (
-      <tbody className="divide-y divide-gray-200 dark:divide-gray-700" {...props}>
+      <tbody className="divide-y divide-gray-200 dark:divide-gray-600 bg-white dark:bg-gray-800" {...props}>
         {children}
       </tbody>
     ),
     th: ({ children, ...props }: React.HTMLAttributes<HTMLTableCellElement>) => (
-      <th className="px-6 py-4 text-left text-sm font-semibold text-white uppercase tracking-wider" {...props}>
+      <th className="px-6 py-4 text-left text-sm font-bold text-white bg-gray-800 dark:bg-gray-900 uppercase tracking-wider border-r border-gray-600 last:border-r-0" {...props}>
         {children}
       </th>
     ),
     td: ({ children, ...props }: React.HTMLAttributes<HTMLTableCellElement>) => (
-      <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100 whitespace-nowrap" {...props}>
+      <td className="px-6 py-4 text-base font-medium text-gray-800 dark:text-gray-200 whitespace-nowrap" {...props}>
         {children}
       </td>
     ),
     tr: ({ children, ...props }: React.HTMLAttributes<HTMLTableRowElement>) => (
-      <tr className="bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-150" {...props}>
+      <tr className="bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-150 border-b border-gray-100 dark:border-gray-700" {...props}>
         {children}
       </tr>
     ),
     strong: ({ children, ...props }: React.HTMLAttributes<HTMLElement>) => (
-      <strong className="font-bold text-gray-900 dark:text-white bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent" {...props}>
+      <strong className="font-bold text-blue-600 dark:text-blue-400" {...props}>
         {children}
       </strong>
     ),
@@ -293,12 +523,30 @@ print(f"피보나치 수열: {[fibonacci(i) for i in range(10)]}")
       <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-semibold text-gray-800 dark:text-white">Markdown Editor</h1>
-          <button
-            onClick={() => setIsFullscreen(true)}
-            className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg"
-          >
-            🖥️ 전체화면 미리보기
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={exportToPDF}
+              disabled={isExporting}
+              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-green-400 transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2"
+            >
+              {isExporting ? (
+                <>
+                  <span className="animate-spin">⏳</span>
+                  PDF 생성 중...
+                </>
+              ) : (
+                <>
+                  📄 PDF 출력
+                </>
+              )}
+            </button>
+            <button
+              onClick={() => setIsFullscreen(true)}
+              className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg"
+            >
+              🖥️ 전체화면 미리보기
+            </button>
+          </div>
         </div>
       </header>
 
@@ -360,6 +608,12 @@ print(f"피보나치 수열: {[fibonacci(i) for i in range(10)]}")
             <ToolbarButton onClick={() => insertAtCursor('```\n\n```')} title="코드 블록">
               📝
             </ToolbarButton>
+            
+            <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+            
+            <ToolbarButton onClick={exportToPDF} title="PDF 출력 (Ctrl+P)">
+              📄
+            </ToolbarButton>
           </div>
 
           <textarea
@@ -379,7 +633,7 @@ print(f"피보나치 수열: {[fibonacci(i) for i in range(10)]}")
           </div>
           <div className="flex-1 overflow-auto bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
             {isClient ? (
-              <div className="p-6 max-w-none">
+              <div ref={previewRef} className="p-6 max-w-none">
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   components={beautifulComponents}
@@ -401,12 +655,21 @@ print(f"피보나치 수열: {[fibonacci(i) for i in range(10)]}")
             <header className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 px-6 py-4">
               <div className="flex items-center justify-between">
                 <h1 className="text-xl font-semibold text-gray-800 dark:text-white">🖥️ 전체화면 미리보기</h1>
-                <button
-                  onClick={() => setIsFullscreen(false)}
-                  className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors shadow-md hover:shadow-lg"
-                >
-                  ✕ 닫기 (ESC)
-                </button>
+                <div className="flex gap-3">
+                  <button
+                    onClick={exportToPDF}
+                    disabled={isExporting}
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-green-400 transition-colors shadow-md hover:shadow-lg"
+                  >
+                    {isExporting ? '📄 PDF 생성 중...' : '📄 PDF 출력'}
+                  </button>
+                  <button
+                    onClick={() => setIsFullscreen(false)}
+                    className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors shadow-md hover:shadow-lg"
+                  >
+                    ✕ 닫기 (ESC)
+                  </button>
+                </div>
               </div>
             </header>
             <div className="flex-1 overflow-auto">

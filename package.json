@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "html2pdf.js": "^0.10.3",
     "next": "15.3.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -16,14 +17,18 @@
     "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
+    "@csstools/postcss-color-function": "^4.0.10",
+    "@csstools/postcss-oklab-function": "^4.0.10",
     "@eslint/eslintrc": "^3",
-    "@tailwindcss/postcss": "^4",
+    "@tailwindcss/postcss": "^4.1.8",
     "@tailwindcss/typography": "^0.5.16",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "autoprefixer": "^10.4.21",
     "eslint": "^9",
     "eslint-config-next": "15.3.2",
+    "postcss-color-mod-function": "^4.1.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
