@@ -213,7 +213,6 @@ print(f"피보나치 수열: {[fibonacci(i) for i in range(10)]}")
         }
         h1 { 
           font-size: 2em !important; 
-          border-bottom: 2px solid #3b82f6 !important;
           padding-bottom: 0.3em !important;
         }
         h2 { 

@@ -175,3 +175,21 @@ This is a **FREE** and open-source project! Contributions are welcome.
 **💖 Made with love for the developer community - 100% FREE forever!**
 
 **💖 개발자 커뮤니티를 위해 사랑으로 제작 - 영원히 100% 무료!**
+
+---
+
+## 🤖 AI Disclaimer
+
+> **⚠️ Plot Twist!** This entire project was crafted by our AI overlords (100% AI-generated) 🤖✨  
+> While our silicon brain worked overtime, there might be some quirky bugs hiding in the code.  
+> Think of them as Easter eggs... but less fun and more crashy! 🐛💥
+> 
+> **Don't forget to star this repo!** ⭐ Your stars fuel our AI's ego and help it write better code! 🚀
+
+## 🤖 AI 면책조항
+
+> **⚠️ 반전!** 이 프로젝트는 AI 로봇들이 100% 제작했습니다 🤖✨  
+> 우리의 실리콘 브레인이 야근을 했지만, 코드 곳곳에 재미있는(?) 버그들이 숨어있을 수 있어요.  
+> 이스터 에그라고 생각하세요... 단지 덜 재미있고 더 많이 터질 뿐! 🐛💥
+> 
+> **스타 주는 거 잊지 마세요!** ⭐ 여러분의 스타가 AI의 자존감을 높여주고 더 나은 코드를 짜게 해줍니다! 🚀
