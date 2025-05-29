@@ -1,4 +1,5 @@
 import React from 'react';
+import { MobileMenu } from './MobileMenu';
 
 interface HeaderProps {
   isExporting: boolean;
@@ -16,59 +17,67 @@ const GitHubIcon = () => (
 export const Header: React.FC<HeaderProps> = ({ isExporting, onExportPDF, onFullscreen, onShare }) => (
   <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 py-3 md:py-4" role="banner">
     <div className="flex items-center justify-between">
-      <div className="flex items-center gap-2 md:gap-4">
-        <h1 className="text-lg md:text-xl font-semibold text-gray-800 dark:text-white">Markdown Editor</h1>
+      <div className="flex items-center gap-2 md:gap-4 min-w-0 flex-1">
+        <h1 className="text-base md:text-xl font-semibold text-gray-800 dark:text-white truncate">
+          Markdown Editor
+        </h1>
         <a 
           href="https://github.com/gyupro/markdown-editor" 
           target="_blank" 
           rel="noopener noreferrer"
-          className="flex text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 text-sm items-center gap-1"
+          className="flex text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 text-sm items-center gap-1 flex-shrink-0"
           title="GitHub Repository"
           aria-label="GitHub에서 오픈소스 코드 보기"
         >
           <GitHubIcon />
-          <span className="hidden md:inline">Open Source</span>
+          <span className="hidden sm:inline">Open Source</span>
         </a>
       </div>
-      <nav className="flex gap-2 md:gap-3" aria-label="메인 작업">
+      <nav className="flex items-center gap-2" aria-label="메인 작업">
         <button
           onClick={onShare}
-          className="px-3 md:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-1 md:gap-2 text-sm"
+          className="px-3 md:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-1 md:gap-2 text-sm flex-shrink-0"
           aria-label="현재 문서를 공유 가능한 링크로 만듭니다"
         >
-          <span className="text-xs md:text-base" aria-hidden="true">🌐</span> 
+          <span className="text-sm md:text-base" aria-hidden="true">🌐</span> 
           <span className="hidden sm:inline">문서 공유</span>
           <span className="sm:hidden">공유</span>
         </button>
-        <button
-          onClick={onExportPDF}
-          disabled={isExporting}
-          className="px-3 md:px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-green-400 transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-1 md:gap-2 text-sm"
-          aria-label={isExporting ? "PDF 생성 중입니다. 잠시만 기다려주세요." : "현재 문서를 PDF로 출력합니다"}
-        >
-          {isExporting ? (
-            <>
-              <span className="animate-spin text-xs md:text-base" aria-hidden="true">⏳</span>
-              <span className="hidden sm:inline">PDF 생성 중...</span>
-              <span className="sm:hidden">생성중...</span>
-            </>
-          ) : (
-            <>
-              <span className="text-xs md:text-base" aria-hidden="true">📄</span> 
-              <span className="hidden sm:inline">PDF 출력</span>
-              <span className="sm:hidden">PDF</span>
-            </>
-          )}
-        </button>
-        <button
-          onClick={onFullscreen}
-          className="px-3 md:px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg text-sm"
-          aria-label="전체화면으로 미리보기를 확인합니다"
-        >
-          <span className="text-xs md:text-base" aria-hidden="true">🖥️</span> 
-          <span className="hidden sm:inline">전체화면 미리보기</span>
-          <span className="sm:hidden">전체화면</span>
-        </button>
+        <div className="hidden md:flex gap-3">
+          <button
+            onClick={onExportPDF}
+            disabled={isExporting}
+            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-green-400 transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2 text-sm"
+            aria-label={isExporting ? "PDF 생성 중입니다. 잠시만 기다려주세요." : "현재 문서를 PDF로 출력합니다"}
+          >
+            {isExporting ? (
+              <>
+                <span className="animate-spin text-base" aria-hidden="true">⏳</span>
+                <span>PDF 생성 중...</span>
+              </>
+            ) : (
+              <>
+                <span className="text-base" aria-hidden="true">📄</span> 
+                <span>PDF 출력</span>
+              </>
+            )}
+          </button>
+          <button
+            onClick={onFullscreen}
+            className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg text-sm"
+            aria-label="전체화면으로 미리보기를 확인합니다"
+          >
+            <span className="text-base" aria-hidden="true">🖥️</span> 
+            <span>전체화면 미리보기</span>
+          </button>
+        </div>
+        <div className="md:hidden">
+          <MobileMenu 
+            isExporting={isExporting}
+            onExportPDF={onExportPDF}
+            onFullscreen={onFullscreen}
+          />
+        </div>
       </nav>
     </div>
   </header>

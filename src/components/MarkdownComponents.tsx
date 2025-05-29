@@ -99,8 +99,8 @@ export const markdownComponents: MarkdownComponents = {
     <hr className="my-6 md:my-8 border-0 h-1 bg-gradient-to-r from-blue-300 via-purple-300 to-pink-300 rounded-full opacity-60" {...props} />
   ),
   table: ({ children, ...props }: React.HTMLAttributes<HTMLTableElement>) => (
-    <div className="overflow-x-auto my-4 md:my-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-      <table className="min-w-full text-xs md:text-base" {...props}>
+    <div className="overflow-x-auto my-4 md:my-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 -mx-4 md:mx-0">
+      <table className="w-full text-sm md:text-base" {...props}>
         {children}
       </table>
     </div>
@@ -116,13 +116,17 @@ export const markdownComponents: MarkdownComponents = {
     </tbody>
   ),
   th: ({ children, ...props }: React.HTMLAttributes<HTMLTableCellElement>) => (
-    <th className="px-3 md:px-6 py-2 md:py-4 text-left text-xs md:text-sm font-bold text-white bg-gray-800 dark:bg-gray-900 uppercase tracking-wider border-r border-gray-600 last:border-r-0" {...props}>
-      {children}
+    <th className="px-2 md:px-4 py-2 md:py-3 text-left text-xs md:text-sm font-bold text-white bg-gray-800 dark:bg-gray-900 tracking-wider border-r border-gray-600 last:border-r-0 min-w-0" {...props}>
+      <div className="truncate">
+        {children}
+      </div>
     </th>
   ),
   td: ({ children, ...props }: React.HTMLAttributes<HTMLTableCellElement>) => (
-    <td className="px-3 md:px-6 py-2 md:py-4 text-sm md:text-base font-medium text-gray-800 dark:text-gray-200 break-words" {...props}>
-      {children}
+    <td className="px-2 md:px-4 py-2 md:py-3 text-sm md:text-base font-medium text-gray-800 dark:text-gray-200 min-w-0" {...props}>
+      <div className="break-words hyphens-auto">
+        {children}
+      </div>
     </td>
   ),
   tr: ({ children, ...props }: React.HTMLAttributes<HTMLTableRowElement>) => (
