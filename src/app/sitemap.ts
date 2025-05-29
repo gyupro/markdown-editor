@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://markdown-editor.vercel.app'
+  const baseUrl = 'https://markdown.develop-on.co.kr'
   
   return [
     {

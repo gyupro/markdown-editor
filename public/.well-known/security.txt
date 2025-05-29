@@ -1,6 +1,6 @@
 Contact: mailto:security@markdown-editor.app
 Expires: 2025-12-31T23:59:59.000Z
-Acknowledgments: https://markdown-editor.vercel.app/security-acknowledgments
+Acknowledgments: https://markdown.develop-on.co.kr/security-acknowledgments
 Preferred-Languages: ko, en
-Canonical: https://markdown-editor.vercel.app/.well-known/security.txt
-Policy: https://markdown-editor.vercel.app/security-policy 
+Canonical: https://markdown.develop-on.co.kr/.well-known/security.txt
+Policy: https://markdown.develop-on.co.kr/security-policy 

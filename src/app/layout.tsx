@@ -33,14 +33,14 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL('https://markdown-editor.vercel.app'),
+  metadataBase: new URL('https://markdown.develop-on.co.kr'),
   alternates: {
     canonical: '/',
   },
   openGraph: {
     title: "Markdown Editor - 무료 온라인 마크다운 에디터",
     description: "실시간 미리보기, PDF 출력, 키보드 단축키를 지원하는 강력하고 직관적인 온라인 마크다운 에디터입니다.",
-    url: 'https://markdown-editor.vercel.app',
+    url: 'https://markdown.develop-on.co.kr',
     siteName: 'Markdown Editor',
     locale: 'ko_KR',
     type: 'website',
@@ -107,7 +107,7 @@ export default function RootLayout({
               "@type": "WebApplication",
               "name": "Markdown Editor",
               "description": "실시간 미리보기, PDF 출력, 키보드 단축키를 지원하는 강력하고 직관적인 온라인 마크다운 에디터입니다.",
-              "url": "https://markdown-editor.vercel.app",
+              "url": "https://markdown.develop-on.co.kr",
               "applicationCategory": "TextEditor",
               "operatingSystem": "Web Browser",
               "offers": {

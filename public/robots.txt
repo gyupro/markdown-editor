@@ -21,7 +21,7 @@ Allow: /
 Disallow: /api/
 
 # Sitemap location
-Sitemap: https://markdown-editor.vercel.app/sitemap.xml
+Sitemap: https://markdown.develop-on.co.kr/sitemap.xml
 
 # Crawl-delay for respectful crawling
 Crawl-delay: 1 

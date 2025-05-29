@@ -22,9 +22,9 @@
   ],
   "author": {
     "name": "Markdown Editor Team",
-    "url": "https://markdown-editor.vercel.app"
+    "url": "https://markdown.develop-on.co.kr"
   },
-  "homepage": "https://markdown-editor.vercel.app",
+  "homepage": "https://markdown.develop-on.co.kr",
   "repository": {
     "type": "git",
     "url": "https://github.com/gyupro/markdown-editor"
