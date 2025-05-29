@@ -26,4 +26,23 @@ export interface PDFOptions {
     format: string;
     orientation: string;
   };
+}
+
+export type MobileTab = 'editor' | 'preview';
+
+export interface ToolbarHandlers {
+  onHeading: (level: number) => void;
+  onBold: () => void;
+  onItalic: () => void;
+  onStrikethrough: () => void;
+  onInlineCode: () => void;
+  onLink: () => void;
+  onImage: () => void;
+  onBulletList: () => void;
+  onNumberedList: () => void;
+  onQuote: () => void;
+  onTable: () => void;
+  onCodeBlock: () => void;
+  onCopy: () => void;
+  onExportPDF: () => void;
 } 

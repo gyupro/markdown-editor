@@ -14,6 +14,7 @@ interface ToolbarProps {
   onQuote: () => void;
   onTable: () => void;
   onCodeBlock: () => void;
+  onCopy: () => void;
   onExportPDF: () => void;
 }
 
@@ -47,6 +48,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onQuote,
   onTable,
   onCodeBlock,
+  onCopy,
   onExportPDF,
 }) => {
   return (
@@ -105,6 +107,9 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       
       <Divider />
       
+      <ToolbarButton onClick={onCopy} title="마크다운 복사">
+        📋
+      </ToolbarButton>
       <ToolbarButton onClick={onExportPDF} title="PDF 출력 (Ctrl+P)">
         📄
       </ToolbarButton>
