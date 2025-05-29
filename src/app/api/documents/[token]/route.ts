@@ -4,10 +4,10 @@ import { supabase } from '@/lib/supabase';
 // 공유 토큰으로 문서 조회 (GET)
 export async function GET(
   request: NextRequest,
-  { params }: { params: { token: string } }
+  { params }: { params: Promise<{ token: string }> }
 ) {
   try {
-    const { token } = params;
+    const { token } = await params;
 
     const { data, error } = await supabase
       .from('documents')
@@ -36,10 +36,10 @@ export async function GET(
 // 문서 업데이트 (PUT)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { token: string } }
+  { params }: { params: Promise<{ token: string }> }
 ) {
   try {
-    const { token } = params;
+    const { token } = await params;
     const { title, content } = await request.json();
 
     const { data, error } = await supabase
