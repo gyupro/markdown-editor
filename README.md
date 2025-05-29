@@ -152,6 +152,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ### 🌐 Document Sharing
 
 - **One-Click Sharing**: Generate shareable links instantly
+- **Short & Secure URLs**: Nano ID tokens (10 characters) instead of UUID (36 characters) - 72% shorter links!
 - **Secure Access**: Token-based document access
 - **Beautiful Viewer**: Optimized read-only view for shared documents
 - **Copy Notifications**: Visual feedback for link copying
@@ -313,6 +314,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 ### 🌐 문서 공유
 
 - **원클릭 공유**: 즉시 공유 가능한 링크 생성
+- **짧고 안전한 URL**: UUID(36자) 대신 Nano ID 토큰(10자) 사용 - 72% 더 짧은 링크!
 - **안전한 접근**: 토큰 기반 문서 접근
 - **아름다운 뷰어**: 공유된 문서를 위한 최적화된 읽기 전용 뷰
 - **복사 알림**: 링크 복사를 위한 시각적 피드백

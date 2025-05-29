@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
-import { v4 as uuidv4 } from 'uuid';
+import { nanoid } from 'nanoid';
 
 // 문서 생성 (POST)
 export async function POST(request: NextRequest) {
@@ -28,8 +28,8 @@ export async function POST(request: NextRequest) {
       });
     }
     
-    // 기존 문서가 없다면 새로운 문서 생성
-    const shareToken = uuidv4();
+    // 기존 문서가 없다면 새로운 문서 생성 (nanoid 사용으로 더 짧은 토큰 생성 - 10자)
+    const shareToken = nanoid(10);
     
     const { data, error } = await supabase
       .from('documents')
