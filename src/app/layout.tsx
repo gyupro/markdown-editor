@@ -98,6 +98,19 @@ export default function RootLayout({
   return (
     <html lang="ko" suppressHydrationWarning={true}>
       <head>
+        {/* Google Analytics */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-D9C9GV0E49"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-D9C9GV0E49');
+            `
+          }}
+        />
+        
         {/* Structured Data */}
         <script
           type="application/ld+json"
