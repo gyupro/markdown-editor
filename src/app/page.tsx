@@ -98,7 +98,7 @@ print(f"피보나치 수열: {[fibonacci(i) for i in range(10)]}")
       
       // PDF 옵션 설정
       const options = {
-        margin: [0.5, 0.5, 0.5, 0.5],
+        margin: [0.2, 0.5, 0.5, 0.5],
         filename: 'markdown-document.pdf',
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { 
@@ -113,188 +113,236 @@ print(f"피보나치 수열: {[fibonacci(i) for i in range(10)]}")
         }
       };
 
-      // 프리뷰 내용을 복제하여 PDF용으로 스타일링
+      // 프리뷰 내용을 그대로 복제 (beautifulComponents 스타일 유지)
       const element = previewRef.current.cloneNode(true) as HTMLElement;
       
-      // 지원되지 않는 CSS 색상 함수들을 제거하고 완전히 스타일을 재설정하는 함수
-      const sanitizeForPDF = (element: HTMLElement) => {
-        const allElements = element.querySelectorAll('*');
-        allElements.forEach((el) => {
-          const htmlEl = el as HTMLElement;
-          
-          // 모든 기존 스타일 제거
-          htmlEl.removeAttribute('style');
-          htmlEl.removeAttribute('class');
-          
-          // 태그별로 기본 스타일만 적용
-          const tagName = htmlEl.tagName.toLowerCase();
-          switch (tagName) {
-            case 'h1':
-              htmlEl.style.cssText = 'font-size: 2em !important; font-weight: bold !important; margin: 1.5em 0 0.5em 0 !important; color: #1f2937 !important;';
-              break;
-            case 'h2':
-              htmlEl.style.cssText = 'font-size: 1.5em !important; font-weight: bold !important; margin: 1.5em 0 0.5em 0 !important; color: #1f2937 !important;';
-              break;
-            case 'h3':
-              htmlEl.style.cssText = 'font-size: 1.25em !important; font-weight: bold !important; margin: 1.25em 0 0.5em 0 !important; color: #1f2937 !important;';
-              break;
-            case 'p':
-              htmlEl.style.cssText = 'margin: 0 0 1em 0 !important; color: #374151 !important; line-height: 1.6 !important;';
-              break;
-            case 'code':
-              htmlEl.style.cssText = 'background-color: #f3f4f6 !important; padding: 0.2em 0.4em !important; border-radius: 4px !important; font-family: Monaco, Consolas, monospace !important; color: #dc2626 !important; font-size: 0.9em !important;';
-              break;
-            case 'pre':
-              htmlEl.style.cssText = 'background-color: #1f2937 !important; color: #f9fafb !important; padding: 1em !important; border-radius: 8px !important; overflow-x: auto !important; margin: 1em 0 !important;';
-              break;
-            case 'blockquote':
-              htmlEl.style.cssText = 'border-left: 4px solid #3b82f6 !important; background-color: #eff6ff !important; padding: 1em !important; margin: 1em 0 !important; border-radius: 0 8px 8px 0 !important;';
-              break;
-            case 'table':
-              htmlEl.style.cssText = 'border-collapse: collapse !important; width: 100% !important; margin: 1em 0 !important; border: 1px solid #d1d5db !important;';
-              break;
-            case 'th':
-              htmlEl.style.cssText = 'background-color: #1f2937 !important; color: white !important; padding: 0.75em !important; text-align: left !important; font-weight: bold !important; border: 1px solid #d1d5db !important;';
-              break;
-            case 'td':
-              htmlEl.style.cssText = 'padding: 0.75em !important; border: 1px solid #d1d5db !important; color: #1f2937 !important;';
-              break;
-            case 'tr':
-              if (htmlEl.parentElement?.tagName.toLowerCase() === 'tbody') {
-                const index = Array.from(htmlEl.parentElement.children).indexOf(htmlEl);
-                if (index % 2 === 1) {
-                  htmlEl.style.cssText = 'background-color: #f9fafb !important;';
-                }
-              }
-              break;
-            case 'strong':
-              htmlEl.style.cssText = 'font-weight: bold !important; color: #1f2937 !important;';
-              break;
-            case 'em':
-              htmlEl.style.cssText = 'font-style: italic !important; color: #7c3aed !important;';
-              break;
-            case 'a':
-              htmlEl.style.cssText = 'color: #2563eb !important; text-decoration: underline !important;';
-              break;
-            case 'ul':
-            case 'ol':
-              htmlEl.style.cssText = 'margin: 1em 0 !important; padding-left: 2em !important;';
-              break;
-            case 'li':
-              htmlEl.style.cssText = 'margin: 0.5em 0 !important; color: #374151 !important;';
-              break;
-            case 'hr':
-              htmlEl.style.cssText = 'border: none !important; height: 2px !important; background: #3b82f6 !important; margin: 2em 0 !important; border-radius: 1px !important;';
-              break;
+      // 프리뷰와 동일한 Tailwind 스타일을 PDF에서도 사용할 수 있도록 CSS 추가
+      const addTailwindCSS = (element: HTMLElement) => {
+        const style = document.createElement('style');
+        style.textContent = `
+          * {
+            -webkit-print-color-adjust: exact !important;
+            color-adjust: exact !important;
+            print-color-adjust: exact !important;
           }
-        });
+          
+          /* 프리뷰와 동일한 Tailwind 스타일 */
+          .text-4xl { font-size: 2.25rem !important; }
+          .text-3xl { font-size: 1.875rem !important; }
+          .text-2xl { font-size: 1.5rem !important; }
+          .text-lg { font-size: 1.125rem !important; }
+          .text-sm { font-size: 0.875rem !important; }
+          
+          .font-bold { font-weight: 700 !important; }
+          .font-semibold { font-weight: 600 !important; }
+          
+          .mb-6 { margin-bottom: 1.5rem !important; }
+          .mb-4 { margin-bottom: 1rem !important; }
+          .mb-3 { margin-bottom: 0.75rem !important; }
+          .mt-8 { margin-top: 2rem !important; }
+          .mt-6 { margin-top: 1.5rem !important; }
+          .my-6 { margin-top: 1.5rem !important; margin-bottom: 1.5rem !important; }
+          .pb-3 { padding-bottom: 0.75rem !important; }
+          .pl-6 { padding-left: 1.5rem !important; }
+          .py-4 { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+          .px-2 { padding-left: 0.5rem !important; padding-right: 0.5rem !important; }
+          .py-1 { padding-top: 0.25rem !important; padding-bottom: 0.25rem !important; }
+          .px-6 { padding-left: 1.5rem !important; padding-right: 1.5rem !important; }
+          .py-4 { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+          .p-6 { padding: 1.5rem !important; }
+          
+          .text-gray-900 { color: #111827 !important; }
+          .text-gray-800 { color: #1f2937 !important; }
+          .text-gray-700 { color: #374151 !important; }
+          .text-gray-300 { color: #d1d5db !important; }
+          .text-white { color: #ffffff !important; }
+          .text-pink-700 { color: #be185d !important; }
+          .text-purple-600 { color: #9333ea !important; }
+          .text-blue-600 { color: #2563eb !important; }
+          
+          .leading-relaxed { line-height: 1.625 !important; }
+          .leading-relaxed { line-height: 1.5 !important; }
+          
+          .flex { display: flex !important; }
+          .items-center { align-items: center !important; }
+          .items-start { align-items: flex-start !important; }
+          
+          /* 그라디언트 바 (h2용) */
+          .w-1 { width: 0.25rem !important; }
+          .h-8 { height: 2rem !important; }
+          .bg-gradient-to-b { background: linear-gradient(to bottom, #3b82f6, #8b5cf6) !important; }
+          .mr-3 { margin-right: 0.75rem !important; }
+          .mr-2 { margin-right: 0.5rem !important; }
+          .mt-1 { margin-top: 0.25rem !important; }
+          .ml-6 { margin-left: 1.5rem !important; }
+          .rounded-full { border-radius: 9999px !important; }
+          .rounded-md { border-radius: 0.375rem !important; }
+          .rounded-r-lg { border-radius: 0 0.5rem 0.5rem 0 !important; }
+          .rounded-xl { border-radius: 0.75rem !important; }
+          
+          /* 배경색 */
+          .bg-gradient-to-r { background: linear-gradient(to right, #dbeafe, #faf5ff) !important; }
+          .bg-gradient-to-br { background: linear-gradient(to bottom right, #1f2937, #111827) !important; }
+          .bg-white { background-color: #ffffff !important; }
+          .bg-gray-800 { background-color: #1f2937 !important; }
+          .bg-gray-900 { background-color: #111827 !important; }
+          
+          /* 테두리 */
+          .border-l-4 { border-left: 4px solid !important; }
+          .border-blue-500 { border-color: #3b82f6 !important; }
+          .border { border: 1px solid !important; }
+          .border-gray-200 { border-color: #e5e7eb !important; }
+          .border-gray-700 { border-color: #374151 !important; }
+          .border-pink-200 { border-color: #fbcfe8 !important; }
+          
+          /* 그림자 */
+          .shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important; }
+          .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important; }
+          
+          /* 기타 스타일 */
+          .italic { font-style: italic !important; }
+          .font-mono { font-family: 'Monaco', 'Consolas', 'Courier New', monospace !important; }
+          .underline { text-decoration: underline !important; }
+          .space-y-2 > * + * { margin-top: 0.5rem !important; }
+          .min-w-full { min-width: 100% !important; }
+          .overflow-x-auto { overflow-x: auto !important; }
+          .whitespace-nowrap { white-space: nowrap !important; }
+          .uppercase { text-transform: uppercase !important; }
+          .tracking-wider { letter-spacing: 0.05em !important; }
+          .divide-y > * + * { border-top: 1px solid #e5e7eb !important; }
+          .text-left { text-align: left !important; }
+          .font-medium { font-weight: 500 !important; }
+          .border-collapse { border-collapse: collapse !important; }
+          .border-r { border-right: 1px solid #374151 !important; }
+          .last\\:border-r-0:last-child { border-right: none !important; }
+          
+          /* 특별한 경우들 */
+          .max-w-none { max-width: none !important; }
+          
+          /* 첫 번째 요소 마진 제거 */
+          h1:first-child, h2:first-child, h3:first-child, p:first-child {
+            margin-top: 0 !important;
+          }
+          
+          /* 코드 블록 - 프리뷰와 동일한 어두운 테마 유지 */
+          pre {
+            background-color: #1f2937 !important;
+            color: #f9fafb !important;
+            padding: 1.5rem !important;
+            border-radius: 0.5rem !important;
+            overflow-x: auto !important;
+            margin: 1.5rem 0 !important;
+            font-family: 'Monaco', 'Consolas', 'Courier New', monospace !important;
+            font-size: 0.875rem !important;
+            line-height: 1.5 !important;
+          }
+          
+          pre code {
+            background-color: transparent !important;
+            color: inherit !important;
+            padding: 0 !important;
+            border: none !important;
+            border-radius: 0 !important;
+          }
+          
+          /* 테이블 스타일 */
+          table {
+            border-collapse: collapse !important;
+            width: 100% !important;
+            margin: 1rem 0 !important;
+          }
+          
+          th {
+            background-color: #1f2937 !important;
+            color: white !important;
+            padding: 0.75rem 1.5rem !important;
+            text-align: left !important;
+            font-weight: bold !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.05em !important;
+            border-right: 1px solid #374151 !important;
+            font-size: 0.875rem !important;
+          }
+          
+          th:last-child {
+            border-right: none !important;
+          }
+          
+          td {
+            padding: 1rem 1.5rem !important;
+            font-size: 1rem !important;
+            font-weight: 500 !important;
+            color: #1f2937 !important;
+            white-space: nowrap !important;
+          }
+          
+          tr {
+            background-color: #ffffff !important;
+            border-bottom: 1px solid #e5e7eb !important;
+          }
+          
+          tbody tr:nth-child(even) {
+            background-color: #f9fafb !important;
+          }
+          
+          /* 리스트 스타일 - bullet 포인트 개선 */
+          ul {
+            margin: 1rem 0 !important;
+            margin-left: 1.5rem !important;
+          }
+          
+          ol {
+            margin: 1rem 0 !important;
+            margin-left: 1.5rem !important;
+          }
+          
+          li {
+            margin: 0.5rem 0 !important;
+            color: #374151 !important;
+            line-height: 1.625 !important;
+            display: flex !important;
+            align-items: flex-start !important;
+          }
+          
+          li span:first-child {
+            color: #3b82f6 !important;
+            margin-right: 0.5rem !important;
+            margin-top: 0.25rem !important;
+          }
+          
+          /* HR 스타일 */
+          hr {
+            border: none !important;
+            height: 0.25rem !important;
+            background: linear-gradient(to right, #93c5fd, #c4b5fd, #f9a8d4) !important;
+            border-radius: 9999px !important;
+            opacity: 0.6 !important;
+            margin: 2rem 0 !important;
+          }
+          
+          /* strong, em 스타일 */
+          strong {
+            font-weight: bold !important;
+            color: #2563eb !important;
+          }
+          
+          em {
+            font-style: italic !important;
+            color: #9333ea !important;
+          }
+          
+          /* 링크 스타일 */
+          a {
+            color: #2563eb !important;
+            text-decoration: underline !important;
+            font-weight: 500 !important;
+          }
+        `;
+        element.appendChild(style);
       };
       
-      // 스타일 정리 적용
-      sanitizeForPDF(element);
-      
-      // PDF 전용 스타일 추가
-      const style = document.createElement('style');
-      style.textContent = `
-        * {
-          -webkit-print-color-adjust: exact !important;
-          color-adjust: exact !important;
-          print-color-adjust: exact !important;
-        }
-        body { 
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif !important;
-          line-height: 1.6 !important;
-          color: #1f2937 !important;
-        }
-        h1, h2, h3, h4, h5, h6 { 
-          color: #1f2937 !important; 
-          margin-top: 1.5em !important;
-          margin-bottom: 0.5em !important;
-        }
-        h1 { 
-          font-size: 2em !important; 
-          padding-bottom: 0.3em !important;
-        }
-        h2 { 
-          font-size: 1.5em !important; 
-        }
-        h3 { 
-          font-size: 1.25em !important; 
-        }
-        p { 
-          margin-bottom: 1em !important; 
-          color: #374151 !important;
-        }
-        code { 
-          background-color: #f3f4f6 !important; 
-          padding: 0.2em 0.4em !important; 
-          border-radius: 4px !important;
-          font-family: 'Monaco', 'Consolas', monospace !important;
-          color: #dc2626 !important;
-        }
-        pre { 
-          background-color: #1f2937 !important; 
-          color: #f9fafb !important; 
-          padding: 1em !important; 
-          border-radius: 8px !important;
-          overflow-x: auto !important;
-        }
-        blockquote { 
-          border-left: 4px solid #3b82f6 !important; 
-          background-color: #eff6ff !important; 
-          padding: 1em !important; 
-          margin: 1em 0 !important;
-          border-radius: 0 8px 8px 0 !important;
-        }
-        table { 
-          border-collapse: collapse !important; 
-          width: 100% !important; 
-          margin: 1em 0 !important;
-          border: 1px solid #d1d5db !important;
-        }
-        th { 
-          background-color: #1f2937 !important; 
-          color: white !important; 
-          padding: 0.75em !important; 
-          text-align: left !important;
-          font-weight: bold !important;
-        }
-        td { 
-          padding: 0.75em !important; 
-          border-bottom: 1px solid #d1d5db !important;
-          color: #1f2937 !important;
-        }
-        tr:nth-child(even) { 
-          background-color: #f9fafb !important; 
-        }
-        strong { 
-          color: #1f2937 !important; 
-          font-weight: bold !important;
-        }
-        em { 
-          color: #7c3aed !important; 
-        }
-        a { 
-          color: #2563eb !important; 
-          text-decoration: underline !important;
-        }
-        ul, ol { 
-          margin: 1em 0 !important; 
-          padding-left: 2em !important;
-        }
-        li { 
-          margin: 0.5em 0 !important; 
-          color: #374151 !important;
-        }
-        hr { 
-          border: none !important;
-          height: 2px !important;
-          background: linear-gradient(to right, #3b82f6, #8b5cf6, #ec4899) !important;
-          margin: 2em 0 !important;
-          border-radius: 1px !important;
-        }
-      `;
-      element.appendChild(style);
+      // 스타일 적용
+      addTailwindCSS(element);
 
       // PDF 생성
       await html2pdf().set(options).from(element).save();
@@ -521,7 +569,21 @@ print(f"피보나치 수열: {[fibonacci(i) for i in range(10)]}")
       {/* Header */}
       <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold text-gray-800 dark:text-white">Markdown Editor</h1>
+          <div className="flex items-center gap-4">
+            <h1 className="text-xl font-semibold text-gray-800 dark:text-white">Markdown Editor</h1>
+            <a 
+              href="https://github.com/gyupro" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 text-sm flex items-center gap-1"
+              title="GitHub Repository"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clipRule="evenodd" />
+              </svg>
+              Open Source
+            </a>
+          </div>
           <div className="flex gap-3">
             <button
               onClick={exportToPDF}
@@ -653,7 +715,21 @@ print(f"피보나치 수열: {[fibonacci(i) for i in range(10)]}")
           <div className="flex flex-col h-full">
             <header className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 px-6 py-4">
               <div className="flex items-center justify-between">
-                <h1 className="text-xl font-semibold text-gray-800 dark:text-white">🖥️ 전체화면 미리보기</h1>
+                <div className="flex items-center gap-4">
+                  <h1 className="text-xl font-semibold text-gray-800 dark:text-white">🖥️ 전체화면 미리보기</h1>
+                  <a 
+                    href="https://github.com/gyupro" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 text-sm flex items-center gap-1"
+                    title="GitHub Repository"
+                  >
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z" clipRule="evenodd" />
+                    </svg>
+                    Open Source
+                  </a>
+                </div>
                 <div className="flex gap-3">
                   <button
                     onClick={exportToPDF}
