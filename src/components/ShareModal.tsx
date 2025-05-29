@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useDocumentShare, DocumentWithMeta } from '@/hooks/useDocumentShare';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 
@@ -9,7 +9,7 @@ interface ShareModalProps {
   title?: string;
 }
 
-export const ShareModal: React.FC<ShareModalProps> = ({ 
+const ShareModalComponent: React.FC<ShareModalProps> = ({ 
   isOpen, 
   onClose, 
   markdown, 
@@ -21,7 +21,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({
   const { createShareableDocument, generateShareUrl, isLoading, error } = useDocumentShare();
   const { isCopied, copyToClipboard } = useCopyToClipboard();
 
-  const handleCreateShare = async () => {
+  const handleCreateShare = useCallback(async () => {
     setIsSharing(true);
     const document = await createShareableDocument(title, markdown);
     
@@ -31,20 +31,20 @@ export const ShareModal: React.FC<ShareModalProps> = ({
       setDocumentMeta(document._meta || null);
     }
     setIsSharing(false);
-  };
+  }, [createShareableDocument, generateShareUrl, title, markdown]);
 
-  const handleCopyLink = async () => {
+  const handleCopyLink = useCallback(async () => {
     if (shareUrl) {
       await copyToClipboard(shareUrl);
     }
-  };
+  }, [copyToClipboard, shareUrl]);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setShareUrl('');
     setIsSharing(false);
     setDocumentMeta(null);
     onClose();
-  };
+  }, [onClose]);
 
   if (!isOpen) return null;
 
@@ -171,4 +171,6 @@ export const ShareModal: React.FC<ShareModalProps> = ({
       </div>
     </div>
   );
-}; 
+};
+
+export const ShareModal = React.memo(ShareModalComponent); 
