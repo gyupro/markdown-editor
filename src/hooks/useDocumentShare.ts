@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Document } from '@/lib/supabase';
 
 export interface DocumentWithMeta extends Document {
@@ -13,7 +13,7 @@ export const useDocumentShare = () => {
   const [error, setError] = useState<string | null>(null);
 
   // 문서 저장 및 공유 링크 생성
-  const createShareableDocument = async (title: string, content: string): Promise<DocumentWithMeta | null> => {
+  const createShareableDocument = useCallback(async (title: string, content: string): Promise<DocumentWithMeta | null> => {
     setIsLoading(true);
     setError(null);
 
@@ -38,10 +38,10 @@ export const useDocumentShare = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   // 공유 링크로 문서 로드
-  const loadSharedDocument = async (token: string): Promise<Document | null> => {
+  const loadSharedDocument = useCallback(async (token: string): Promise<Document | null> => {
     setIsLoading(true);
     setError(null);
 
@@ -63,10 +63,10 @@ export const useDocumentShare = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   // 문서 업데이트
-  const updateSharedDocument = async (token: string, title: string, content: string): Promise<Document | null> => {
+  const updateSharedDocument = useCallback(async (token: string, title: string, content: string): Promise<Document | null> => {
     setIsLoading(true);
     setError(null);
 
@@ -91,12 +91,12 @@ export const useDocumentShare = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   // 공유 링크 생성
-  const generateShareUrl = (token: string): string => {
+  const generateShareUrl = useCallback((token: string): string => {
     return `${window.location.origin}/shared/${token}`;
-  };
+  }, []);
 
   return {
     isLoading,

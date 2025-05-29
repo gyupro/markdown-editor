@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useDocumentShare } from '@/hooks/useDocumentShare';
+import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import { Document } from '@/lib/supabase';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -10,22 +11,49 @@ import { markdownComponents } from '@/components/MarkdownComponents';
 
 export default function SharedDocumentPage() {
   const params = useParams();
+  const router = useRouter();
   const token = params.token as string;
   const [document, setDocument] = useState<Document | null>(null);
   const { loadSharedDocument, isLoading, error } = useDocumentShare();
+  const { copyToClipboard, isCopied } = useCopyToClipboard();
 
   const loadDocument = useCallback(async () => {
+    if (!token) return;
+    
     const loadedDocument = await loadSharedDocument(token);
     if (loadedDocument) {
       setDocument(loadedDocument);
     }
-  }, [loadSharedDocument, token]);
+  }, [token, loadSharedDocument]);
 
   useEffect(() => {
-    if (token) {
-      loadDocument();
-    }
-  }, [token, loadDocument]);
+    loadDocument();
+  }, [loadDocument]);
+
+  // 편집하기 - 메인 페이지로 이동하면서 내용 전달
+  const handleEditDocument = () => {
+    if (!document) return;
+    
+    // 로컬 스토리지에 임시 저장
+    localStorage.setItem('temp_shared_document', JSON.stringify({
+      title: document.title,
+      content: document.content,
+      fromShared: true
+    }));
+    
+    router.push('/');
+  };
+
+  // 내용 복사하기
+  const handleCopyContent = async () => {
+    if (!document) return;
+    await copyToClipboard(document.content);
+  };
+
+  // 새 문서 만들기
+  const handleNewDocument = () => {
+    router.push('/');
+  };
 
   if (isLoading) {
     return (
@@ -73,8 +101,9 @@ export default function SharedDocumentPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
       <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <div>
+        <div className="max-w-4xl mx-auto">
+          {/* 제목 영역 */}
+          <div className="mb-4 md:mb-0">
             <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
               {document.title}
             </h1>
@@ -82,12 +111,58 @@ export default function SharedDocumentPage() {
               공유된 문서 • {new Date(document.created_at).toLocaleDateString('ko-KR')}
             </p>
           </div>
-          <button
-            onClick={() => window.location.href = '/'}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors text-sm"
-          >
-            새 문서 만들기
-          </button>
+          
+          {/* 액션 버튼들 */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+            {/* 내용 복사하기 */}
+            <button
+              onClick={handleCopyContent}
+              disabled={!document}
+              className="flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-md transition-colors text-sm disabled:opacity-50"
+              title="마크다운 내용 복사"
+            >
+              {isCopied ? (
+                <>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                  </svg>
+                  복사됨
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                  내용 복사
+                </>
+              )}
+            </button>
+
+            {/* 편집하기 */}
+            <button
+              onClick={handleEditDocument}
+              disabled={!document}
+              className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition-colors text-sm disabled:opacity-50"
+              title="이 문서를 편집하기"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              이 문서 편집하기
+            </button>
+
+            {/* 새 문서 만들기 */}
+            <button
+              onClick={handleNewDocument}
+              className="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors text-sm"
+              title="새로운 문서 만들기"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+              </svg>
+              새 문서 만들기
+            </button>
+          </div>
         </div>
       </header>
 

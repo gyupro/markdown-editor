@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMarkdownEditor } from '@/hooks/useMarkdownEditor';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import { DEFAULT_MARKDOWN } from '@/constants/markdown';
@@ -18,6 +18,8 @@ export default function HomePage() {
   const { copyToClipboard } = useCopyToClipboard();
   const [mobileActiveTab, setMobileActiveTab] = useState<MobileTab>('editor');
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [documentTitle, setDocumentTitle] = useState('My Document');
+  const [showSharedNotice, setShowSharedNotice] = useState(false);
 
   const {
     markdown,
@@ -34,6 +36,33 @@ export default function HomePage() {
     insertHeading,
     insertTable,
   } = useMarkdownEditor(DEFAULT_MARKDOWN);
+
+  // 공유받은 문서 로드
+  useEffect(() => {
+    const loadSharedDocument = () => {
+      try {
+        const sharedData = localStorage.getItem('temp_shared_document');
+        if (sharedData) {
+          const parsed = JSON.parse(sharedData);
+          setMarkdown(parsed.content || '');
+          setDocumentTitle(parsed.title || 'My Document');
+          
+          if (parsed.fromShared) {
+            setShowSharedNotice(true);
+            // 5초 후 알림 숨기기
+            setTimeout(() => setShowSharedNotice(false), 5000);
+          }
+          
+          // 사용 후 로컬스토리지에서 제거
+          localStorage.removeItem('temp_shared_document');
+        }
+      } catch (error) {
+        console.error('공유 문서 로드 실패:', error);
+      }
+    };
+
+    loadSharedDocument();
+  }, [setMarkdown]);
 
   // 마크다운 복사 핸들러
   const handleCopyMarkdown = async () => {
@@ -65,6 +94,28 @@ export default function HomePage() {
 
   return (
     <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
+      {/* 공유받은 문서 로드 알림 */}
+      {showSharedNotice && (
+        <div className="bg-green-50 dark:bg-green-900/20 border-b border-green-200 dark:border-green-800 px-4 py-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-green-800 dark:text-green-200">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+              </svg>
+              <span className="text-sm font-medium">공유받은 문서가 로드되었습니다: "{documentTitle}"</span>
+            </div>
+            <button
+              onClick={() => setShowSharedNotice(false)}
+              className="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-200"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
+
       <Header 
         isExporting={isExporting}
         onExportPDF={handleExportToPDF}
@@ -108,7 +159,7 @@ export default function HomePage() {
         isOpen={isShareModalOpen}
         onClose={() => setIsShareModalOpen(false)}
         markdown={markdown}
-        title="My Document"
+        title={documentTitle}
       />
     </div>
   );
