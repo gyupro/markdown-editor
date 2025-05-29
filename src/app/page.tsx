@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useMarkdownEditor } from '@/hooks/useMarkdownEditor';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import { DEFAULT_MARKDOWN } from '@/constants/markdown';
@@ -20,6 +20,7 @@ export default function HomePage() {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [documentTitle, setDocumentTitle] = useState('My Document');
   const [showSharedNotice, setShowSharedNotice] = useState(false);
+  const hasLoadedSharedDocument = useRef(false);
 
   const {
     markdown,
@@ -37,52 +38,36 @@ export default function HomePage() {
     insertTable,
   } = useMarkdownEditor(DEFAULT_MARKDOWN);
 
-  // 클라이언트 마운트 시 공유 문서 확인 (한 번만)
+  // 공유받은 문서 로드 (한 번만 실행)
   useEffect(() => {
+    if (hasLoadedSharedDocument.current) return;
+    
     const loadSharedDocument = () => {
       try {
-        const sharedData = sessionStorage.getItem('temp_shared_document');
+        const sharedData = localStorage.getItem('temp_shared_document');
         if (sharedData) {
           const parsed = JSON.parse(sharedData);
+          setMarkdown(parsed.content || '');
+          setDocumentTitle(parsed.title || 'My Document');
           
-          // 5분 이내 데이터만 유효 (선택사항)
-          const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
-          if (parsed.timestamp && parsed.timestamp < fiveMinutesAgo) {
-            sessionStorage.removeItem('temp_shared_document');
-            return;
-          }
-          
-          // 마크다운 내용 로드
-          if (parsed.content) {
-            setMarkdown(parsed.content);
-          }
-          
-          // 제목 설정
-          if (parsed.title) {
-            setDocumentTitle(parsed.title);
-          }
-          
-          // 공유 알림 표시
           if (parsed.fromShared) {
             setShowSharedNotice(true);
+            // 5초 후 알림 숨기기
             setTimeout(() => setShowSharedNotice(false), 5000);
           }
           
-          // sessionStorage에서 제거 (한 번만 사용)
-          sessionStorage.removeItem('temp_shared_document');
+          // 사용 후 로컬스토리지에서 제거
+          localStorage.removeItem('temp_shared_document');
+          hasLoadedSharedDocument.current = true;
         }
       } catch (error) {
         console.error('공유 문서 로드 실패:', error);
-        // 에러 시 데이터 정리
-        sessionStorage.removeItem('temp_shared_document');
       }
     };
 
-    // 클라이언트에서만 실행
-    if (isClient) {
-      loadSharedDocument();
-    }
-  }, [isClient, setMarkdown]);
+    loadSharedDocument();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // 빈 의존성 배열로 마운트 시에만 실행
 
   // 마크다운 복사 핸들러
   const handleCopyMarkdown = async () => {
@@ -122,7 +107,7 @@ export default function HomePage() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
               </svg>
-              <span className="text-sm font-medium">공유받은 문서가 로드되었습니다: "{documentTitle}"</span>
+              <span className="text-sm font-medium">공유받은 문서가 로드되었습니다: &ldquo;{documentTitle}&rdquo;</span>
             </div>
             <button
               onClick={() => setShowSharedNotice(false)}
