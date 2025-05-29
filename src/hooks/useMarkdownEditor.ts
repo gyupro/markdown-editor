@@ -15,7 +15,7 @@ export const useMarkdownEditor = (initialMarkdown: string) => {
   }, []);
 
   // PDF 출력 함수
-  const handleExportToPDF = async () => {
+  const handleExportToPDF = useCallback(async () => {
     if (!isClient) return;
     
     setIsExporting(true);
@@ -28,7 +28,7 @@ export const useMarkdownEditor = (initialMarkdown: string) => {
     } finally {
       setIsExporting(false);
     }
-  };
+  }, [isClient]);
 
   // 텍스트 포맷팅 함수
   const insertFormatting = useCallback((before: string, after: string) => {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { MarkdownComponents } from '@/types/markdown';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 

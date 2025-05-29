@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { useDocumentShare } from '@/hooks/useDocumentShare';
 import { Document } from '@/lib/supabase';
@@ -14,18 +14,18 @@ export default function SharedDocumentPage() {
   const [document, setDocument] = useState<Document | null>(null);
   const { loadSharedDocument, isLoading, error } = useDocumentShare();
 
-  useEffect(() => {
-    if (token) {
-      loadDocument();
-    }
-  }, [token]);
-
-  const loadDocument = async () => {
+  const loadDocument = useCallback(async () => {
     const loadedDocument = await loadSharedDocument(token);
     if (loadedDocument) {
       setDocument(loadedDocument);
     }
-  };
+  }, [loadSharedDocument, token]);
+
+  useEffect(() => {
+    if (token) {
+      loadDocument();
+    }
+  }, [token, loadDocument]);
 
   if (isLoading) {
     return (
