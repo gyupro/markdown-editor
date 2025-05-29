@@ -23,11 +23,7 @@ export async function GET(
   try {
     // Rate limiting 체크 (조회는 더 관대하게 - 1분에 30번)
     const clientIP = getClientIP(request);
-    const readRateLimiter = globalRateLimiter.constructor.name === 'SimpleRateLimiter' 
-      ? new (globalRateLimiter.constructor as any)(30, 60000)  // 1분에 30번
-      : globalRateLimiter;
-    
-    if (!readRateLimiter.isAllowed(clientIP)) {
+    if (!globalRateLimiter.isAllowed(clientIP)) {
       return NextResponse.json(
         { error: '너무 많은 요청이 발생했습니다. 잠시 후 다시 시도해 주세요.' },
         { status: 429 }
@@ -60,7 +56,8 @@ export async function GET(
       );
     }
 
-    // 민감한 정보 제거 후 반환
+    // 민감한 정보 제거 후 반환 (share_token, is_public 필드 제거)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { share_token, is_public, ...safeDocument } = document;
     
     return NextResponse.json(safeDocument);
