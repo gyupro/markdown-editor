@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 요청 본문 파싱 및 크기 제한
-    let body;
+    let body: { title: string; content: string };
     try {
       const text = await request.text();
       if (text.length > 1024 * 1024) { // 1MB 제한
@@ -59,8 +59,8 @@ export async function POST(request: NextRequest) {
           { status: 413 }
         );
       }
-      body = JSON.parse(text);
-    } catch (err) {
+      body = JSON.parse(text) as { title: string; content: string };
+    } catch {
       return NextResponse.json(
         { error: '잘못된 JSON 형식입니다.' },
         { status: 400 }
