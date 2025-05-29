@@ -37,32 +37,52 @@ export default function HomePage() {
     insertTable,
   } = useMarkdownEditor(DEFAULT_MARKDOWN);
 
-  // 공유받은 문서 로드
+  // 클라이언트 마운트 시 공유 문서 확인 (한 번만)
   useEffect(() => {
     const loadSharedDocument = () => {
       try {
-        const sharedData = localStorage.getItem('temp_shared_document');
+        const sharedData = sessionStorage.getItem('temp_shared_document');
         if (sharedData) {
           const parsed = JSON.parse(sharedData);
-          setMarkdown(parsed.content || '');
-          setDocumentTitle(parsed.title || 'My Document');
           
+          // 5분 이내 데이터만 유효 (선택사항)
+          const fiveMinutesAgo = Date.now() - 5 * 60 * 1000;
+          if (parsed.timestamp && parsed.timestamp < fiveMinutesAgo) {
+            sessionStorage.removeItem('temp_shared_document');
+            return;
+          }
+          
+          // 마크다운 내용 로드
+          if (parsed.content) {
+            setMarkdown(parsed.content);
+          }
+          
+          // 제목 설정
+          if (parsed.title) {
+            setDocumentTitle(parsed.title);
+          }
+          
+          // 공유 알림 표시
           if (parsed.fromShared) {
             setShowSharedNotice(true);
-            // 5초 후 알림 숨기기
             setTimeout(() => setShowSharedNotice(false), 5000);
           }
           
-          // 사용 후 로컬스토리지에서 제거
-          localStorage.removeItem('temp_shared_document');
+          // sessionStorage에서 제거 (한 번만 사용)
+          sessionStorage.removeItem('temp_shared_document');
         }
       } catch (error) {
         console.error('공유 문서 로드 실패:', error);
+        // 에러 시 데이터 정리
+        sessionStorage.removeItem('temp_shared_document');
       }
     };
 
-    loadSharedDocument();
-  }, [setMarkdown]);
+    // 클라이언트에서만 실행
+    if (isClient) {
+      loadSharedDocument();
+    }
+  }, [isClient, setMarkdown]);
 
   // 마크다운 복사 핸들러
   const handleCopyMarkdown = async () => {

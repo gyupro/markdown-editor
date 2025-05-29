@@ -27,18 +27,21 @@ export default function SharedDocumentPage() {
   }, [token, loadSharedDocument]);
 
   useEffect(() => {
-    loadDocument();
-  }, [loadDocument]);
+    if (token) {
+      loadDocument();
+    }
+  }, [token, loadDocument]);
 
   // 편집하기 - 메인 페이지로 이동하면서 내용 전달
   const handleEditDocument = () => {
     if (!document) return;
     
-    // 로컬 스토리지에 임시 저장
-    localStorage.setItem('temp_shared_document', JSON.stringify({
+    // sessionStorage에 임시 저장 (탭별로 격리, 탭 닫히면 자동 삭제)
+    sessionStorage.setItem('temp_shared_document', JSON.stringify({
       title: document.title,
       content: document.content,
-      fromShared: true
+      fromShared: true,
+      timestamp: Date.now() // 타임스탬프 추가로 신선도 보장
     }));
     
     router.push('/');
