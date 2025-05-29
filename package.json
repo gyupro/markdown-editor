@@ -2,11 +2,43 @@
   "name": "markdown-editor",
   "version": "0.1.0",
   "private": true,
+  "description": "실시간 미리보기, PDF 출력, 키보드 단축키를 지원하는 강력하고 직관적인 온라인 마크다운 에디터",
+  "keywords": [
+    "markdown",
+    "editor",
+    "online",
+    "실시간",
+    "미리보기",
+    "preview",
+    "PDF",
+    "export",
+    "GitHub",
+    "GFM",
+    "무료",
+    "free",
+    "web",
+    "productivity",
+    "writing"
+  ],
+  "author": {
+    "name": "Markdown Editor Team",
+    "url": "https://markdown-editor.vercel.app"
+  },
+  "homepage": "https://markdown-editor.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gyupro/markdown-editor"
+  },
+  "bugs": {
+    "url": "https://github.com/gyupro/markdown-editor/issues"
+  },
+  "license": "MIT",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "sitemap": "next build && next start"
   },
   "dependencies": {
     "@vercel/analytics": "^1.5.0",
@@ -32,5 +64,9 @@
     "postcss-color-mod-function": "^4.1.1",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
   }
 }

@@ -61,26 +61,69 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ```
 ├── src/
 │   ├── app/
-│   │   ├── page.tsx          # Main editor component
-│   │   ├── layout.tsx        # App layout
-│   │   └── globals.css       # Global styles
+│   │   ├── page.tsx              # Main editor page (refactored)
+│   │   ├── layout.tsx            # App layout
+│   │   ├── globals.css           # Global styles
+│   │   ├── sitemap.ts           # SEO sitemap
+│   │   └── favicon.ico          # App icon
+│   ├── components/
+│   │   ├── MarkdownComponents.tsx # Custom markdown renderers
+│   │   └── Toolbar.tsx           # Editor toolbar component
+│   ├── hooks/
+│   │   └── useMarkdownEditor.ts  # Custom hook for editor logic
+│   ├── utils/
+│   │   └── pdf.ts               # PDF generation utilities
+│   ├── constants/
+│   │   └── markdown.ts          # App constants and defaults
 │   └── types/
-│       └── html2pdf.d.ts     # TypeScript definitions
-├── public/                   # Static assets
-├── postcss.config.mjs        # PostCSS configuration
-├── tailwind.config.ts        # Tailwind CSS configuration
-└── package.json              # Dependencies
+│       └── markdown.ts          # TypeScript type definitions
+├── public/                      # Static assets
+├── postcss.config.mjs          # PostCSS configuration
+├── tailwind.config.ts          # Tailwind CSS configuration
+└── package.json                # Dependencies
 ```
+
+### 🏗️ Architecture Highlights
+
+#### **Clean Code Structure**
+- **Modular Design**: 793-line monolith → 7 focused modules
+- **Single Responsibility**: Each file has a specific purpose
+- **Type Safety**: Comprehensive TypeScript definitions
+- **Reusable Components**: Modular UI components
+
+#### **Component Structure**
+- `useMarkdownEditor` - Custom hook managing all editor state and logic
+- `MarkdownComponents` - Beautiful custom renderers for markdown elements
+- `Toolbar` - Intuitive editing toolbar with all formatting options
+- `pdf.ts` - Dedicated PDF generation with custom styling
+
+#### **Performance Features**
+- **Code Splitting**: Automatic bundle optimization
+- **Dynamic Imports**: PDF library loaded only when needed
+- **Efficient Re-renders**: Optimized React hooks and callbacks
+- **Memory Management**: Proper cleanup and event handling
 
 ### 🎯 Key Features Implementation
 
-- **Real-time Preview**: Uses React state management for instant updates
-- **PDF Generation**: Custom sanitization for perfect PDF output
-- **Responsive Design**: Works on all device sizes
-- **Dark/Light Theme**: Automatic theme detection
-- **Color Compatibility**: PostCSS plugins for wide browser support
+- **Real-time Preview**: Custom React hooks with optimized state management
+- **PDF Generation**: Advanced CSS injection for pixel-perfect PDF output
+- **Responsive Design**: Mobile-first approach with Tailwind CSS
+- **Accessibility**: ARIA labels, keyboard navigation, screen reader support
+- **Dark/Light Theme**: Seamless theme switching with CSS variables
+- **Type Safety**: Full TypeScript coverage for runtime error prevention
+
+
+## 🤖 AI Disclaimer
+
+> **⚠️ Plot Twist!** This entire project was crafted by our AI overlords (100% AI-generated) 🤖✨  
+> While our silicon brain worked overtime, there might be some quirky bugs hiding in the code.  
+> Think of them as Easter eggs... but less fun and more crashy! 🐛💥
+> 
+> **Don't forget to star this repo!** ⭐ Your stars fuel our AI's ego and help it write better code! 🚀
 
 ---
+
+
 
 ## 한국어
 
@@ -137,24 +180,56 @@ npm run dev
 ```
 ├── src/
 │   ├── app/
-│   │   ├── page.tsx          # 메인 에디터 컴포넌트
-│   │   ├── layout.tsx        # 앱 레이아웃
-│   │   └── globals.css       # 전역 스타일
+│   │   ├── page.tsx              # 메인 에디터 페이지 (리팩토링됨)
+│   │   ├── layout.tsx            # 앱 레이아웃
+│   │   ├── globals.css           # 전역 스타일
+│   │   ├── sitemap.ts           # SEO 사이트맵
+│   │   └── favicon.ico          # 앱 아이콘
+│   ├── components/
+│   │   ├── MarkdownComponents.tsx # 커스텀 마크다운 렌더러
+│   │   └── Toolbar.tsx           # 에디터 툴바 컴포넌트
+│   ├── hooks/
+│   │   └── useMarkdownEditor.ts  # 에디터 로직 커스텀 훅
+│   ├── utils/
+│   │   └── pdf.ts               # PDF 생성 유틸리티
+│   ├── constants/
+│   │   └── markdown.ts          # 앱 상수 및 기본값
 │   └── types/
-│       └── html2pdf.d.ts     # TypeScript 정의
-├── public/                   # 정적 자산
-├── postcss.config.mjs        # PostCSS 설정
-├── tailwind.config.ts        # Tailwind CSS 설정
-└── package.json              # 의존성
+│       └── markdown.ts          # TypeScript 타입 정의
+├── public/                      # 정적 자산
+├── postcss.config.mjs          # PostCSS 설정
+├── tailwind.config.ts          # Tailwind CSS 설정
+└── package.json                # 의존성
 ```
+
+### 🏗️ 아키텍처 하이라이트
+
+#### **깔끔한 코드 구조**
+- **모듈러 디자인**: 793줄 모노리스 → 7개의 집중된 모듈
+- **단일 책임 원칙**: 각 파일이 특정 목적을 가짐
+- **타입 안전성**: 포괄적인 TypeScript 정의
+- **재사용 가능한 컴포넌트**: 모듈식 UI 컴포넌트
+
+#### **컴포넌트 구조**
+- `useMarkdownEditor` - 모든 에디터 상태와 로직을 관리하는 커스텀 훅
+- `MarkdownComponents` - 마크다운 요소들을 위한 아름다운 커스텀 렌더러
+- `Toolbar` - 모든 포맷팅 옵션을 포함한 직관적인 편집 툴바
+- `pdf.ts` - 커스텀 스타일링을 포함한 전용 PDF 생성
+
+#### **성능 기능**
+- **코드 분할**: 자동 번들 최적화
+- **동적 임포트**: 필요할 때만 PDF 라이브러리 로드
+- **효율적인 리렌더링**: 최적화된 React 훅과 콜백
+- **메모리 관리**: 적절한 정리 및 이벤트 처리
 
 ### 🎯 주요 기능 구현
 
-- **실시간 미리보기**: React 상태 관리로 즉시 업데이트
-- **PDF 생성**: 완벽한 PDF 출력을 위한 커스텀 정리 기능
-- **반응형 디자인**: 모든 기기 크기에서 작동
-- **다크/라이트 테마**: 자동 테마 감지
-- **색상 호환성**: 광범위한 브라우저 지원을 위한 PostCSS 플러그인
+- **실시간 미리보기**: 최적화된 상태 관리를 가진 커스텀 React 훅
+- **PDF 생성**: 픽셀 완벽한 PDF 출력을 위한 고급 CSS 주입
+- **반응형 디자인**: Tailwind CSS를 활용한 모바일 우선 접근법
+- **접근성**: ARIA 레이블, 키보드 네비게이션, 스크린 리더 지원
+- **다크/라이트 테마**: CSS 변수를 활용한 매끄러운 테마 전환
+- **타입 안전성**: 런타임 에러 방지를 위한 완전한 TypeScript 커버리지
 
 ---
 
@@ -178,13 +253,6 @@ This is a **FREE** and open-source project! Contributions are welcome.
 
 ---
 
-## 🤖 AI Disclaimer
-
-> **⚠️ Plot Twist!** This entire project was crafted by our AI overlords (100% AI-generated) 🤖✨  
-> While our silicon brain worked overtime, there might be some quirky bugs hiding in the code.  
-> Think of them as Easter eggs... but less fun and more crashy! 🐛💥
-> 
-> **Don't forget to star this repo!** ⭐ Your stars fuel our AI's ego and help it write better code! 🚀
 
 ## 🤖 AI 면책조항
 

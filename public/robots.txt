@@ -1,0 +1,27 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+Disallow: /node_modules/
+Disallow: /.well-known/
+
+# Google bots
+User-agent: Googlebot
+Allow: /
+Disallow: /api/
+
+# Bing bots
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+
+# Naver bots
+User-agent: Yeti
+Allow: /
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://markdown-editor.vercel.app/sitemap.xml
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1 
