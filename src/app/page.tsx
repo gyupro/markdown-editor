@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useMarkdownEditor } from '@/hooks/useMarkdownEditor';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import { DEFAULT_MARKDOWN } from '@/constants/markdown';
@@ -69,18 +69,18 @@ export default function HomePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // 빈 의존성 배열로 마운트 시에만 실행
 
-  // 마크다운 복사 핸들러
-  const handleCopyMarkdown = async () => {
+  // 마크다운 복사 핸들러 - useCallback으로 메모이제이션
+  const handleCopyMarkdown = useCallback(async () => {
     await copyToClipboard(markdown);
-  };
+  }, [copyToClipboard, markdown]);
 
-  // 공유 모달 열기
-  const handleShare = () => {
+  // 공유 모달 열기 - useCallback으로 메모이제이션
+  const handleShare = useCallback(() => {
     setIsShareModalOpen(true);
-  };
+  }, []);
 
-  // 툴바 액션 핸들러들
-  const toolbarHandlers = {
+  // 툴바 액션 핸들러들 - useMemo로 메모이제이션하여 불필요한 리렌더링 방지
+  const toolbarHandlers = useMemo(() => ({
     onHeading: insertHeading,
     onBold: () => insertFormatting('**', '**'),
     onItalic: () => insertFormatting('*', '*'),
@@ -95,7 +95,7 @@ export default function HomePage() {
     onCodeBlock: () => insertAtCursor('```\n\n```'),
     onCopy: handleCopyMarkdown,
     onExportPDF: handleExportToPDF,
-  };
+  }), [insertHeading, insertFormatting, insertAtCursor, insertTable, handleCopyMarkdown, handleExportToPDF]);
 
   return (
     <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-900">

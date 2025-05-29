@@ -10,7 +10,7 @@ interface EditorSectionProps {
   toolbarHandlers: ToolbarHandlers;
 }
 
-export const EditorSection: React.FC<EditorSectionProps> = ({
+const EditorSectionComponent: React.FC<EditorSectionProps> = ({
   isVisible,
   markdown,
   onMarkdownChange,
@@ -42,4 +42,7 @@ export const EditorSection: React.FC<EditorSectionProps> = ({
       키보드 단축키: Ctrl+B (굵게), Ctrl+I (기울임), Ctrl+K (링크), Ctrl+P (PDF 출력)
     </div>
   </section>
-); 
+);
+
+// React.memo로 컴포넌트 메모이제이션하여 불필요한 리렌더링 방지
+export const EditorSection = React.memo(EditorSectionComponent); 
