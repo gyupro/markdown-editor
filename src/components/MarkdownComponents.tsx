@@ -1,5 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { MarkdownComponents } from '@/types/markdown';
+import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
+
+const CodeBlock: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isCopied, copyToClipboard } = useCopyToClipboard();
+  
+  const handleCopy = async () => {
+    const codeText = React.Children.toArray(children)
+      .map(child => typeof child === 'string' ? child : '')
+      .join('');
+    await copyToClipboard(codeText);
+  };
+
+  return (
+    <div className="relative group">
+      <pre className="bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100 p-3 md:p-6 rounded-xl shadow-lg my-4 md:my-6 overflow-x-auto border border-gray-700 text-xs md:text-sm max-w-full">
+        <code className="leading-relaxed break-words">
+          {children}
+        </code>
+      </pre>
+      <button
+        onClick={handleCopy}
+        className="absolute top-2 right-2 md:top-4 md:right-4 bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded text-xs transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+        title={isCopied ? '복사됨!' : '코드 복사'}
+        aria-label={isCopied ? '코드가 클립보드에 복사되었습니다' : '코드를 클립보드에 복사'}
+      >
+        {isCopied ? '✓' : '📋'}
+      </button>
+    </div>
+  );
+};
 
 export const markdownComponents: MarkdownComponents = {
   h1: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
@@ -36,11 +66,9 @@ export const markdownComponents: MarkdownComponents = {
     </code>
   ),
   pre: ({ children, ...props }: React.HTMLAttributes<HTMLPreElement>) => (
-    <pre className="bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100 p-3 md:p-6 rounded-xl shadow-lg my-4 md:my-6 overflow-x-auto border border-gray-700 text-xs md:text-sm max-w-full" {...props}>
-      <code className="leading-relaxed break-words">
-        {children}
-      </code>
-    </pre>
+    <CodeBlock {...props}>
+      {children}
+    </CodeBlock>
   ),
   a: ({ children, href, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
     <a 

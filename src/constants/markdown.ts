@@ -9,6 +9,7 @@ export const DEFAULT_MARKDOWN = `# 📝 Markdown Editor
 - 🔧 **강력한 툴바**: 클릭 한 번으로 포맷팅 적용
 - 🖥️ **전체화면 모드**: 집중해서 작업하고 미리보기
 - 📄 **PDF 출력**: 문서를 PDF로 저장하세요
+- 📋 **복사 기능**: 마크다운 텍스트와 코드를 쉽게 복사
 
 ## 📊 테이블 예시
 
@@ -19,6 +20,7 @@ export const DEFAULT_MARKDOWN = `# 📝 Markdown Editor
 | 전체화면 모드 | ✅ 완료 | ESC로 종료 가능 |
 | 테이블 지원 | ✅ 완료 | GitHub Flavored Markdown |
 | PDF 출력 | ✅ 완료 | 고품질 PDF 생성 |
+| 복사 기능 | ✅ 완료 | 마크다운 및 코드 복사 |
 
 ## 💻 코드 예시
 
