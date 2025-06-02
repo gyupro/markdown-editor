@@ -18,7 +18,7 @@ const getClientIP = (request: NextRequest): string => {
 // 공유 문서 조회 (GET)
 export async function GET(
   request: NextRequest,
-  { params }: { params: { token: string } }
+  { params }: { params: Promise<{ token: string }> }
 ) {
   try {
     // Rate limiting 체크 (조회는 더 관대하게 - 1분에 30번)
@@ -30,7 +30,7 @@ export async function GET(
       );
     }
 
-    const { token } = params;
+    const { token } = await params;
 
     // 토큰 검증
     if (!validateShareToken(token)) {
@@ -73,7 +73,7 @@ export async function GET(
 // 공유 문서 업데이트 (PUT) - 향후 사용을 위한 준비
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { token: string } }
+  { params }: { params: Promise<{ token: string }> }
 ) {
   try {
     // Rate limiting 체크
@@ -85,7 +85,7 @@ export async function PUT(
       );
     }
 
-    const { token } = params;
+    const { token } = await params;
 
     // 토큰 검증
     if (!validateShareToken(token)) {
