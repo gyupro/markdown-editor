@@ -121,10 +121,18 @@ export const validateTitle = (title: string): {
     return { isValid: false, error: '제목은 200자를 초과할 수 없습니다.' };
   }
   
-  // 특수문자 제한 (기본적인 문자만 허용)
-  const allowedPattern = /^[가-힣a-zA-Z0-9\s\-_.!?()[\]{}:;,'"]+$/;
-  if (!allowedPattern.test(trimmedTitle)) {
-    return { isValid: false, error: '제목에 허용되지 않는 특수문자가 포함되어 있습니다.' };
+  // 위험한 패턴만 차단 (스크립트 태그, HTML 태그 등)
+  const dangerousPatterns = [
+    /<[^>]*>/g, // HTML 태그
+    /javascript:/gi, // javascript: 프로토콜
+    /on\w+\s*=/gi, // 이벤트 핸들러
+    /data:(?!image\/[a-z]+;base64,)/gi, // 의심스러운 data: URL
+  ];
+  
+  for (const pattern of dangerousPatterns) {
+    if (pattern.test(trimmedTitle)) {
+      return { isValid: false, error: '제목에 허용되지 않는 코드가 포함되어 있습니다.' };
+    }
   }
   
   return { isValid: true };
