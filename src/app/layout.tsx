@@ -37,6 +37,11 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/',
   },
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/favicon.ico',
+  },
   openGraph: {
     title: "Markdown Editor - 무료 온라인 마크다운 에디터",
     description: "실시간 미리보기, PDF 출력, 키보드 단축키를 지원하는 강력하고 직관적인 온라인 마크다운 에디터입니다.",
@@ -154,9 +159,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         
-        {/* Favicon and PWA icons */}
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="apple-touch-icon" href="/favicon.ico" />
+        {/* Manifest for PWA */}
         <link rel="manifest" href="/manifest.json" />
         
         {/* Additional SEO meta tags */}
