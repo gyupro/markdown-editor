@@ -1,5 +1,6 @@
 import React from 'react';
 import { MobileMenu } from './MobileMenu';
+import Image from 'next/image';
 
 interface HeaderProps {
   isExporting: boolean;
@@ -18,9 +19,18 @@ export const Header: React.FC<HeaderProps> = ({ isExporting, onExportPDF, onFull
   <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 py-3 md:py-4" role="banner">
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2 md:gap-4 min-w-0 flex-1">
-        <h1 className="text-base md:text-xl font-semibold text-gray-800 dark:text-white truncate">
-          Markdown Editor
-        </h1>
+        <div className="flex items-center gap-2 md:gap-3">
+          <Image 
+            src="/logo.png" 
+            alt="Markdown Editor Logo" 
+            width={32} 
+            height={32} 
+            className="w-6 h-6 md:w-8 md:h-8 flex-shrink-0"
+          />
+          <h1 className="text-base md:text-xl font-semibold text-gray-800 dark:text-white truncate">
+            Markdown Editor
+          </h1>
+        </div>
         <a 
           href="https://github.com/gyupro/markdown-editor" 
           target="_blank" 

@@ -78,6 +78,15 @@ export const useMarkdownEditor = (initialMarkdown: string) => {
     insertAtCursor(TABLE_TEMPLATE);
   }, [insertAtCursor]);
 
+  // 전체 선택 함수
+  const selectAll = useCallback(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    textarea.focus();
+    textarea.select();
+  }, []);
+
   // 키보드 단축키 처리
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -124,5 +133,6 @@ export const useMarkdownEditor = (initialMarkdown: string) => {
     insertAtCursor,
     insertHeading,
     insertTable,
+    selectAll,
   };
 }; 

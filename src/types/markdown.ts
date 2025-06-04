@@ -45,4 +45,5 @@ export interface ToolbarHandlers {
   onCodeBlock: () => void;
   onCopy: () => void;
   onExportPDF: () => void;
+  onSelectAll: () => void;
 } 
