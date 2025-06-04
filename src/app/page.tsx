@@ -5,6 +5,7 @@ import { useMarkdownEditor } from '@/hooks/useMarkdownEditor';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import { DEFAULT_MARKDOWN } from '@/constants/markdown';
 import { MobileTab } from '@/types/markdown';
+import { extractTitleFromMarkdown } from '@/utils/markdown';
 
 // 새로 분리된 컴포넌트들 임포트
 import { Header } from '@/components/Header';
@@ -18,7 +19,7 @@ export default function HomePage() {
   const { copyToClipboard } = useCopyToClipboard();
   const [mobileActiveTab, setMobileActiveTab] = useState<MobileTab>('editor');
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
-  const [documentTitle, setDocumentTitle] = useState('My Document');
+  const [documentTitle, setDocumentTitle] = useState('FREE-마크다운 에디터');
   const [showSharedNotice, setShowSharedNotice] = useState(false);
   const hasLoadedSharedDocument = useRef(false);
 
@@ -38,6 +39,12 @@ export default function HomePage() {
     insertTable,
   } = useMarkdownEditor(DEFAULT_MARKDOWN);
 
+  // 마크다운 내용이 변경될 때마다 제목 자동 추출
+  useEffect(() => {
+    const extractedTitle = extractTitleFromMarkdown(markdown);
+    setDocumentTitle(extractedTitle);
+  }, [markdown]);
+
   // 공유받은 문서 로드 (한 번만 실행)
   useEffect(() => {
     if (hasLoadedSharedDocument.current) return;
@@ -47,8 +54,12 @@ export default function HomePage() {
         const sharedData = localStorage.getItem('temp_shared_document');
         if (sharedData) {
           const parsed = JSON.parse(sharedData);
-          setMarkdown(parsed.content || '');
-          setDocumentTitle(parsed.title || 'My Document');
+          const content = parsed.content || '';
+          setMarkdown(content);
+          
+          // 마크다운 내용에서 제목 추출
+          const extractedTitle = extractTitleFromMarkdown(content);
+          setDocumentTitle(extractedTitle);
           
           if (parsed.fromShared) {
             setShowSharedNotice(true);
