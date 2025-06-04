@@ -16,6 +16,7 @@ interface ToolbarProps {
   onCodeBlock: () => void;
   onCopy: () => void;
   onExportPDF: () => void;
+  onSelectAll: () => void;
 }
 
 const ToolbarButton: React.FC<ToolbarButtonProps> = ({ onClick, title, children, disabled = false }) => (
@@ -50,6 +51,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onCodeBlock,
   onCopy,
   onExportPDF,
+  onSelectAll,
 }) => {
   return (
     <nav 
@@ -107,6 +109,9 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       
       <Divider />
       
+      <ToolbarButton onClick={onSelectAll} title="전체 선택 (Ctrl+A)">
+        📌
+      </ToolbarButton>
       <ToolbarButton onClick={onCopy} title="마크다운 복사">
         📋
       </ToolbarButton>

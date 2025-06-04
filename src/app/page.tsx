@@ -37,6 +37,7 @@ export default function HomePage() {
     insertAtCursor,
     insertHeading,
     insertTable,
+    selectAll,
   } = useMarkdownEditor(DEFAULT_MARKDOWN);
 
   // 마크다운 내용이 변경될 때마다 제목 자동 추출
@@ -104,9 +105,10 @@ export default function HomePage() {
     onQuote: () => insertFormatting('> ', ''),
     onTable: insertTable,
     onCodeBlock: () => insertAtCursor('```\n\n```'),
+    onSelectAll: selectAll,
     onCopy: handleCopyMarkdown,
     onExportPDF: handleExportToPDF,
-  }), [insertHeading, insertFormatting, insertAtCursor, insertTable, handleCopyMarkdown, handleExportToPDF]);
+  }), [insertHeading, insertFormatting, insertAtCursor, insertTable, selectAll, handleCopyMarkdown, handleExportToPDF]);
 
   return (
     <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
