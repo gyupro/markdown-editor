@@ -2,30 +2,70 @@ import React from 'react';
 import { MarkdownComponents } from '@/types/markdown';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 
-const CodeBlock: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const CodeBlock: React.FC<{ children: React.ReactNode }> = ({ children: codeElementAsNode }) => {
+  let actualCodeText = '';
+
+  // Case 1: The node itself is a string (e.g., text directly inside <pre>)
+  if (typeof codeElementAsNode === 'string') {
+    actualCodeText = codeElementAsNode;
+  }
+  // Case 2: The node is a React element (e.g., <pre><code>text</code></pre>, codeElementAsNode is the <code>)
+  else if (React.isValidElement(codeElementAsNode)) {
+    // codeElementAsNode.props가 존재하고 객체인지 확인 (children에 접근하기 전)
+    const elementProps = codeElementAsNode.props as { children?: React.ReactNode };
+
+    if (typeof elementProps.children === 'string') {
+      // children of <code> is a string: <code>"text"</code>
+      actualCodeText = elementProps.children;
+    } else if (Array.isArray(elementProps.children)) {
+      // children of <code> is an array: <code>{["text", <span/>, "more text"]}</code>
+      actualCodeText = elementProps.children
+        .map((childNode: React.ReactNode): string => { // Explicitly type childNode and return type
+          if (typeof childNode === 'string') {
+            return childNode;
+          }
+          if (React.isValidElement(childNode)) {
+            // childNode.props가 존재하고 객체인지 확인
+            const childElementProps = childNode.props as { children?: React.ReactNode };
+            if (typeof childElementProps.children === 'string') {
+              return childElementProps.children; // Text inside a child element like <span>text</span>
+            }
+          }
+          return ''; // Non-string or non-extractable children become empty strings
+        })
+        .join('');
+    } else if (React.isValidElement(elementProps.children)) {
+      // children of <code> is another single React element: <code><span>text</span></code>
+      const innerElement = elementProps.children;
+      // innerElement.props가 존재하고 객체인지 확인
+      const innerElementProps = innerElement.props as { children?: React.ReactNode };
+      if (typeof innerElementProps.children === 'string') {
+        actualCodeText = innerElementProps.children;
+      }
+    }
+  }
+
   const { isCopied, copyToClipboard } = useCopyToClipboard();
   
   const handleCopy = async () => {
-    const codeText = React.Children.toArray(children)
-      .map(child => typeof child === 'string' ? child : '')
-      .join('');
-    await copyToClipboard(codeText);
+    await copyToClipboard(actualCodeText);
   };
 
   return (
     <div className="relative group">
-      <pre className="bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100 p-3 md:p-6 rounded-xl shadow-lg my-4 md:my-6 overflow-x-auto border border-gray-700 text-xs md:text-sm max-w-full">
-        <code className="leading-relaxed break-words">
-          {children}
+      <pre className="bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700 text-gray-100 p-4 md:p-6 rounded-xl shadow-lg my-4 md:my-6 overflow-x-auto text-sm md:text-base max-w-full">
+        <code className="leading-normal whitespace-pre-wrap break-words block">
+          {actualCodeText}
         </code>
       </pre>
+      
       <button
         onClick={handleCopy}
-        className="absolute top-2 right-2 md:top-4 md:right-4 bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded text-xs transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+        className="absolute top-3 right-3 bg-gray-700/90 hover:bg-gray-600 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs transition-all duration-200 opacity-0 group-hover:opacity-100 focus:opacity-100 shadow-lg"
         title={isCopied ? '복사됨!' : '코드 복사'}
         aria-label={isCopied ? '코드가 클립보드에 복사되었습니다' : '코드를 클립보드에 복사'}
       >
-        {isCopied ? '✓' : '📋'}
+        {isCopied ? '✅' : '📋'}
       </button>
     </div>
   );
