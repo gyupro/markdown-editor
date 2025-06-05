@@ -57,8 +57,7 @@ export async function GET(
     }
 
     // 민감한 정보 제거 후 반환 (share_token, is_public 필드 제거)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { share_token, is_public, ...safeDocument } = document;
+    const { share_token: _, is_public: __, ...safeDocument } = document;
     
     return NextResponse.json(safeDocument);
   } catch (error) {
