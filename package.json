@@ -41,6 +41,7 @@
     "sitemap": "next build && next start"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@supabase/supabase-js": "^2.49.8",
     "@vercel/analytics": "^1.5.0",
     "html2pdf.js": "^0.10.3",
