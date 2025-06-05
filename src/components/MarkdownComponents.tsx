@@ -4,7 +4,7 @@ import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 
 // 텍스트를 URL 친화적인 ID로 변환하는 함수
 const createSlug = (text: string): string => {
-  let slug = text
+  const slug = text
     .toLowerCase()
     .trim()
     .replace(/[^\p{L}\p{N}\s-]/gu, '') // 유니코드 문자, 숫자, 공백, 하이픈만 유지

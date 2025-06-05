@@ -54,8 +54,6 @@ export async function POST(request: NextRequest) {
     let text: string = '';
     try {
       text = await request.text();
-      console.log('요청 본문 크기:', text.length, 'bytes');
-      console.log('요청 본문 샘플:', text.substring(0, 200) + '...');
       
       if (text.length > 1024 * 1024) { // 1MB 제한
         console.error('요청 크기 초과:', text.length, 'bytes');
@@ -65,8 +63,6 @@ export async function POST(request: NextRequest) {
         );
       }
       body = JSON.parse(text) as { title: string; content: string };
-      console.log('파싱된 제목:', body.title?.substring(0, 50) + '...');
-      console.log('파싱된 내용 크기:', body.content?.length, 'chars');
     } catch (parseError) {
       console.error('JSON 파싱 오류:', parseError);
       console.error('요청 본문:', text.substring(0, 500));
@@ -79,7 +75,6 @@ export async function POST(request: NextRequest) {
     const { title, content } = body;
 
     // 입력값 검증
-    console.log('제목 검증 시작:', title);
     const titleValidation = validateTitle(title);
     if (!titleValidation.isValid) {
       console.error('제목 검증 실패:', titleValidation.error);
@@ -89,7 +84,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('내용 검증 시작, 길이:', content?.length);
     const contentValidation = validateContent(content);
     if (!contentValidation.isValid) {
       console.error('내용 검증 실패:', contentValidation.error);
