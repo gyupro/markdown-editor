@@ -49,19 +49,9 @@ Revise AND expand the following Markdown while preserving its original structure
 
 ${userPrompt.trim() ? `Additional instructions: ${userPrompt}\n` : ''}
 ${currentMarkdown}`
-      : `${userPrompt.trim() ? `Create a comprehensive and detailed Markdown document about: ${userPrompt}` : 'Create a well-structured and comprehensive Markdown document'}
+      : `${userPrompt.trim() ? `Create a concise Markdown document about: ${userPrompt}` : 'Create a well-structured Markdown document'}
 
-Make it rich and informative with:
-- Clear hierarchical headings (H1, H2, H3)
-- Bullet points and numbered lists where appropriate
-- Code blocks with syntax highlighting when relevant
-- Tables for data comparison or structured information
-- Blockquotes for important notes or tips
-- Bold and italic text for emphasis
-- Links to relevant resources (use placeholder URLs like https://example.com)
-- Examples and practical use cases
-
-Structure the content logically and make it actionable and engaging. Return only clean Markdown content without any meta-commentary.`;
+Keep it brief and focused. Use appropriate headings, lists, and formatting. Aim for 200-500 words maximum unless user prompt is provided. Return only clean Markdown content.`;
 
     /* -------------------------- Streaming Response -------------------------- */
     const encoder = new TextEncoder();
