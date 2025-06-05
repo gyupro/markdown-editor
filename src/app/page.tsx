@@ -14,11 +14,13 @@ import { EditorSection } from '@/components/EditorSection';
 import { PreviewSection } from '@/components/PreviewSection';
 import { FullscreenModal } from '@/components/FullscreenModal';
 import { ShareModal } from '@/components/ShareModal';
+import { AIModal } from '@/components/AIModal';
 
 export default function HomePage() {
   const { copyToClipboard } = useCopyToClipboard();
   const [mobileActiveTab, setMobileActiveTab] = useState<MobileTab>('editor');
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isAIModalOpen, setIsAIModalOpen] = useState(false);
   const [documentTitle, setDocumentTitle] = useState('FREE-마크다운 에디터');
   const [showSharedNotice, setShowSharedNotice] = useState(false);
   const hasLoadedSharedDocument = useRef(false);
@@ -86,10 +88,25 @@ export default function HomePage() {
     await copyToClipboard(markdown);
   }, [copyToClipboard, markdown]);
 
-  // 공유 모달 열기 - useCallback으로 메모이제이션
-  const handleShare = useCallback(() => {
-    setIsShareModalOpen(true);
-  }, []);
+  // AI 콘텐츠 적용 핸들러
+  const handleApplyAIContent = useCallback((content: string, replaceAll: boolean) => {
+    if (replaceAll) {
+      setMarkdown(content);
+    } else {
+      const textarea = textareaRef.current;
+      if (textarea) {
+        const start = textarea.selectionStart;
+        const newText = markdown.substring(0, start) + '\n\n' + content + '\n\n' + markdown.substring(start);
+        setMarkdown(newText);
+        
+        // 커서를 새로 추가된 콘텐츠 뒤로 이동
+        setTimeout(() => {
+          textarea.focus();
+          textarea.setSelectionRange(start + content.length + 4, start + content.length + 4);
+        }, 0);
+      }
+    }
+  }, [markdown, setMarkdown, textareaRef]);
 
   // 툴바 액션 핸들러들 - useMemo로 메모이제이션하여 불필요한 리렌더링 방지
   const toolbarHandlers = useMemo(() => ({
@@ -108,6 +125,7 @@ export default function HomePage() {
     onSelectAll: selectAll,
     onCopy: handleCopyMarkdown,
     onExportPDF: handleExportToPDF,
+    onAI: () => setIsAIModalOpen(true),
   }), [insertHeading, insertFormatting, insertAtCursor, insertTable, selectAll, handleCopyMarkdown, handleExportToPDF]);
 
   return (
@@ -138,7 +156,7 @@ export default function HomePage() {
         isExporting={isExporting}
         onExportPDF={handleExportToPDF}
         onFullscreen={() => setIsFullscreen(true)}
-        onShare={handleShare}
+        onShare={() => setIsShareModalOpen(true)}
       />
       
       <MobileTabs 
@@ -178,6 +196,13 @@ export default function HomePage() {
         onClose={() => setIsShareModalOpen(false)}
         markdown={markdown}
         title={documentTitle}
+      />
+
+      <AIModal
+        isOpen={isAIModalOpen}
+        onClose={() => setIsAIModalOpen(false)}
+        currentMarkdown={markdown}
+        onApplyContent={handleApplyAIContent}
       />
     </div>
   );

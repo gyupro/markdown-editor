@@ -26,6 +26,9 @@ export interface PDFOptions {
     format: string;
     orientation: string;
   };
+  pagebreak?: {
+    mode: string[];
+  };
 }
 
 export type MobileTab = 'editor' | 'preview';
@@ -46,4 +49,5 @@ export interface ToolbarHandlers {
   onCopy: () => void;
   onExportPDF: () => void;
   onSelectAll: () => void;
+  onAI: () => void;
 } 

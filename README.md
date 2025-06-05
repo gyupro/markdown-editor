@@ -15,6 +15,7 @@
 - 🎨 **Beautiful Live Preview** - Real-time markdown rendering with elegant styling
 - ⚡ **Instant Rendering** - See your changes as you type
 - 🔧 **Powerful Toolbar** - One-click formatting with intuitive buttons
+- 🤖 **AI Content Generation** - GEMINI-powered content creation and improvement
 - 🖥️ **Fullscreen Mode** - Distraction-free writing and preview
 - 📄 **PDF Export** - High-quality PDF generation with professional formatting
 - 🌐 **Document Sharing** - Create shareable links for your documents
@@ -25,6 +26,17 @@
 - 💬 **Rich Elements** - Blockquotes, lists, links, images, and more
 - 🌙 **Dark/Light Theme** - Seamless theme switching
 
+### 🤖 AI Features
+
+- **Smart Content Generation** - Generate high-quality markdown content on any topic
+- **Content Improvement** - Enhance existing text with AI suggestions  
+- **Topic Suggestions** - Get inspired with curated writing topics
+- **Two-Mode Operation**:
+  - 🌟 **Fresh Start**: Generate completely new content
+  - 🔧 **Enhancement**: Improve and expand existing text
+- **GEMINI Integration** - Powered by Google's advanced AI model
+- **Flexible API Key**: Use your own API key for unlimited access
+
 ### 🛠️ Tech Stack
 
 - **Next.js 15.3.2** with Turbopack
@@ -32,6 +44,7 @@
 - **TypeScript** for type safety
 - **Tailwind CSS 4** for beautiful styling
 - **Supabase** for database and document storage
+- **Google Generative AI** for GEMINI integration
 - **React Markdown** with GitHub Flavored Markdown
 - **html2pdf.js** for PDF generation
 
@@ -61,7 +74,12 @@ Create a `.env.local` file with your Supabase configuration:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# GEMINI AI API Key (server-side only for security)
+GEMINI_API_KEY=your_gemini_api_key
 ```
+
+**참고**: GEMINI API 키는 보안을 위해 서버에서만 관리됩니다. AI 기능은 안전한 API 라우트를 통해 처리됩니다.
 
 ### ⌨️ Keyboard Shortcuts
 
@@ -95,6 +113,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 │   │   ├── PreviewSection.tsx    # Preview area component
 │   │   ├── FullscreenModal.tsx   # Fullscreen preview modal
 │   │   ├── ShareModal.tsx        # Document sharing modal
+│   │   ├── AIModal.tsx           # AI content generation modal
 │   │   ├── MarkdownComponents.tsx # Custom markdown renderers
 │   │   └── Toolbar.tsx           # Editor toolbar component
 │   ├── hooks/
@@ -129,6 +148,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 - `useDocumentShare` - Custom hook for document sharing and database operations
 - `useCopyToClipboard` - Custom hook for clipboard functionality with visual feedback
 - `ShareModal` - Beautiful modal for creating and sharing document links
+- `AIModal` - Beautiful modal for AI content generation
 - `MarkdownComponents` - Beautiful custom renderers for markdown elements
 - `Toolbar` - Intuitive editing toolbar with all formatting options
 
@@ -177,6 +197,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 - 🎨 **아름다운 실시간 미리보기** - 세련된 디자인으로 실시간 마크다운 렌더링
 - ⚡ **즉시 렌더링** - 타이핑과 동시에 결과 확인
 - 🔧 **강력한 툴바** - 직관적인 버튼으로 원클릭 포맷팅
+- 🤖 **AI 콘텐츠 생성** - GEMINI 기반 콘텐츠 생성 및 개선
 - 🖥️ **전체화면 모드** - 집중해서 작업할 수 있는 환경
 - 📄 **PDF 출력** - 전문적인 포맷팅으로 고품질 PDF 생성
 - 🌐 **문서 공유** - 문서의 공유 가능한 링크 생성
@@ -186,6 +207,17 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 - 🎯 **코드 하이라이팅** - 다양한 언어의 구문 강조
 - 💬 **풍부한 요소들** - 인용구, 목록, 링크, 이미지 등
 - 🌙 **다크/라이트 테마** - 매끄러운 테마 전환
+
+### 🤖 AI 기능
+
+- **스마트 콘텐츠 생성** - 어떤 주제든 고품질 마크다운 콘텐츠 생성
+- **콘텐츠 개선** - AI 제안으로 기존 텍스트 향상
+- **주제 제안** - 엄선된 글쓰기 주제로 영감 얻기
+- **2가지 모드 지원**:
+  - 🌟 **새로운 시작**: 완전히 새로운 콘텐츠 생성
+  - 🔧 **기존 개선**: 기존 텍스트 개선 및 확장
+- **GEMINI 통합** - 구글의 고급 AI 모델 활용
+- **유연한 API 키**: 자신의 API 키로 무제한 이용
 
 ### 🛠️ 기술 스택
 
@@ -223,7 +255,12 @@ npm run dev
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+
+# GEMINI AI API Key (server-side only for security)
+GEMINI_API_KEY=your_gemini_api_key
 ```
+
+**참고**: GEMINI API 키는 보안을 위해 서버에서만 관리됩니다. AI 기능은 안전한 API 라우트를 통해 처리됩니다.
 
 ### ⌨️ 키보드 단축키
 
@@ -257,6 +294,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 │   │   ├── PreviewSection.tsx    # 미리보기 영역 컴포넌트
 │   │   ├── FullscreenModal.tsx   # 전체화면 미리보기 모달
 │   │   ├── ShareModal.tsx        # 문서 공유 모달
+│   │   ├── AIModal.tsx           # AI content generation modal
 │   │   ├── MarkdownComponents.tsx # 커스텀 마크다운 렌더러
 │   │   └── Toolbar.tsx           # 에디터 툴바 컴포넌트
 │   ├── hooks/
@@ -291,6 +329,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 - `useDocumentShare` - 문서 공유 및 데이터베이스 작업용 커스텀 훅
 - `useCopyToClipboard` - 시각적 피드백이 있는 클립보드 기능 커스텀 훅
 - `ShareModal` - 문서 링크 생성 및 공유를 위한 아름다운 모달
+- `AIModal` - Beautiful modal for AI content generation
 - `MarkdownComponents` - 마크다운 요소들을 위한 아름다운 커스텀 렌더러
 - `Toolbar` - 모든 포맷팅 옵션을 포함한 직관적인 편집 툴바
 

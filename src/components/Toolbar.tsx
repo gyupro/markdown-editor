@@ -17,6 +17,7 @@ interface ToolbarProps {
   onCopy: () => void;
   onExportPDF: () => void;
   onSelectAll: () => void;
+  onAI: () => void;
 }
 
 const ToolbarButton: React.FC<ToolbarButtonProps> = ({ onClick, title, children, disabled = false }) => (
@@ -52,6 +53,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onCopy,
   onExportPDF,
   onSelectAll,
+  onAI,
 }) => {
   return (
     <nav 
@@ -105,6 +107,12 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       </ToolbarButton>
       <ToolbarButton onClick={onCodeBlock} title="코드 블록">
         📝
+      </ToolbarButton>
+      
+      <Divider />
+      
+      <ToolbarButton onClick={onAI} title="AI 콘텐츠 생성">
+        🤖
       </ToolbarButton>
       
       <Divider />
