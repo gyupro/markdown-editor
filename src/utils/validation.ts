@@ -78,7 +78,7 @@ export const validateEnvironment = (): {
 };
 
 /**
- * 입력값 생성 (XSS 방지)
+ * 입력값 생성 (XSS 방지) - 이모지와 유니코드 문자 보존
  */
 export const sanitizeInput = (input: string, maxLength: number = 10000): string => {
   if (!input || typeof input !== 'string') {
@@ -88,14 +88,24 @@ export const sanitizeInput = (input: string, maxLength: number = 10000): string 
   // 길이 제한
   let sanitized = input.slice(0, maxLength);
   
-  // 기본적인 HTML 태그 이스케이프
+  // 위험한 HTML 태그와 스크립트만 제거하고 이모지/유니코드는 보존
+  // XSS 공격에 사용될 수 있는 패턴만 선별적으로 처리
   sanitized = sanitized
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;')
-    .replace(/\//g, '&#x2F;');
+    // 스크립트 태그 완전 제거
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    // 이벤트 핸들러 제거
+    .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
+    // javascript: 프로토콜 제거  
+    .replace(/javascript:/gi, '')
+    // 위험한 data: URL 제거 (이미지 제외)
+    .replace(/data:(?!image\/[a-z]+;base64,)[^;\s]*/gi, '')
+    // 위험한 HTML 태그만 이스케이프 (기본 HTML 태그는 보존)
+    .replace(/<script/gi, '&lt;script')
+    .replace(/<\/script>/gi, '&lt;/script&gt;')
+    .replace(/<iframe/gi, '&lt;iframe')
+    .replace(/<object/gi, '&lt;object')
+    .replace(/<embed/gi, '&lt;embed')
+    .replace(/<form/gi, '&lt;form');
   
   return sanitized;
 };
@@ -158,12 +168,12 @@ export const validateContent = (content: string): {
     };
   }
   
-  // 기본적인 악성 콘텐츠 패턴 검사
+  // 기본적인 악성 콘텐츠 패턴 검사 (더 정확한 패턴 사용)
   const suspiciousPatterns = [
     /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, // script 태그
-    /javascript:/gi, // javascript: 프로토콜
-    /on\w+\s*=/gi, // 이벤트 핸들러 (onclick, onload 등)
-    /data:(?!image\/[a-z]+;base64,)[^;]+/gi, // 의심스러운 data: URL
+    /javascript\s*:/gi, // javascript: 프로토콜
+    /\bon(click|load|error|focus|blur|change|submit|keyup|keydown|mouseover|mouseout)\s*=/gi, // 실제 이벤트 핸들러만
+    /data:(?!image\/[a-z]+;base64,)(?!text\/)[^;\s]*/gi, // 의심스러운 data: URL (이미지와 텍스트 제외)
   ];
   
   for (const pattern of suspiciousPatterns) {

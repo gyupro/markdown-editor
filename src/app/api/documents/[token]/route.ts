@@ -59,7 +59,10 @@ export async function GET(
     // 민감한 정보 제거 후 반환 (share_token, is_public 필드 제거)
     const { share_token: _, is_public: __, ...safeDocument } = document;
     
-    return NextResponse.json(safeDocument);
+    const response = NextResponse.json(safeDocument);
+    // UTF-8 인코딩 명시적 설정
+    response.headers.set('Content-Type', 'application/json; charset=utf-8');
+    return response;
   } catch (error) {
     console.error('GET /api/documents/[token] 오류:', error);
     return NextResponse.json(

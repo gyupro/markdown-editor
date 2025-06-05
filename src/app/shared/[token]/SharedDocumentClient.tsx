@@ -4,6 +4,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useDocumentShare } from '@/hooks/useDocumentShare';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
+import { useHashNavigation } from '@/hooks/useHashNavigation';
 import { Document } from '@/lib/supabase';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -11,31 +12,54 @@ import { markdownComponents } from '@/components/MarkdownComponents';
 import { validateShareToken } from '@/utils/validation';
 import { extractSummaryFromMarkdown } from '@/utils/markdown';
 
-export default function SharedDocumentClient() {
+interface SharedDocumentClientProps {
+  initialToken?: string;
+}
+
+export default function SharedDocumentClient({ initialToken }: SharedDocumentClientProps = {}) {
   const params = useParams();
   const router = useRouter();
-  const token = params.token as string;
+  const token = initialToken || (params.token as string);
   const [document, setDocument] = useState<Document | null>(null);
   const { loadSharedDocument, isLoading, error } = useDocumentShare();
   const { copyToClipboard, isCopied } = useCopyToClipboard();
   const [showMoreMenu, setShowMoreMenu] = useState(false);
 
-  const loadDocument = useCallback(async () => {
-    // 클라이언트 사이드 토큰 검증
-    if (!validateShareToken(token)) {
-      console.error('유효하지 않은 공유 링크입니다.');
-      return;
-    }
+  // 해시 네비게이션 훅 사용 (문서가 로드된 후에만 활성화)
+  useHashNavigation(!!document);
 
-    const loadedDocument = await loadSharedDocument(token);
-    if (loadedDocument) {
-      setDocument(loadedDocument);
+  const loadDocument = useCallback(async () => {
+    try {
+      console.log('토큰 로딩 시작:', token);
+      
+      // URL 해시가 포함된 경우 토큰만 추출
+      const cleanToken = token?.split('#')[0];
+      console.log('정리된 토큰:', cleanToken);
+      
+      // 클라이언트 사이드 토큰 검증
+      if (!cleanToken || !validateShareToken(cleanToken)) {
+        console.error('유효하지 않은 공유 링크입니다. 토큰:', cleanToken);
+        return;
+      }
+
+      console.log('문서 로드 시작...');
+      const loadedDocument = await loadSharedDocument(cleanToken);
+      console.log('로드된 문서:', loadedDocument);
+      
+      if (loadedDocument) {
+        setDocument(loadedDocument);
+      }
+    } catch (error) {
+      console.error('문서 로드 중 에러:', error);
     }
   }, [token, loadSharedDocument]);
 
   useEffect(() => {
+    console.log('useEffect 실행됨. 토큰:', token);
     if (token) {
       loadDocument();
+    } else {
+      console.warn('토큰이 없습니다.');
     }
   }, [token, loadDocument]);
 
@@ -283,7 +307,7 @@ export default function SharedDocumentClient() {
 
       <main className="max-w-4xl mx-auto p-4 md:p-6">
         <article 
-          className="py-4 md:p-6 max-w-full prose prose-slate dark:prose-invert prose-lg md:prose-xl prose-headings:scroll-mt-4 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-code:text-pink-600 dark:prose-code:text-pink-400 prose-blockquote:border-l-blue-500 prose-img:rounded-lg prose-img:shadow-lg" 
+          className="py-4 md:p-6 max-w-full prose prose-slate dark:prose-invert prose-lg md:prose-xl prose-headings:scroll-mt-24 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-code:text-pink-600 dark:prose-code:text-pink-400 prose-blockquote:border-l-blue-500 prose-img:rounded-lg prose-img:shadow-lg" 
           aria-label="공유된 마크다운 문서"
           style={{
             fontSize: 'clamp(14px, 4vw, 18px)',
