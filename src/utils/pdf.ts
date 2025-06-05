@@ -323,7 +323,7 @@ export const generatePDF = async (
 
 // React 컴포넌트에서 사용할 수 있는 PDF 내보내기 함수
 export const exportToPDF = async (
-  previewRef: React.RefObject<HTMLDivElement>,
+  previewRef: React.RefObject<HTMLDivElement | null>,
   customOptions?: Partial<PDFOptions>,
 ): Promise<void> => {
   if (!previewRef.current) {

@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import { MobileMenu } from './MobileMenu';
 
 interface HeaderProps {
@@ -19,9 +20,11 @@ export const Header: React.FC<HeaderProps> = ({ isExporting, onExportPDF, onFull
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2 md:gap-4 min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <img 
+          <Image 
             src="/logo.png" 
             alt="Markdown Editor Logo" 
+            width={32}
+            height={32}
             className="w-6 h-6 md:w-8 md:h-8 object-contain"
             onError={(e) => {
               e.currentTarget.style.display = 'none';

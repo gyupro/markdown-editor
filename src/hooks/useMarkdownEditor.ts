@@ -16,7 +16,7 @@ export const useMarkdownEditor = (initialMarkdown: string) => {
 
   // PDF 출력 함수
   const handleExportToPDF = useCallback(async () => {
-    if (!isClient) return;
+    if (!isClient || !previewRef.current) return;
     
     setIsExporting(true);
     
