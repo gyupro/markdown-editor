@@ -2,6 +2,105 @@ import React from 'react';
 import { MarkdownComponents } from '@/types/markdown';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 
+// 텍스트를 URL 친화적인 ID로 변환하는 함수
+const createSlug = (text: string): string => {
+  let slug = text
+    .toLowerCase()
+    .trim()
+    .replace(/[^\p{L}\p{N}\s-]/gu, '') // 유니코드 문자, 숫자, 공백, 하이픈만 유지
+    .replace(/\s+/g, '-') // 공백을 하이픈으로 변경
+    .replace(/-+/g, '-') // 연속된 하이픈을 하나로 변경
+    .replace(/^-+|-+$/g, ''); // 시작과 끝의 하이픈 제거
+  
+  // 모든 헤딩 ID가 하이픈으로 시작하도록 함
+  return '-' + slug;
+};
+
+// 헤딩 컴포넌트에서 사용할 텍스트 추출 함수
+const extractText = (children: React.ReactNode): string => {
+  if (typeof children === 'string') {
+    return children;
+  }
+  if (Array.isArray(children)) {
+    return children.map(extractText).join('');
+  }
+  if (React.isValidElement(children)) {
+    const elementProps = children.props as { children?: React.ReactNode };
+    return extractText(elementProps.children);
+  }
+  return '';
+};
+
+// 앵커 링크가 있는 헤딩 컴포넌트
+const HeadingWithAnchor: React.FC<{
+  level: 1 | 2 | 3;
+  children: React.ReactNode;
+  props?: React.HTMLAttributes<HTMLHeadingElement>;
+}> = ({ level, children, props }) => {
+  const text = extractText(children);
+  const id = createSlug(text);
+  
+  const handleAnchorClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // URL 해시 업데이트
+      window.history.pushState(null, '', `#${id}`);
+    }
+  };
+
+  const baseStyles = "group relative scroll-mt-20"; // scroll-mt-20은 고정 헤더를 위한 오프셋
+  
+  if (level === 1) {
+    return (
+      <h1 id={id} className={`text-2xl md:text-4xl font-bold mb-4 md:mb-6 text-gray-900 dark:text-white pb-2 md:pb-3 leading-tight ${baseStyles}`} {...props}>
+        {children}
+        <a 
+          href={`#${id}`}
+          onClick={handleAnchorClick}
+          className="ml-2 opacity-0 group-hover:opacity-50 hover:!opacity-100 text-blue-500 hover:text-blue-600 transition-opacity duration-200 text-xl"
+          aria-label={`${text} 섹션으로 이동`}
+          title="링크 복사"
+        >
+          #
+        </a>
+      </h1>
+    );
+  } else if (level === 2) {
+    return (
+      <h2 id={id} className={`text-xl md:text-3xl font-semibold mb-3 md:mb-4 mt-6 md:mt-8 text-gray-800 dark:text-gray-100 flex items-center leading-tight ${baseStyles}`} {...props}>
+        <span className="w-1 h-6 md:h-8 bg-gradient-to-b from-blue-500 to-purple-500 mr-2 md:mr-3 rounded-full"></span>
+        {children}
+        <a 
+          href={`#${id}`}
+          onClick={handleAnchorClick}
+          className="ml-2 opacity-0 group-hover:opacity-50 hover:!opacity-100 text-blue-500 hover:text-blue-600 transition-opacity duration-200 text-lg"
+          aria-label={`${text} 섹션으로 이동`}
+          title="링크 복사"
+        >
+          #
+        </a>
+      </h2>
+    );
+  } else {
+    return (
+      <h3 id={id} className={`text-lg md:text-2xl font-semibold mb-2 md:mb-3 mt-4 md:mt-6 text-gray-800 dark:text-gray-100 leading-tight ${baseStyles}`} {...props}>
+        {children}
+        <a 
+          href={`#${id}`}
+          onClick={handleAnchorClick}
+          className="ml-2 opacity-0 group-hover:opacity-50 hover:!opacity-100 text-blue-500 hover:text-blue-600 transition-opacity duration-200 text-base"
+          aria-label={`${text} 섹션으로 이동`}
+          title="링크 복사"
+        >
+          #
+        </a>
+      </h3>
+    );
+  }
+};
+
 const CodeBlock: React.FC<{ children: React.ReactNode }> = ({ children: codeElementAsNode }) => {
   let actualCodeText = '';
 
@@ -73,20 +172,19 @@ const CodeBlock: React.FC<{ children: React.ReactNode }> = ({ children: codeElem
 
 export const markdownComponents: MarkdownComponents = {
   h1: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h1 className="text-2xl md:text-4xl font-bold mb-4 md:mb-6 text-gray-900 dark:text-white pb-2 md:pb-3 leading-tight" {...props}>
+    <HeadingWithAnchor level={1} props={props}>
       {children}
-    </h1>
+    </HeadingWithAnchor>
   ),
   h2: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h2 className="text-xl md:text-3xl font-semibold mb-3 md:mb-4 mt-6 md:mt-8 text-gray-800 dark:text-gray-100 flex items-center leading-tight" {...props}>
-      <span className="w-1 h-6 md:h-8 bg-gradient-to-b from-blue-500 to-purple-500 mr-2 md:mr-3 rounded-full"></span>
+    <HeadingWithAnchor level={2} props={props}>
       {children}
-    </h2>
+    </HeadingWithAnchor>
   ),
   h3: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h3 className="text-lg md:text-2xl font-semibold mb-2 md:mb-3 mt-4 md:mt-6 text-gray-800 dark:text-gray-100 leading-tight" {...props}>
+    <HeadingWithAnchor level={3} props={props}>
       {children}
-    </h3>
+    </HeadingWithAnchor>
   ),
   p: ({ children, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => (
     <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3 md:mb-4 text-base md:text-lg" {...props}>

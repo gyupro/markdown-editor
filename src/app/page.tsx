@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useMarkdownEditor } from '@/hooks/useMarkdownEditor';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
+import { useHashNavigation } from '@/hooks/useHashNavigation';
 import { DEFAULT_MARKDOWN } from '@/constants/markdown';
 import { MobileTab } from '@/types/markdown';
 import { extractTitleFromMarkdown } from '@/utils/markdown';
@@ -24,6 +25,9 @@ export default function HomePage() {
   const [documentTitle, setDocumentTitle] = useState('FREE-마크다운 에디터');
   const [showSharedNotice, setShowSharedNotice] = useState(false);
   const hasLoadedSharedDocument = useRef(false);
+
+  // 해시 네비게이션 훅 사용
+  useHashNavigation();
 
   const {
     markdown,

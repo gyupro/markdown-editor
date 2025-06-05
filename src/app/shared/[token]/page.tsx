@@ -12,8 +12,11 @@ export async function generateMetadata(
   try {
     const { token } = await params;
     
+    // URL 해시가 포함된 경우 토큰만 추출
+    const cleanToken = token.split('#')[0];
+    
     // 토큰 검증
-    if (!validateShareToken(token)) {
+    if (!validateShareToken(cleanToken)) {
       return {
         title: '잘못된 공유 링크 | FREE 마크다운 에디터',
         description: '유효하지 않은 공유 링크입니다.',
@@ -24,7 +27,7 @@ export async function generateMetadata(
     const { data: document, error } = await supabase
       .from('documents')
       .select('*')
-      .eq('share_token', token)
+      .eq('share_token', cleanToken)
       .eq('is_public', true)
       .single();
 
@@ -38,38 +41,81 @@ export async function generateMetadata(
     // 문서 내용에서 요약 추출 (최대 150자)
     const summary = extractSummaryFromMarkdown(document.content);
     const description = summary || `${document.title} - FREE 마크다운 에디터로 작성된 문서`;
+    
+    // 동적 URL 설정 (해시 포함하여 정확한 메타데이터 생성)
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://markdown.develop-on.co.kr';
+    const canonicalUrl = `${baseUrl}/shared/${cleanToken}`;
 
     return {
-      title: `${document.title}`,
-      description: description,
+      title: `${document.title} | FREE 마크다운 에디터`,
+      description,
+      keywords: [
+        document.title,
+        '마크다운', 'markdown', '공유', 'share',
+        '문서', 'document', '에디터', 'editor',
+        '무료', 'free', '온라인', 'online'
+      ],
+      authors: [{ name: 'FREE 마크다운 에디터' }],
+      creator: 'FREE 마크다운 에디터',
+      publisher: 'FREE 마크다운 에디터',
+      formatDetection: {
+        email: false,
+        address: false,
+        telephone: false,
+      },
+      // Open Graph
       openGraph: {
         title: document.title,
-        description: description,
+        description,
         type: 'article',
+        url: canonicalUrl,
         siteName: 'FREE 마크다운 에디터',
         locale: 'ko_KR',
         publishedTime: document.created_at,
+        authors: ['FREE 마크다운 에디터'],
       },
+      // Twitter Card
       twitter: {
         card: 'summary',
         title: document.title,
-        description: description,
+        description,
+        site: '@markdown_editor',
+        creator: '@markdown_editor',
       },
-      // 카카오톡 최적화를 위한 추가 메타데이터
+      // 추가 메타태그
       other: {
-        'og:article:author': 'FREE 마크다운 에디터',
-        'og:article:published_time': document.created_at,
-      }
+        'article:author': 'FREE 마크다운 에디터',
+        'article:published_time': document.created_at,
+        'article:modified_time': document.updated_at || document.created_at,
+      },
+      alternates: {
+        canonical: canonicalUrl,
+      },
+      robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+          index: true,
+          follow: true,
+        },
+      },
     };
   } catch (error) {
     console.error('메타데이터 생성 오류:', error);
     return {
-      title: 'FREE 마크다운 에디터',
-      description: '온라인 마크다운 에디터로 문서를 작성하고 공유하세요.',
+      title: '오류 발생 | FREE 마크다운 에디터',
+      description: '문서를 불러오는 중 오류가 발생했습니다.',
     };
   }
 }
 
-export default function SharedDocumentPage() {
-  return <SharedDocumentClient />;
+// 클라이언트 컴포넌트에 props 전달을 위한 서버 컴포넌트
+export default async function SharedDocumentPage({ 
+  params 
+}: { 
+  params: Promise<{ token: string }> 
+}) {
+  const { token } = await params;
+  
+  return <SharedDocumentClient initialToken={token} />;
 } 

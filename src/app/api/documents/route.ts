@@ -51,16 +51,25 @@ export async function POST(request: NextRequest) {
 
     // 요청 본문 파싱 및 크기 제한
     let body: { title: string; content: string };
+    let text: string = '';
     try {
-      const text = await request.text();
+      text = await request.text();
+      console.log('요청 본문 크기:', text.length, 'bytes');
+      console.log('요청 본문 샘플:', text.substring(0, 200) + '...');
+      
       if (text.length > 1024 * 1024) { // 1MB 제한
+        console.error('요청 크기 초과:', text.length, 'bytes');
         return NextResponse.json(
           { error: '요청 크기가 너무 큽니다.' },
           { status: 413 }
         );
       }
       body = JSON.parse(text) as { title: string; content: string };
-    } catch {
+      console.log('파싱된 제목:', body.title?.substring(0, 50) + '...');
+      console.log('파싱된 내용 크기:', body.content?.length, 'chars');
+    } catch (parseError) {
+      console.error('JSON 파싱 오류:', parseError);
+      console.error('요청 본문:', text.substring(0, 500));
       return NextResponse.json(
         { error: '잘못된 JSON 형식입니다.' },
         { status: 400 }
@@ -70,16 +79,20 @@ export async function POST(request: NextRequest) {
     const { title, content } = body;
 
     // 입력값 검증
+    console.log('제목 검증 시작:', title);
     const titleValidation = validateTitle(title);
     if (!titleValidation.isValid) {
+      console.error('제목 검증 실패:', titleValidation.error);
       return NextResponse.json(
         { error: titleValidation.error },
         { status: 400 }
       );
     }
 
+    console.log('내용 검증 시작, 길이:', content?.length);
     const contentValidation = validateContent(content);
     if (!contentValidation.isValid) {
+      console.error('내용 검증 실패:', contentValidation.error);
       return NextResponse.json(
         { error: contentValidation.error },
         { status: 400 }
@@ -102,13 +115,17 @@ export async function POST(request: NextRequest) {
 
     // 기존 문서가 있다면 그것을 반환
     if (existingDocument && !searchError) {
-      return NextResponse.json({
+      const response = NextResponse.json({
         ...existingDocument,
         _meta: {
           isReused: true,
           message: '동일한 내용의 문서가 이미 존재하여 기존 공유 링크를 사용합니다.'
         }
       });
+      
+      // UTF-8 인코딩 명시적 설정
+      response.headers.set('Content-Type', 'application/json; charset=utf-8');
+      return response;
     }
     
     // 기존 문서가 없다면 새로운 문서 생성 (nanoid 사용으로 더 짧은 토큰 생성 - 10자)
@@ -135,13 +152,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       ...newDocument,
       _meta: {
         isReused: false,
         message: '새로운 공유 링크가 생성되었습니다.'
       }
     });
+    
+    // UTF-8 인코딩 명시적 설정
+    response.headers.set('Content-Type', 'application/json; charset=utf-8');
+    return response;
   } catch (error) {
     console.error('POST /api/documents 오류:', error);
     return NextResponse.json(

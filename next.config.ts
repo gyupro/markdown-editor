@@ -34,6 +34,15 @@ const nextConfig: NextConfig = {
         ],
       },
       {
+        source: '/api/(.*)',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'application/json; charset=utf-8',
+          },
+        ],
+      },
+      {
         source: '/robots.txt',
         headers: [
           {

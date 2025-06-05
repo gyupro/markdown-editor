@@ -137,7 +137,8 @@ export const useDocumentShare = () => {
           const response = await fetch('/api/documents', {
             method: 'POST',
             headers: {
-              'Content-Type': 'application/json',
+              'Content-Type': 'application/json; charset=utf-8',
+              'Accept': 'application/json; charset=utf-8',
             },
             body: JSON.stringify({ title, content }),
             signal: controller.signal
@@ -181,6 +182,9 @@ export const useDocumentShare = () => {
         
         try {
           const response = await fetch(`/api/documents/${token}`, {
+            headers: {
+              'Accept': 'application/json; charset=utf-8',
+            },
             signal: controller.signal
           });
 
@@ -223,7 +227,8 @@ export const useDocumentShare = () => {
           const response = await fetch(`/api/documents/${token}`, {
             method: 'PUT',
             headers: {
-              'Content-Type': 'application/json',
+              'Content-Type': 'application/json; charset=utf-8',
+              'Accept': 'application/json; charset=utf-8',
             },
             body: JSON.stringify({ title, content }),
             signal: controller.signal
