@@ -388,13 +388,14 @@ const generateTailwindStyles = (): string => `
 `;
 
 
-// Simple OKLCH cleanup function - just removes unsupported color functions
+// Comprehensive cleanup function - removes all unsupported color functions
 const convertOklchToHex = (styles: string): string => {
   let convertedStyles = styles;
   
-  // Simply remove unsupported color functions to prevent parsing errors
+  // Remove all unsupported color functions that can cause parsing errors
   convertedStyles = convertedStyles.replace(/oklch\([^)]+\)/g, '');
-  convertedStyles = convertedStyles.replace(/color-mix\([^)]+\)/g, '');
+  convertedStyles = convertedStyles.replace(/oklab\([^)]+\)/g, ''); // Added oklab
+  convertedStyles = convertedStyles.replace(/color-mix\s*\([^)]+\)/g, '');
   convertedStyles = convertedStyles.replace(/color\(display-p3[^)]+\)/g, '');
   convertedStyles = convertedStyles.replace(/lch\([^)]+\)/g, '');
   convertedStyles = convertedStyles.replace(/lab\([^)]+\)/g, '');
@@ -461,7 +462,7 @@ export const exportToPDF = async (
       
       properties.forEach(property => {
         const value = computedStyle.getPropertyValue(property);
-        if (value && value.includes('oklch')) {
+        if (value && (value.includes('oklch') || value.includes('oklab') || value.includes('color-mix'))) {
           // Set the computed color directly as hex (browser will convert OKLCH to hex)
           const computedColor = value; // This will be the actual resolved color
           // Force a recalculation by setting a safe fallback
@@ -478,7 +479,8 @@ export const exportToPDF = async (
       // Clean inline styles
       if (el.style.cssText) {
         el.style.cssText = el.style.cssText.replace(/oklch\([^)]+\)/g, 'transparent');
-        el.style.cssText = el.style.cssText.replace(/color-mix\([^)]+\)/g, 'transparent');
+        el.style.cssText = el.style.cssText.replace(/oklab\([^)]+\)/g, 'transparent');
+        el.style.cssText = el.style.cssText.replace(/color-mix\s*\([^)]+\)/g, 'transparent');
       }
       
       // Process children
@@ -560,6 +562,38 @@ export const exportToPDF = async (
     element.classList.add('pdf-generation-override');
     overrideOklchVariables();
     
+    // Additional aggressive cleanup for production environments
+    const cleanAllStylesheets = () => {
+      try {
+        // Create a comprehensive override style that completely blocks modern color functions
+        const aggressiveOverride = document.createElement('style');
+        aggressiveOverride.textContent = `
+          /* Aggressive PDF-safe overrides */
+          .pdf-generation-override *,
+          .pdf-generation-override *::before,
+          .pdf-generation-override *::after {
+            background-color: initial !important;
+            color: initial !important;
+            border-color: initial !important;
+          }
+          
+          .pdf-generation-override {
+            background: #ffffff !important;
+            color: #000000 !important;
+          }
+          
+          .pdf-generation-override .dark {
+            background: #000000 !important;
+            color: #ffffff !important;
+          }
+        `;
+        tempContainer.appendChild(aggressiveOverride);
+      } catch (e) {
+        console.warn('Could not apply aggressive stylesheet cleanup:', e);
+      }
+    };
+    
+    cleanAllStylesheets();
     replaceOklchInComputedStyles(element);
     
     // 스타일 적용
