@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { useMarkdownEditor } from '@/hooks/useMarkdownEditor';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import { useHashNavigation } from '@/hooks/useHashNavigation';
+import { useTheme } from '@/hooks/useTheme';
 import { DEFAULT_MARKDOWN } from '@/constants/markdown';
 import { MobileTab } from '@/types/markdown';
 import { extractTitleFromMarkdown } from '@/utils/markdown';
@@ -19,6 +20,7 @@ import { AIModal } from '@/components/AIModal';
 
 export default function HomePage() {
   const { copyToClipboard } = useCopyToClipboard();
+  const { theme, toggleTheme, isLoaded: isThemeLoaded } = useTheme();
   const [mobileActiveTab, setMobileActiveTab] = useState<MobileTab>('editor');
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isAIModalOpen, setIsAIModalOpen] = useState(false);
@@ -161,6 +163,8 @@ export default function HomePage() {
         onExportPDF={handleExportToPDF}
         onFullscreen={() => setIsFullscreen(true)}
         onShare={() => setIsShareModalOpen(true)}
+        theme={theme}
+        onThemeToggle={toggleTheme}
       />
       
       <MobileTabs 
