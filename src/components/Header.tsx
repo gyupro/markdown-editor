@@ -7,6 +7,8 @@ interface HeaderProps {
   onExportPDF: () => void;
   onFullscreen: () => void;
   onShare: () => void;
+  theme: 'light' | 'dark';
+  onThemeToggle: () => void;
 }
 
 const GitHubIcon = () => (
@@ -15,7 +17,19 @@ const GitHubIcon = () => (
   </svg>
 );
 
-export const Header: React.FC<HeaderProps> = ({ isExporting, onExportPDF, onFullscreen, onShare }) => (
+const SunIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+  </svg>
+);
+
+const MoonIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+  </svg>
+);
+
+export const Header: React.FC<HeaderProps> = ({ isExporting, onExportPDF, onFullscreen, onShare, theme, onThemeToggle }) => (
   <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 py-3 md:py-4" role="banner">
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2 md:gap-4 min-w-0 flex-1">
@@ -47,6 +61,14 @@ export const Header: React.FC<HeaderProps> = ({ isExporting, onExportPDF, onFull
         </a>
       </div>
       <nav className="flex items-center gap-2" aria-label="메인 작업">
+        <button
+          onClick={onThemeToggle}
+          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+          aria-label={theme === 'light' ? '다크 모드로 전환' : '라이트 모드로 전환'}
+          title={theme === 'light' ? '다크 모드로 전환' : '라이트 모드로 전환'}
+        >
+          {theme === 'light' ? <MoonIcon /> : <SunIcon />}
+        </button>
         <button
           onClick={onShare}
           className="px-3 md:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-1 md:gap-2 text-sm flex-shrink-0"
@@ -89,6 +111,8 @@ export const Header: React.FC<HeaderProps> = ({ isExporting, onExportPDF, onFull
             isExporting={isExporting}
             onExportPDF={onExportPDF}
             onFullscreen={onFullscreen}
+            theme={theme}
+            onThemeToggle={onThemeToggle}
           />
         </div>
       </nav>
