@@ -20,6 +20,10 @@ export interface PDFOptions {
     scale: number;
     useCORS: boolean;
     letterRendering: boolean;
+    logging?: boolean;
+    allowTaint?: boolean;
+    windowHeight?: number;
+    scrollY?: number;
   };
   jsPDF: {
     unit: string;
@@ -27,8 +31,12 @@ export interface PDFOptions {
     orientation: string;
   };
   pagebreak?: {
-    mode: string[];
+    mode: string | string[];
+    before?: string | string[];
+    after?: string | string[];
+    avoid?: string | string[];
   };
+  enableLinks?: boolean;
 }
 
 export type MobileTab = 'editor' | 'preview';

@@ -3,22 +3,30 @@ import { CSSProperties } from 'react';
 
 // PDF 옵션 상수화 및 타입 강화
 export const PDF_DEFAULT_OPTIONS: PDFOptions = {
-  margin: [0.5, 0.5, 0.5, 0.5],
+  margin: [10, 10, 10, 10], // mm 단위로 변경하여 더 정확한 여백 설정
   filename: 'markdown-document.pdf',
   image: { type: 'jpeg', quality: 0.98 },
   html2canvas: {
     scale: 2,
     useCORS: true,
     letterRendering: true,
+    logging: false,
+    allowTaint: true,
+    windowHeight: 1080,
+    scrollY: 0, // 스크롤 위치 초기화
   },
   jsPDF: {
-    unit: 'in',
+    unit: 'mm',
     format: 'a4',
     orientation: 'portrait',
   },
   pagebreak: {
-    mode: ['css', 'legacy'],
+    mode: ['avoid-all', 'css', 'legacy'],
+    before: ['.page-break-before', '.break-before'],
+    after: ['.page-break-after', '.break-after'], 
+    avoid: ['pre', 'blockquote', 'table', 'ul', 'ol', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li', 'tr', 'figure'],
   },
+  enableLinks: true,
 } as const;
 
 // Tailwind 스타일을 별도의 함수로 분리하여 재사용 가능하게 만듦
@@ -109,13 +117,64 @@ const generateTailwindStyles = (): string => `
   }
 
   /* 제목들은 페이지 분할 시 적절히 처리 */
-  h1, h2 {
+  h1, h2, h3, h4, h5, h6 {
     page-break-after: avoid !important;
     page-break-inside: avoid !important;
+    break-after: avoid !important;
+    break-inside: avoid !important;
   }
 
-  h3, h4, h5, h6 {
+  /* 제목과 다음 내용이 함께 유지되도록 */
+  h1 + *, h2 + *, h3 + *, h4 + *, h5 + *, h6 + * {
+    page-break-before: avoid !important;
+    break-before: avoid !important;
+  }
+
+  /* 목록 항목들이 분리되지 않도록 */
+  ul, ol {
     page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  li {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* 코드 블록이 분리되지 않도록 */
+  pre {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* 테이블이 분리되지 않도록 */
+  table {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* 인용구가 분리되지 않도록 */
+  blockquote {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* 이미지와 캡션이 분리되지 않도록 */
+  figure {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* 단락의 마지막 줄이 혼자 남지 않도록 */
+  p {
+    orphans: 3 !important;
+    widows: 3 !important;
+  }
+
+  /* 페이지 여백 설정 */
+  @page {
+    margin: 0.5in !important;
+    size: a4 !important;
   }
 
   /* 기타 스타일 */
@@ -141,6 +200,50 @@ const generateTailwindStyles = (): string => `
   /* 첫 번째 요소 마진 제거 */
   h1:first-child, h2:first-child, h3:first-child, p:first-child {
     margin-top: 0 !important;
+  }
+
+  /* 페이지 분할 클래스 */
+  .page-break-before {
+    page-break-before: always !important;
+    break-before: always !important;
+  }
+
+  .page-break-after {
+    page-break-after: always !important;
+    break-after: always !important;
+  }
+
+  .keep-with-previous {
+    page-break-before: avoid !important;
+    break-before: avoid !important;
+  }
+
+  /* 블록 요소들의 페이지 분할 방지 */
+  .prose > * {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* 마크다운 특정 요소들의 페이지 분할 처리 */
+  blockquote {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    border-left: 4px solid #3b82f6 !important;
+    padding-left: 1rem !important;
+    margin: 1rem 0 !important;
+  }
+
+  /* 목록 항목 그룹화 */
+  ul > li:first-child,
+  ol > li:first-child {
+    page-break-before: avoid !important;
+    break-before: avoid !important;
+  }
+
+  ul > li:last-child,
+  ol > li:last-child {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
   }
 
   /* 코드 블록 - 프리뷰와 동일한 어두운 테마 유지 */
@@ -304,22 +407,6 @@ export const applyPDFOptimizationStyles = (element: HTMLElement): void => {
   Object.assign(element.style, styles);
 };
 
-// PDF 생성 함수
-export const generatePDF = async (
-  element: HTMLElement,
-  options: PDFOptions = PDF_DEFAULT_OPTIONS,
-): Promise<void> => {
-  const html2pdf = (await import('html2pdf.js')).default;
-
-  // 스타일 적용
-  applyStylesToElement(element, generateTailwindStyles());
-
-  // PDF 최적화 스타일 적용
-  applyPDFOptimizationStyles(element);
-
-  // PDF 생성
-  await html2pdf().set(options).from(element).save();
-};
 
 // React 컴포넌트에서 사용할 수 있는 PDF 내보내기 함수
 export const exportToPDF = async (
@@ -330,14 +417,95 @@ export const exportToPDF = async (
     throw new Error('Preview element not found');
   }
 
-  // 프리뷰 내용을 복제
-  const element = previewRef.current.cloneNode(true) as HTMLElement;
+  try {
+    // html2pdf 동적 임포트
+    const html2pdf = (await import('html2pdf.js')).default;
+    
+    // 프리뷰 내용을 복제
+    const element = previewRef.current.cloneNode(true) as HTMLElement;
+    
+    // 복제된 element를 임시 컨테이너에 추가
+    const tempContainer = document.createElement('div');
+    tempContainer.style.position = 'absolute';
+    tempContainer.style.left = '-9999px';
+    tempContainer.style.top = '0';
+    tempContainer.style.width = '190mm'; // A4 width minus margins (210mm - 20mm)
+    tempContainer.style.backgroundColor = 'white';
+    tempContainer.appendChild(element);
+    document.body.appendChild(tempContainer);
 
-  // 커스텀 옵션이 있으면 기본 옵션과 병합
-  const options = customOptions
-    ? { ...PDF_DEFAULT_OPTIONS, ...customOptions }
-    : PDF_DEFAULT_OPTIONS;
+    // 스타일 적용
+    applyStylesToElement(element, generateTailwindStyles());
+    applyPDFOptimizationStyles(element);
 
-  // PDF 생성
-  await generatePDF(element, options);
+    // 페이지 분할을 위한 추가 처리
+    prepareContentForPDF(element);
+
+    // 커스텀 옵션이 있으면 기본 옵션과 병합
+    const options = customOptions
+      ? { ...PDF_DEFAULT_OPTIONS, ...customOptions }
+      : PDF_DEFAULT_OPTIONS;
+
+    // 현재 스크롤 위치 저장 및 초기화
+    const currentScrollY = window.scrollY;
+    window.scrollTo(0, 0);
+
+    // PDF 생성
+    await html2pdf().set(options).from(element).save();
+    
+    // 스크롤 위치 복원
+    window.scrollTo(0, currentScrollY);
+    
+    // 임시 컨테이너 제거
+    document.body.removeChild(tempContainer);
+  } catch (error) {
+    console.error('PDF 생성 중 오류:', error);
+    throw error;
+  }
+};
+
+// PDF를 위한 콘텐츠 준비 함수
+const prepareContentForPDF = (element: HTMLElement): void => {
+  // 모든 이미지가 로드되었는지 확인
+  const images = element.querySelectorAll('img');
+  images.forEach((img) => {
+    if (!img.complete) {
+      img.style.display = 'none';
+    }
+  });
+
+  // 긴 코드 블록에 대한 처리
+  const codeBlocks = element.querySelectorAll('pre');
+  codeBlocks.forEach((pre) => {
+    // 코드 블록이 너무 길면 페이지 분할 클래스 추가
+    if (pre.scrollHeight > 600) {
+      pre.classList.add('page-break-before');
+    }
+  });
+
+  // 테이블에 대한 처리
+  const tables = element.querySelectorAll('table');
+  tables.forEach((table) => {
+    // 테이블이 너무 길면 페이지 분할 클래스 추가
+    if (table.scrollHeight > 600) {
+      table.classList.add('page-break-before');
+    }
+  });
+
+  // 제목 요소들에 대한 처리
+  const headings = element.querySelectorAll('h1, h2, h3, h4, h5, h6');
+  headings.forEach((heading, index) => {
+    // 페이지 하단에 제목이 위치하지 않도록 처리
+    const nextElement = heading.nextElementSibling;
+    if (nextElement) {
+      const headingRect = heading.getBoundingClientRect();
+      const nextRect = nextElement.getBoundingClientRect();
+      
+      // 제목과 다음 요소 사이의 거리가 너무 크면 함께 유지
+      if (nextRect.top - headingRect.bottom > 100) {
+        heading.style.pageBreakAfter = 'avoid';
+        nextElement.classList.add('keep-with-previous');
+      }
+    }
+  });
 };

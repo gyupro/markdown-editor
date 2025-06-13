@@ -1,0 +1,92 @@
+{
+  "common": {
+    "title": "무료 마크다운 에디터",
+    "description": "문서 공유 기능이 있는 강력하고 기능이 풍부한 마크다운 에디터",
+    "loading": "로딩 중..."
+  },
+  "header": {
+    "fullscreen": "전체화면",
+    "share": "공유",
+    "export": "PDF 출력",
+    "ai": "AI",
+    "theme": "테마"
+  },
+  "editor": {
+    "placeholder": "여기에 마크다운을 작성해보세요...",
+    "toolbar": {
+      "bold": "굵게",
+      "italic": "기울임",
+      "strikethrough": "취소선",
+      "code": "코드",
+      "link": "링크",
+      "image": "이미지",
+      "bulletList": "불릿 목록",
+      "numberedList": "번호 목록",
+      "quote": "인용",
+      "table": "테이블",
+      "codeBlock": "코드 블록",
+      "selectAll": "전체 선택",
+      "copy": "복사"
+    }
+  },
+  "preview": {
+    "title": "미리보기",
+    "noContent": "미리볼 내용이 없습니다"
+  },
+  "share": {
+    "title": "문서 공유",
+    "createLink": "공유 링크 생성",
+    "linkCreated": "공유 링크가 성공적으로 생성되었습니다!",
+    "copyLink": "링크 복사",
+    "linkCopied": "링크가 클립보드에 복사되었습니다!",
+    "close": "닫기",
+    "loading": "공유 링크 생성 중..."
+  },
+  "ai": {
+    "title": "AI 콘텐츠 생성기",
+    "modes": {
+      "generate": "새 콘텐츠 생성",
+      "enhance": "기존 콘텐츠 개선"
+    },
+    "topic": "주제",
+    "topicPlaceholder": "AI가 작성할 주제를 입력하세요...",
+    "generate": "생성",
+    "enhanceButton": "콘텐츠 개선",
+    "loading": "콘텐츠 생성 중...",
+    "error": "콘텐츠 생성 오류",
+    "close": "닫기",
+    "suggestions": {
+      "title": "추천 주제",
+      "topics": [
+        "깨끗한 코드 작성 방법",
+        "React 훅 소개",
+        "API 설계 모범 사례",
+        "TypeScript 시작하기",
+        "최신 CSS 기법"
+      ]
+    }
+  },
+  "fullscreen": {
+    "exit": "전체화면 종료"
+  },
+  "tabs": {
+    "editor": "에디터",
+    "preview": "미리보기"
+  },
+  "shortcuts": {
+    "title": "키보드 단축키",
+    "bold": "굵은 글씨",
+    "italic": "기울임꼴",
+    "link": "링크 삽입",
+    "pdf": "PDF로 출력",
+    "fullscreen": "전체화면 전환",
+    "exit": "전체화면 종료"
+  },
+  "language": {
+    "select": "언어 선택",
+    "english": "English",
+    "korean": "한국어",
+    "japanese": "日本語",
+    "chinese": "中文"
+  }
+} 

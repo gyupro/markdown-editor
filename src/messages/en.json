@@ -1,0 +1,92 @@
+{
+  "common": {
+    "title": "FREE Markdown Editor",
+    "description": "A powerful, feature-rich markdown editor with document sharing",
+    "loading": "Loading..."
+  },
+  "header": {
+    "fullscreen": "Fullscreen",
+    "share": "Share",
+    "export": "Export PDF",
+    "ai": "AI",
+    "theme": "Theme"
+  },
+  "editor": {
+    "placeholder": "Start writing your markdown here...",
+    "toolbar": {
+      "bold": "Bold",
+      "italic": "Italic",
+      "strikethrough": "Strikethrough",
+      "code": "Code",
+      "link": "Link",
+      "image": "Image",
+      "bulletList": "Bullet List",
+      "numberedList": "Numbered List",
+      "quote": "Quote",
+      "table": "Table",
+      "codeBlock": "Code Block",
+      "selectAll": "Select All",
+      "copy": "Copy"
+    }
+  },
+  "preview": {
+    "title": "Preview",
+    "noContent": "No content to preview"
+  },
+  "share": {
+    "title": "Share Document",
+    "createLink": "Create Share Link",
+    "linkCreated": "Share link created successfully!",
+    "copyLink": "Copy Link",
+    "linkCopied": "Link copied to clipboard!",
+    "close": "Close",
+    "loading": "Creating share link..."
+  },
+  "ai": {
+    "title": "AI Content Generator",
+    "modes": {
+      "generate": "Generate New Content",
+      "enhance": "Enhance Existing Content"
+    },
+    "topic": "Topic",
+    "topicPlaceholder": "Enter a topic for AI to write about...",
+    "generate": "Generate",
+    "enhanceButton": "Enhance Content",
+    "loading": "Generating content...",
+    "error": "Error generating content",
+    "close": "Close",
+    "suggestions": {
+      "title": "Suggested Topics",
+      "topics": [
+        "How to write clean code",
+        "Introduction to React hooks",
+        "Best practices for API design",
+        "Getting started with TypeScript",
+        "Modern CSS techniques"
+      ]
+    }
+  },
+  "fullscreen": {
+    "exit": "Exit Fullscreen"
+  },
+  "tabs": {
+    "editor": "Editor",
+    "preview": "Preview"
+  },
+  "shortcuts": {
+    "title": "Keyboard Shortcuts",
+    "bold": "Bold text",
+    "italic": "Italic text",
+    "link": "Insert link",
+    "pdf": "Export to PDF",
+    "fullscreen": "Toggle fullscreen",
+    "exit": "Exit fullscreen"
+  },
+  "language": {
+    "select": "Select Language",
+    "english": "English",
+    "korean": "한국어",
+    "japanese": "日本語",
+    "chinese": "中文"
+  }
+} 
