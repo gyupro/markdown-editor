@@ -387,36 +387,17 @@ const generateTailwindStyles = (): string => `
   }
 `;
 
-// OKLCH 색상을 hex로 변환하는 함수
-const convertOklchToHex = (styles: string): string => {
-  // OKLCH 색상을 대체할 hex 색상 매핑
-  const oklchToHex: Record<string, string> = {
-    'oklch(97.1% .013 17.38)': '#fef2f2',
-    'oklch(88.5% .062 18.334)': '#ffcaca', 
-    'oklch(80.8% .114 19.571)': '#ffa3a4',
-    'oklch(63.7% .237 25.331)': '#fb2c36',
-    'oklch(50.5% .213 27.518)': '#bf000f',
-    'oklch(44.4% .177 26.899)': '#9f0712',
-    'oklch(39.6% .141 25.723)': '#82181a',
-    'oklch(64.6% .222 41.116)': '#ec5600',
-    'oklch(55.3% .195 38.402)': '#c43e00',
-    'oklch(98.7% .026 102.212)': '#fefce8',
-    'oklch(94.5% .129 101.54)': '#fff085',
-    'oklch(90.5% .182 98.111)': '#ffe02e',
-    // Add more mappings as needed
-  };
 
+// Simple OKLCH cleanup function - just removes unsupported color functions
+const convertOklchToHex = (styles: string): string => {
   let convertedStyles = styles;
   
-  // Replace OKLCH colors with hex equivalents
-  Object.entries(oklchToHex).forEach(([oklch, hex]) => {
-    convertedStyles = convertedStyles.replace(new RegExp(oklch.replace(/[()%\.]/g, '\\$&'), 'g'), hex);
-  });
-  
-  // Generic fallback: remove any remaining OKLCH/color-mix functions
-  convertedStyles = convertedStyles.replace(/oklch\([^)]+\)/g, '#000000');
-  convertedStyles = convertedStyles.replace(/color-mix\([^)]+\)/g, '#000000');
-  convertedStyles = convertedStyles.replace(/color\(display-p3[^)]+\)/g, '#000000');
+  // Simply remove unsupported color functions to prevent parsing errors
+  convertedStyles = convertedStyles.replace(/oklch\([^)]+\)/g, '');
+  convertedStyles = convertedStyles.replace(/color-mix\([^)]+\)/g, '');
+  convertedStyles = convertedStyles.replace(/color\(display-p3[^)]+\)/g, '');
+  convertedStyles = convertedStyles.replace(/lch\([^)]+\)/g, '');
+  convertedStyles = convertedStyles.replace(/lab\([^)]+\)/g, '');
   
   return convertedStyles;
 };
@@ -468,22 +449,118 @@ export const exportToPDF = async (
     tempContainer.appendChild(element);
     document.body.appendChild(tempContainer);
 
-    // 기존 OKLCH 스타일 제거/변환
-    const convertElementStyles = (el: HTMLElement) => {
-      // 인라인 스타일에서 OKLCH 제거
+    // More thorough approach: override computed styles that contain OKLCH
+    const replaceOklchInComputedStyles = (el: HTMLElement) => {
+      const computedStyle = window.getComputedStyle(el);
+      
+      // Get the current computed values and override only if they contain OKLCH
+      const properties = [
+        'background-color', 'color', 'border-color', 'border-top-color',
+        'border-right-color', 'border-bottom-color', 'border-left-color'
+      ];
+      
+      properties.forEach(property => {
+        const value = computedStyle.getPropertyValue(property);
+        if (value && value.includes('oklch')) {
+          // Set the computed color directly as hex (browser will convert OKLCH to hex)
+          const computedColor = value; // This will be the actual resolved color
+          // Force a recalculation by setting a safe fallback
+          if (property.includes('background')) {
+            el.style.setProperty(property, 'rgb(255, 255, 255)', 'important');
+          } else if (property.includes('color') && !property.includes('background')) {
+            el.style.setProperty(property, 'rgb(0, 0, 0)', 'important');
+          } else if (property.includes('border')) {
+            el.style.setProperty(property, 'rgb(229, 231, 235)', 'important');
+          }
+        }
+      });
+      
+      // Clean inline styles
       if (el.style.cssText) {
-        el.style.cssText = convertOklchToHex(el.style.cssText);
+        el.style.cssText = el.style.cssText.replace(/oklch\([^)]+\)/g, 'transparent');
+        el.style.cssText = el.style.cssText.replace(/color-mix\([^)]+\)/g, 'transparent');
       }
       
-      // 자식 요소들도 처리
+      // Process children
       Array.from(el.children).forEach(child => {
         if (child instanceof HTMLElement) {
-          convertElementStyles(child);
+          replaceOklchInComputedStyles(child);
         }
       });
     };
+
+    // Also inject a style that overrides all CSS custom properties with OKLCH
+    const overrideOklchVariables = () => {
+      const overrideStyle = document.createElement('style');
+      overrideStyle.textContent = `
+        /* Override OKLCH CSS variables for PDF generation */
+        .pdf-generation-override {
+          --color-red-50: #fef2f2 !important;
+          --color-red-200: #fecaca !important;
+          --color-red-300: #fca5a5 !important;
+          --color-red-700: #b91c1c !important;
+          --color-red-800: #991b1b !important;
+          --color-red-900: #7f1d1d !important;
+          --color-orange-600: #ea580c !important;
+          --color-orange-700: #c2410c !important;
+          --color-yellow-50: #fefce8 !important;
+          --color-yellow-200: #fef08a !important;
+          --color-yellow-300: #fde047 !important;
+          --color-yellow-800: #854d0e !important;
+          --color-yellow-900: #713f12 !important;
+          --color-green-50: #f0fdf4 !important;
+          --color-green-100: #dcfce7 !important;
+          --color-green-200: #bbf7d0 !important;
+          --color-green-300: #86efac !important;
+          --color-green-400: #4ade80 !important;
+          --color-green-500: #22c55e !important;
+          --color-green-600: #16a34a !important;
+          --color-green-700: #15803d !important;
+          --color-green-800: #166534 !important;
+          --color-green-900: #14532d !important;
+          --color-blue-50: #eff6ff !important;
+          --color-blue-300: #93c5fd !important;
+          --color-blue-400: #60a5fa !important;
+          --color-blue-500: #3b82f6 !important;
+          --color-blue-600: #2563eb !important;
+          --color-blue-700: #1d4ed8 !important;
+          --color-blue-800: #1e40af !important;
+          --color-blue-900: #1e3a8a !important;
+          --color-purple-50: #faf5ff !important;
+          --color-purple-100: #f3e8ff !important;
+          --color-purple-300: #c4b5fd !important;
+          --color-purple-400: #a78bfa !important;
+          --color-purple-500: #8b5cf6 !important;
+          --color-purple-600: #7c3aed !important;
+          --color-purple-700: #6d28d9 !important;
+          --color-purple-900: #581c87 !important;
+          --color-pink-100: #fce7f3 !important;
+          --color-pink-200: #fbcfe8 !important;
+          --color-pink-300: #f9a8d4 !important;
+          --color-pink-700: #be185d !important;
+          --color-pink-900: #9d174d !important;
+          --color-gray-50: #f9fafb !important;
+          --color-gray-100: #f3f4f6 !important;
+          --color-gray-200: #e5e7eb !important;
+          --color-gray-300: #d1d5db !important;
+          --color-gray-400: #9ca3af !important;
+          --color-gray-500: #6b7280 !important;
+          --color-gray-600: #4b5563 !important;
+          --color-gray-700: #374151 !important;
+          --color-gray-800: #1f2937 !important;
+          --color-gray-900: #111827 !important;
+          --color-black: #000000 !important;
+          --color-white: #ffffff !important;
+        }
+      `;
+      tempContainer.appendChild(overrideStyle);
+    };
+
+    // Apply the class and override styles
+    element.classList.add('pdf-generation-override');
+    overrideOklchVariables();
     
-    convertElementStyles(element);
+    replaceOklchInComputedStyles(element);
     
     // 스타일 적용
     applyStylesToElement(element, generateTailwindStyles());
@@ -507,7 +584,8 @@ export const exportToPDF = async (
     // 스크롤 위치 복원
     window.scrollTo(0, currentScrollY);
     
-    // 임시 컨테이너 제거
+    // Clean up - remove class and temporary container
+    element.classList.remove('pdf-generation-override');
     document.body.removeChild(tempContainer);
   } catch (error) {
     console.error('PDF 생성 중 오류:', error);
