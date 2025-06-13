@@ -69,7 +69,6 @@ export const Header: React.FC<HeaderProps> = ({ isExporting, onExportPDF, onFull
         >
           {theme === 'light' ? <MoonIcon /> : <SunIcon />}
         </button>
-        <div className="hidden md:block w-4 h-4 bg-blue-500 dark:bg-red-500 rounded" title="Dark mode test indicator"></div>
         <button
           onClick={onShare}
           className="px-3 md:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-1 md:gap-2 text-sm flex-shrink-0"

@@ -2,6 +2,10 @@
 
 @variant dark (.dark &);
 
+@theme {
+  --color-format: rgb;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
