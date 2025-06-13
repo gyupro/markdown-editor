@@ -387,10 +387,44 @@ const generateTailwindStyles = (): string => `
   }
 `;
 
+// OKLCH 색상을 hex로 변환하는 함수
+const convertOklchToHex = (styles: string): string => {
+  // OKLCH 색상을 대체할 hex 색상 매핑
+  const oklchToHex: Record<string, string> = {
+    'oklch(97.1% .013 17.38)': '#fef2f2',
+    'oklch(88.5% .062 18.334)': '#ffcaca', 
+    'oklch(80.8% .114 19.571)': '#ffa3a4',
+    'oklch(63.7% .237 25.331)': '#fb2c36',
+    'oklch(50.5% .213 27.518)': '#bf000f',
+    'oklch(44.4% .177 26.899)': '#9f0712',
+    'oklch(39.6% .141 25.723)': '#82181a',
+    'oklch(64.6% .222 41.116)': '#ec5600',
+    'oklch(55.3% .195 38.402)': '#c43e00',
+    'oklch(98.7% .026 102.212)': '#fefce8',
+    'oklch(94.5% .129 101.54)': '#fff085',
+    'oklch(90.5% .182 98.111)': '#ffe02e',
+    // Add more mappings as needed
+  };
+
+  let convertedStyles = styles;
+  
+  // Replace OKLCH colors with hex equivalents
+  Object.entries(oklchToHex).forEach(([oklch, hex]) => {
+    convertedStyles = convertedStyles.replace(new RegExp(oklch.replace(/[()%\.]/g, '\\$&'), 'g'), hex);
+  });
+  
+  // Generic fallback: remove any remaining OKLCH/color-mix functions
+  convertedStyles = convertedStyles.replace(/oklch\([^)]+\)/g, '#000000');
+  convertedStyles = convertedStyles.replace(/color-mix\([^)]+\)/g, '#000000');
+  convertedStyles = convertedStyles.replace(/color\(display-p3[^)]+\)/g, '#000000');
+  
+  return convertedStyles;
+};
+
 // 스타일 적용 유틸리티 함수
 export const applyStylesToElement = (element: HTMLElement, styles: string): void => {
   const styleElement = document.createElement('style');
-  styleElement.textContent = styles;
+  styleElement.textContent = convertOklchToHex(styles);
   element.appendChild(styleElement);
 };
 
@@ -434,6 +468,23 @@ export const exportToPDF = async (
     tempContainer.appendChild(element);
     document.body.appendChild(tempContainer);
 
+    // 기존 OKLCH 스타일 제거/변환
+    const convertElementStyles = (el: HTMLElement) => {
+      // 인라인 스타일에서 OKLCH 제거
+      if (el.style.cssText) {
+        el.style.cssText = convertOklchToHex(el.style.cssText);
+      }
+      
+      // 자식 요소들도 처리
+      Array.from(el.children).forEach(child => {
+        if (child instanceof HTMLElement) {
+          convertElementStyles(child);
+        }
+      });
+    };
+    
+    convertElementStyles(element);
+    
     // 스타일 적용
     applyStylesToElement(element, generateTailwindStyles());
     applyPDFOptimizationStyles(element);

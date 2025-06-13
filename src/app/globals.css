@@ -3,7 +3,7 @@
 @variant dark (.dark &);
 
 @theme {
-  --color-format: rgb;
+  --color-format: hex;
 }
 
 :root {
