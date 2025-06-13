@@ -46,7 +46,7 @@ export default function HomePage() {
     insertHeading,
     insertTable,
     selectAll,
-  } = useMarkdownEditor(DEFAULT_MARKDOWN, theme);
+  } = useMarkdownEditor(DEFAULT_MARKDOWN);
 
   // 마크다운 내용이 변경될 때마다 제목 자동 추출
   useEffect(() => {

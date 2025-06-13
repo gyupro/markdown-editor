@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { KEYBOARD_SHORTCUTS, TABLE_TEMPLATE } from '@/constants/markdown';
 import { exportToPDF } from '@/utils/pdf';
 
-export const useMarkdownEditor = (initialMarkdown: string, theme: 'light' | 'dark' = 'light') => {
+export const useMarkdownEditor = (initialMarkdown: string) => {
   const [markdown, setMarkdown] = useState(initialMarkdown);
   const [isClient, setIsClient] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -21,14 +21,14 @@ export const useMarkdownEditor = (initialMarkdown: string, theme: 'light' | 'dar
     setIsExporting(true);
     
     try {
-      await exportToPDF(previewRef, undefined, theme);
+      await exportToPDF(previewRef);
     } catch (error) {
       console.error('PDF 출력 중 오류가 발생했습니다:', error);
       alert('PDF 출력 중 오류가 발생했습니다. 다시 시도해 주세요.');
     } finally {
       setIsExporting(false);
     }
-  }, [isClient, theme]);
+  }, [isClient]);
 
   // 텍스트 포맷팅 함수
   const insertFormatting = useCallback((before: string, after: string) => {
