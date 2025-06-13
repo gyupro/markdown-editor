@@ -503,7 +503,7 @@ const prepareContentForPDF = (element: HTMLElement): void => {
       
       // 제목과 다음 요소 사이의 거리가 너무 크면 함께 유지
       if (nextRect.top - headingRect.bottom > 100) {
-        heading.style.pageBreakAfter = 'avoid';
+        (heading as HTMLElement).style.pageBreakAfter = 'avoid';
         nextElement.classList.add('keep-with-previous');
       }
     }
