@@ -1,0 +1,92 @@
+{
+  "common": {
+    "title": "無料マークダウンエディタ",
+    "description": "ドキュメント共有機能付きの強力で機能豊富なマークダウンエディタ",
+    "loading": "読み込み中..."
+  },
+  "header": {
+    "fullscreen": "フルスクリーン",
+    "share": "共有",
+    "export": "PDF出力",
+    "ai": "AI",
+    "theme": "テーマ"
+  },
+  "editor": {
+    "placeholder": "ここにマークダウンを書き始めてください...",
+    "toolbar": {
+      "bold": "太字",
+      "italic": "斜体",
+      "strikethrough": "取り消し線",
+      "code": "コード",
+      "link": "リンク",
+      "image": "画像",
+      "bulletList": "箇条書きリスト",
+      "numberedList": "番号付きリスト",
+      "quote": "引用",
+      "table": "テーブル",
+      "codeBlock": "コードブロック",
+      "selectAll": "すべて選択",
+      "copy": "コピー"
+    }
+  },
+  "preview": {
+    "title": "プレビュー",
+    "noContent": "プレビューするコンテンツがありません"
+  },
+  "share": {
+    "title": "ドキュメント共有",
+    "createLink": "共有リンク作成",
+    "linkCreated": "共有リンクが正常に作成されました！",
+    "copyLink": "リンクをコピー",
+    "linkCopied": "リンクがクリップボードにコピーされました！",
+    "close": "閉じる",
+    "loading": "共有リンク作成中..."
+  },
+  "ai": {
+    "title": "AIコンテンツジェネレーター",
+    "modes": {
+      "generate": "新しいコンテンツを生成",
+      "enhance": "既存のコンテンツを改善"
+    },
+    "topic": "トピック",
+    "topicPlaceholder": "AIに書いてもらうトピックを入力してください...",
+    "generate": "生成",
+    "enhanceButton": "コンテンツを改善",
+    "loading": "コンテンツ生成中...",
+    "error": "コンテンツ生成エラー",
+    "close": "閉じる",
+    "suggestions": {
+      "title": "おすすめトピック",
+      "topics": [
+        "クリーンコードの書き方",
+        "React フックの紹介",
+        "API設計のベストプラクティス",
+        "TypeScriptの始め方",
+        "モダンCSS技術"
+      ]
+    }
+  },
+  "fullscreen": {
+    "exit": "フルスクリーン終了"
+  },
+  "tabs": {
+    "editor": "エディタ",
+    "preview": "プレビュー"
+  },
+  "shortcuts": {
+    "title": "キーボードショートカット",
+    "bold": "太字テキスト",
+    "italic": "斜体テキスト",
+    "link": "リンク挿入",
+    "pdf": "PDFに出力",
+    "fullscreen": "フルスクリーン切り替え",
+    "exit": "フルスクリーン終了"
+  },
+  "language": {
+    "select": "言語を選択",
+    "english": "English",
+    "korean": "한국어",
+    "japanese": "日本語",
+    "chinese": "中文"
+  }
+} 

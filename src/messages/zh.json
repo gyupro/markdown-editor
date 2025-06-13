@@ -1,0 +1,92 @@
+{
+  "common": {
+    "title": "免费Markdown编辑器",
+    "description": "功能强大、功能丰富的Markdown编辑器，支持文档共享",
+    "loading": "加载中..."
+  },
+  "header": {
+    "fullscreen": "全屏",
+    "share": "分享",
+    "export": "导出PDF",
+    "ai": "AI",
+    "theme": "主题"
+  },
+  "editor": {
+    "placeholder": "在这里开始编写您的Markdown...",
+    "toolbar": {
+      "bold": "粗体",
+      "italic": "斜体",
+      "strikethrough": "删除线",
+      "code": "代码",
+      "link": "链接",
+      "image": "图片",
+      "bulletList": "项目符号列表",
+      "numberedList": "编号列表",
+      "quote": "引用",
+      "table": "表格",
+      "codeBlock": "代码块",
+      "selectAll": "全选",
+      "copy": "复制"
+    }
+  },
+  "preview": {
+    "title": "预览",
+    "noContent": "没有内容可预览"
+  },
+  "share": {
+    "title": "分享文档",
+    "createLink": "创建分享链接",
+    "linkCreated": "分享链接创建成功！",
+    "copyLink": "复制链接",
+    "linkCopied": "链接已复制到剪贴板！",
+    "close": "关闭",
+    "loading": "创建分享链接中..."
+  },
+  "ai": {
+    "title": "AI内容生成器",
+    "modes": {
+      "generate": "生成新内容",
+      "enhance": "增强现有内容"
+    },
+    "topic": "主题",
+    "topicPlaceholder": "输入AI要写作的主题...",
+    "generate": "生成",
+    "enhanceButton": "增强内容",
+    "loading": "生成内容中...",
+    "error": "内容生成错误",
+    "close": "关闭",
+    "suggestions": {
+      "title": "推荐主题",
+      "topics": [
+        "如何编写干净的代码",
+        "React Hooks介绍",
+        "API设计最佳实践",
+        "TypeScript入门",
+        "现代CSS技术"
+      ]
+    }
+  },
+  "fullscreen": {
+    "exit": "退出全屏"
+  },
+  "tabs": {
+    "editor": "编辑器",
+    "preview": "预览"
+  },
+  "shortcuts": {
+    "title": "键盘快捷键",
+    "bold": "粗体文本",
+    "italic": "斜体文本",
+    "link": "插入链接",
+    "pdf": "导出到PDF",
+    "fullscreen": "切换全屏",
+    "exit": "退出全屏"
+  },
+  "language": {
+    "select": "选择语言",
+    "english": "English",
+    "korean": "한국어",
+    "japanese": "日本語",
+    "chinese": "中文"
+  }
+} 
