@@ -30,7 +30,7 @@ export const PDF_DEFAULT_OPTIONS: PDFOptions = {
 } as const;
 
 // Tailwind 스타일을 별도의 함수로 분리하여 재사용 가능하게 만듦
-const generateTailwindStyles = (): string => `
+const generateTailwindStyles = (theme: 'light' | 'dark' = 'light'): string => `
   * {
     -webkit-print-color-adjust: exact !important;
     color-adjust: exact !important;
@@ -385,6 +385,131 @@ const generateTailwindStyles = (): string => `
     display: inline !important;
     border: 1px solid #e5e7eb !important;
   }
+
+  /* Theme-specific styles */
+  ${theme === 'dark' ? `
+    /* Dark theme styles */
+    body, .prose {
+      background-color: #111827 !important;
+      color: #f9fafb !important;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+      color: #f9fafb !important;
+    }
+    
+    blockquote {
+      background-color: #1f2937 !important;
+      border-left-color: #374151 !important;
+      color: #d1d5db !important;
+    }
+    
+    code {
+      background-color: #1f2937 !important;
+      color: #e5e7eb !important;
+      border-color: #374151 !important;
+    }
+    
+    pre {
+      background-color: #0f172a !important;
+      color: #e2e8f0 !important;
+      border-color: #334155 !important;
+    }
+    
+    table {
+      border-color: #374151 !important;
+    }
+    
+    th, td {
+      border-color: #374151 !important;
+      color: #f9fafb !important;
+    }
+    
+    th {
+      background-color: #1f2937 !important;
+    }
+    
+    tr:nth-child(even) {
+      background-color: #111827 !important;
+    }
+    
+    tr:nth-child(odd) {
+      background-color: #1f2937 !important;
+    }
+    
+    a {
+      color: #60a5fa !important;
+    }
+    
+    strong, b {
+      color: #f9fafb !important;
+    }
+    
+    em, i {
+      color: #e5e7eb !important;
+    }
+  ` : `
+    /* Light theme styles */
+    body, .prose {
+      background-color: #ffffff !important;
+      color: #111827 !important;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+      color: #111827 !important;
+    }
+    
+    blockquote {
+      background-color: #f9fafb !important;
+      border-left-color: #d1d5db !important;
+      color: #374151 !important;
+    }
+    
+    code {
+      background-color: #f3f4f6 !important;
+      color: #374151 !important;
+      border-color: #d1d5db !important;
+    }
+    
+    pre {
+      background-color: #f8fafc !important;
+      color: #334155 !important;
+      border-color: #e2e8f0 !important;
+    }
+    
+    table {
+      border-color: #d1d5db !important;
+    }
+    
+    th, td {
+      border-color: #d1d5db !important;
+      color: #111827 !important;
+    }
+    
+    th {
+      background-color: #f9fafb !important;
+    }
+    
+    tr:nth-child(even) {
+      background-color: #ffffff !important;
+    }
+    
+    tr:nth-child(odd) {
+      background-color: #f9fafb !important;
+    }
+    
+    a {
+      color: #3b82f6 !important;
+    }
+    
+    strong, b {
+      color: #111827 !important;
+    }
+    
+    em, i {
+      color: #374151 !important;
+    }
+  `}
 `;
 
 // 스타일 적용 유틸리티 함수
@@ -412,6 +537,7 @@ export const applyPDFOptimizationStyles = (element: HTMLElement): void => {
 export const exportToPDF = async (
   previewRef: React.RefObject<HTMLDivElement | null>,
   customOptions?: Partial<PDFOptions>,
+  theme: 'light' | 'dark' = 'light',
 ): Promise<void> => {
   if (!previewRef.current) {
     throw new Error('Preview element not found');
@@ -430,12 +556,12 @@ export const exportToPDF = async (
     tempContainer.style.left = '-9999px';
     tempContainer.style.top = '0';
     tempContainer.style.width = '190mm'; // A4 width minus margins (210mm - 20mm)
-    tempContainer.style.backgroundColor = 'white';
+    tempContainer.style.backgroundColor = theme === 'dark' ? '#111827' : 'white';
     tempContainer.appendChild(element);
     document.body.appendChild(tempContainer);
 
     // 스타일 적용
-    applyStylesToElement(element, generateTailwindStyles());
+    applyStylesToElement(element, generateTailwindStyles(theme));
     applyPDFOptimizationStyles(element);
 
     // 페이지 분할을 위한 추가 처리
