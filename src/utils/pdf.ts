@@ -267,16 +267,19 @@ const generateTailwindStyles = (): string => `
     border-radius: 0 !important;
   }
 
-  /* 테이블 스타일 */
+  /* 테이블 스타일 - 코드 블록과 동일한 다크 테마 */
   table {
     border-collapse: collapse !important;
     width: 100% !important;
     margin: 1rem 0 !important;
+    background-color: #1f2937 !important;
+    border-radius: 0.5rem !important;
+    overflow: hidden !important;
   }
 
   th {
-    background-color: #1f2937 !important;
-    color: white !important;
+    background-color: #111827 !important;
+    color: #f9fafb !important;
     padding: 0.75rem 1.5rem !important;
     text-align: left !important;
     font-weight: bold !important;
@@ -294,17 +297,22 @@ const generateTailwindStyles = (): string => `
     padding: 1rem 1.5rem !important;
     font-size: 1rem !important;
     font-weight: 500 !important;
-    color: #1f2937 !important;
-    white-space: nowrap !important;
+    color: #f9fafb !important;
+    background-color: #1f2937 !important;
+    border-right: 1px solid #374151 !important;
+  }
+
+  td:last-child {
+    border-right: none !important;
   }
 
   tr {
-    background-color: #ffffff !important;
-    border-bottom: 1px solid #e5e7eb !important;
+    background-color: #1f2937 !important;
+    border-bottom: 1px solid #374151 !important;
   }
 
   tbody tr:nth-child(even) {
-    background-color: #f9fafb !important;
+    background-color: #1e293b !important;
   }
 
   /* 리스트 스타일 - bullet 포인트 개선 */
@@ -452,6 +460,26 @@ export const exportToPDF = async (
 
     // More thorough approach: override computed styles that contain OKLCH
     const replaceOklchInComputedStyles = (el: HTMLElement) => {
+      // Skip code blocks, tables and their children to preserve styling
+      if (el.tagName === 'PRE' || el.tagName === 'CODE' || el.closest('pre') ||
+          el.tagName === 'TABLE' || el.tagName === 'THEAD' || el.tagName === 'TBODY' || 
+          el.tagName === 'TR' || el.tagName === 'TH' || el.tagName === 'TD' || el.closest('table')) {
+        // Still clean inline styles but don't override colors
+        if (el.style.cssText) {
+          el.style.cssText = el.style.cssText.replace(/oklch\([^)]+\)/g, 'transparent');
+          el.style.cssText = el.style.cssText.replace(/oklab\([^)]+\)/g, 'transparent');
+          el.style.cssText = el.style.cssText.replace(/color-mix\s*\([^)]+\)/g, 'transparent');
+        }
+        
+        // Process children
+        Array.from(el.children).forEach(child => {
+          if (child instanceof HTMLElement) {
+            replaceOklchInComputedStyles(child);
+          }
+        });
+        return;
+      }
+      
       const computedStyle = window.getComputedStyle(el);
       
       // Get the current computed values and override only if they contain OKLCH
@@ -568,10 +596,10 @@ export const exportToPDF = async (
         // Create a comprehensive override style that completely blocks modern color functions
         const aggressiveOverride = document.createElement('style');
         aggressiveOverride.textContent = `
-          /* Aggressive PDF-safe overrides */
-          .pdf-generation-override *,
-          .pdf-generation-override *::before,
-          .pdf-generation-override *::after {
+          /* Aggressive PDF-safe overrides - but preserve code blocks and tables */
+          .pdf-generation-override *:not(pre):not(pre *):not(table):not(table *),
+          .pdf-generation-override *:not(pre):not(pre *):not(table):not(table *)::before,
+          .pdf-generation-override *:not(pre):not(pre *):not(table):not(table *)::after {
             background-color: initial !important;
             color: initial !important;
             border-color: initial !important;
@@ -585,6 +613,37 @@ export const exportToPDF = async (
           .pdf-generation-override .dark {
             background: #000000 !important;
             color: #ffffff !important;
+          }
+          
+          /* Ensure code blocks maintain proper colors */
+          .pdf-generation-override pre {
+            background-color: #1f2937 !important;
+            color: #f9fafb !important;
+          }
+          
+          .pdf-generation-override pre code,
+          .pdf-generation-override pre * {
+            background-color: transparent !important;
+            color: #f9fafb !important;
+          }
+          
+          /* Ensure tables maintain dark theme colors */
+          .pdf-generation-override table {
+            background-color: #1f2937 !important;
+          }
+          
+          .pdf-generation-override th {
+            background-color: #111827 !important;
+            color: #f9fafb !important;
+          }
+          
+          .pdf-generation-override td {
+            background-color: #1f2937 !important;
+            color: #f9fafb !important;
+          }
+          
+          .pdf-generation-override tbody tr:nth-child(even) td {
+            background-color: #1e293b !important;
           }
         `;
         tempContainer.appendChild(aggressiveOverride);
