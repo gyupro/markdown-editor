@@ -215,30 +215,30 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 py-3 md:py-4" role="banner">
         <div className="max-w-4xl mx-auto">
-          {/* 헤더 상단 영역 */}
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2 md:gap-4 min-w-0 flex-1">
-              <div className="flex items-center gap-2">
-                <Image 
-                  src="/logo.png" 
-                  alt="Markdown Editor Logo" 
-                  width={32}
-                  height={32}
-                  className="w-6 h-6 md:w-8 md:h-8 object-contain"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                  }}
-                />
-                <h1 className="text-base md:text-xl font-semibold text-gray-800 dark:text-white truncate">
-                  {document.title}
-                </h1>
-              </div>
-            </div>
+          {/* 헤더 영역 - 모바일 최적화 */}
+          <div className="space-y-3">
+            {/* 제목과 로고 */}
             <div className="flex items-center gap-2">
-              <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 flex-shrink-0">
-                {new Date(document.created_at).toLocaleDateString('ko-KR')}
+              <Image 
+                src="/logo.png" 
+                alt="Markdown Editor Logo" 
+                width={32}
+                height={32}
+                className="w-6 h-6 md:w-8 md:h-8 object-contain flex-shrink-0"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+              <h1 className="text-base md:text-xl font-semibold text-gray-800 dark:text-white break-words">
+                {document.title}
+              </h1>
+            </div>
+            
+            {/* 날짜와 다크모드 토글 */}
+            <div className="flex items-center justify-between">
+              <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
+                공유된 문서 · {new Date(document.created_at).toLocaleDateString('ko-KR')}
               </p>
-              {/* 다크모드 토글 버튼 */}
               <button
                 onClick={toggleTheme}
                 className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
