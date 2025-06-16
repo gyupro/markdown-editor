@@ -218,18 +218,18 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
           {/* 헤더 영역 - 모바일 최적화 */}
           <div className="space-y-3">
             {/* 제목과 로고 */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-start gap-2">
               <Image 
                 src="/logo.png" 
                 alt="Markdown Editor Logo" 
                 width={32}
                 height={32}
-                className="w-6 h-6 md:w-8 md:h-8 object-contain flex-shrink-0"
+                className="w-6 h-6 md:w-8 md:h-8 object-contain flex-shrink-0 mt-0.5"
                 onError={(e) => {
                   e.currentTarget.style.display = 'none';
                 }}
               />
-              <h1 className="text-base md:text-xl font-semibold text-gray-800 dark:text-white break-words">
+              <h1 className="text-base md:text-xl font-semibold text-gray-800 dark:text-white break-words flex-1">
                 {document.title}
               </h1>
             </div>
