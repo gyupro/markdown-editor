@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useDocumentShare } from '@/hooks/useDocumentShare';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import { useHashNavigation } from '@/hooks/useHashNavigation';
+import { useTheme } from '@/hooks/useTheme';
 import { Document } from '@/lib/supabase';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -24,6 +25,7 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
   const [document, setDocument] = useState<Document | null>(null);
   const { loadSharedDocument, isLoading, error } = useDocumentShare();
   const { copyToClipboard, isCopied } = useCopyToClipboard();
+  const { theme, toggleTheme } = useTheme();
   const [showMoreMenu, setShowMoreMenu] = useState(false);
 
   // 해시 네비게이션 훅 사용
@@ -232,9 +234,28 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
                 </h1>
               </div>
             </div>
-            <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 flex-shrink-0">
-              {new Date(document.created_at).toLocaleDateString('ko-KR')}
-            </p>
+            <div className="flex items-center gap-2">
+              <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 flex-shrink-0">
+                {new Date(document.created_at).toLocaleDateString('ko-KR')}
+              </p>
+              {/* 다크모드 토글 버튼 */}
+              <button
+                onClick={toggleTheme}
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                aria-label={theme === 'light' ? '다크 모드로 전환' : '라이트 모드로 전환'}
+                title={theme === 'light' ? '다크 모드로 전환' : '라이트 모드로 전환'}
+              >
+                {theme === 'light' ? (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                  </svg>
+                ) : (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                )}
+              </button>
+            </div>
           </div>
           
           {/* 액션 버튼들 - 모바일 친화적 레이아웃 */}
