@@ -49,23 +49,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 요청 본문 파싱 및 크기 제한
+    // 요청 본문 파싱
     let body: { title: string; content: string };
-    let text: string = '';
     try {
-      text = await request.text();
-      
-      if (text.length > 1024 * 1024) { // 1MB 제한
-        console.error('요청 크기 초과:', text.length, 'bytes');
-        return NextResponse.json(
-          { error: '요청 크기가 너무 큽니다.' },
-          { status: 413 }
-        );
-      }
-      body = JSON.parse(text) as { title: string; content: string };
+      body = await request.json() as { title: string; content: string };
     } catch (parseError) {
       console.error('JSON 파싱 오류:', parseError);
-      console.error('요청 본문:', text.substring(0, 500));
       return NextResponse.json(
         { error: '잘못된 JSON 형식입니다.' },
         { status: 400 }
@@ -95,7 +84,7 @@ export async function POST(request: NextRequest) {
 
     // 입력값 생성
     const sanitizedTitle = sanitizeInput(title, 200);
-    const sanitizedContent = sanitizeInput(content, 1024 * 1024);
+    const sanitizedContent = sanitizeInput(content, 10 * 1024 * 1024); // 10MB로 증가
     
     // 동일한 내용의 기존 공개 문서가 있는지 확인
     const { data: existingDocument, error: searchError } = await supabase

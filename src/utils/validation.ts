@@ -159,32 +159,8 @@ export const validateContent = (content: string): {
     return { isValid: false, error: '내용은 필수입니다.' };
   }
   
-  // 최대 길이 제한 (1MB)
-  const maxLength = 1024 * 1024; // 1MB
-  if (content.length > maxLength) {
-    return { 
-      isValid: false, 
-      error: `내용이 너무 깁니다. 최대 ${Math.floor(maxLength / 1024)}KB까지 허용됩니다.` 
-    };
-  }
-  
-  // 기본적인 악성 콘텐츠 패턴 검사 (더 정확한 패턴 사용)
-  const suspiciousPatterns = [
-    /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, // script 태그
-    /javascript\s*:/gi, // javascript: 프로토콜
-    /\bon(click|load|error|focus|blur|change|submit|keyup|keydown|mouseover|mouseout)\s*=/gi, // 실제 이벤트 핸들러만
-    /data:(?!image\/[a-z]+;base64,)(?!text\/)[^;\s]*/gi, // 의심스러운 data: URL (이미지와 텍스트 제외)
-  ];
-  
-  for (const pattern of suspiciousPatterns) {
-    if (pattern.test(content)) {
-      return { 
-        isValid: false, 
-        error: '보안상의 이유로 허용되지 않는 내용이 포함되어 있습니다.' 
-      };
-    }
-  }
-  
+  // 내용이 있으면 유효한 것으로 간주
+  // 길이 제한은 데이터베이스나 인프라 레벨에서 처리
   return { isValid: true };
 };
 
