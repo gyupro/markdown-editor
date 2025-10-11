@@ -1,0 +1,27 @@
+name: Supabase Keepalive
+
+on:
+  schedule:
+    # 3일마다 실행 (UTC 기준 매주 월요일, 목요일 오전 3시)
+    - cron: '0 3 * * 1,4'
+  workflow_dispatch: # 수동 실행 가능
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call keepalive endpoint
+        run: |
+          response=$(curl -s -w "\n%{http_code}" https://markdown.develop-on.co.kr/api/keepalive)
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | sed '$d')
+
+          echo "HTTP Status: $http_code"
+          echo "Response: $body"
+
+          if [ "$http_code" -eq 200 ]; then
+            echo "✅ Keepalive successful"
+          else
+            echo "❌ Keepalive failed"
+            exit 1
+          fi
