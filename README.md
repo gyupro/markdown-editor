@@ -31,7 +31,7 @@
 - 📱 **Mobile Responsive** - Perfect experience on all devices
 - ↩️ **Undo/Redo** - Full history support with Ctrl+Z/Y shortcuts
 - 💾 **Local Storage** - Auto-save drafts and manage documents locally
-- 🖼️ **Image Upload** - Drag & drop or paste images directly
+- 🖼️ **Image Upload** - Drag & drop or paste images directly (auto-upload to cloud)
 - 🔄 **Scroll Sync** - Synchronized scrolling between editor and preview
 
 ## 🚀 Quick Start
@@ -117,7 +117,7 @@ src/
 - 📱 **모바일 반응형** - 모든 기기에서 완벽한 경험
 - ↩️ **실행 취소/다시 실행** - Ctrl+Z/Y 단축키로 전체 히스토리 지원
 - 💾 **로컬 저장소** - 초안 자동 저장 및 문서 로컬 관리
-- 🖼️ **이미지 업로드** - 드래그 앤 드롭 또는 붙여넣기로 이미지 삽입
+- 🖼️ **이미지 업로드** - 드래그 앤 드롭 또는 붙여넣기로 이미지 삽입 (클라우드 자동 업로드)
 - 🔄 **스크롤 동기화** - 에디터와 미리보기 간 스크롤 동기화
 
 ## 🚀 빠른 시작
