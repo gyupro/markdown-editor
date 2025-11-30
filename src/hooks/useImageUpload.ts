@@ -3,6 +3,64 @@ import { supabase } from '@/lib/supabase';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
+const WEBP_QUALITY = 0.85; // WebP 품질 (0-1)
+
+// 이미지를 WebP로 변환하는 함수
+const convertToWebP = (file: File): Promise<Blob> => {
+  return new Promise((resolve, reject) => {
+    // GIF는 애니메이션 유지를 위해 변환하지 않음
+    if (file.type === 'image/gif') {
+      resolve(file);
+      return;
+    }
+
+    // SVG는 벡터 포맷이므로 변환하지 않음
+    if (file.type === 'image/svg+xml') {
+      resolve(file);
+      return;
+    }
+
+    // 이미 WebP면 그대로 반환
+    if (file.type === 'image/webp') {
+      resolve(file);
+      return;
+    }
+
+    const img = new Image();
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    img.onload = () => {
+      canvas.width = img.width;
+      canvas.height = img.height;
+
+      if (ctx) {
+        ctx.drawImage(img, 0, 0);
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              resolve(blob);
+            } else {
+              // WebP 변환 실패 시 원본 반환
+              resolve(file);
+            }
+          },
+          'image/webp',
+          WEBP_QUALITY
+        );
+      } else {
+        resolve(file);
+      }
+    };
+
+    img.onerror = () => {
+      // 이미지 로드 실패 시 원본 반환
+      resolve(file);
+    };
+
+    img.src = URL.createObjectURL(file);
+  });
+};
 
 export interface ImageUploadResult {
   url: string;
@@ -51,21 +109,29 @@ export const useImageUpload = () => {
     setIsUploading(true);
 
     try {
+      setUploadProgress(10);
+
+      // Convert to WebP (GIF, SVG 제외)
+      const convertedBlob = await convertToWebP(file);
+      const isConverted = convertedBlob.type === 'image/webp' && file.type !== 'image/webp';
+
+      setUploadProgress(30);
+
       // Generate unique filename
       const timestamp = Date.now();
       const randomStr = Math.random().toString(36).substring(2, 8);
-      const extension = file.name.split('.').pop() || 'png';
+      // WebP로 변환된 경우 확장자를 webp로, 아니면 원본 확장자 유지
+      const extension = isConverted ? 'webp' : (file.type === 'image/gif' ? 'gif' : file.type === 'image/svg+xml' ? 'svg' : file.name.split('.').pop() || 'webp');
       const fileName = `${timestamp}-${randomStr}.${extension}`;
       const filePath = `uploads/${fileName}`;
-
-      setUploadProgress(30);
 
       // Upload to Supabase Storage
       const { data, error: uploadError } = await supabase.storage
         .from('images')
-        .upload(filePath, file, {
+        .upload(filePath, convertedBlob, {
           cacheControl: '3600',
-          upsert: false
+          upsert: false,
+          contentType: convertedBlob.type
         });
 
       if (uploadError) {
