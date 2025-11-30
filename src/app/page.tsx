@@ -53,10 +53,6 @@ export default function HomePage() {
     redo,
     canUndo,
     canRedo,
-    // Local storage
-    lastSaved,
-    isSaving,
-    saveNow,
     // Scroll sync
     handleEditorScroll,
     handlePreviewScroll,
@@ -167,9 +163,7 @@ export default function HomePage() {
     canRedo,
     // Local documents
     onOpenDocuments: () => setIsDocumentsModalOpen(true),
-    isSaving,
-    lastSaved,
-  }), [insertHeading, insertFormatting, insertAtCursor, insertTable, selectAll, handleCopyMarkdown, handleExportToPDF, undo, redo, canUndo, canRedo, isSaving, lastSaved]);
+  }), [insertHeading, insertFormatting, insertAtCursor, insertTable, selectAll, handleCopyMarkdown, handleExportToPDF, undo, redo, canUndo, canRedo]);
 
   return (
     <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-900">

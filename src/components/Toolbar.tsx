@@ -25,8 +25,6 @@ interface ToolbarProps {
   onOpenDocuments?: () => void;
   canUndo?: boolean;
   canRedo?: boolean;
-  isSaving?: boolean;
-  lastSaved?: Date | null;
 }
 
 const ToolbarButton: React.FC<ToolbarButtonProps> = ({ onClick, title, children, disabled = false }) => (
@@ -46,40 +44,19 @@ const Divider: React.FC = () => (
   <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1" aria-hidden="true"></div>
 );
 
-// Cute folder icon component for save button
-const FolderIcon: React.FC<{ isSaving?: boolean }> = ({ isSaving }) => (
+// Folder icon component
+const FolderIcon: React.FC = () => (
   <svg
-    className={`w-4 h-4 ${isSaving ? 'animate-pulse' : ''}`}
+    className="w-4 h-4"
     fill="currentColor"
     viewBox="0 0 24 24"
   >
-    {/* Folder back */}
     <path
       d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"
       fill="currentColor"
     />
-    {/* Cute face when saving */}
-    {isSaving && (
-      <>
-        <circle cx="9" cy="13" r="1" fill="#fff"/>
-        <circle cx="15" cy="13" r="1" fill="#fff"/>
-        <path d="M9.5 15.5c1.5 1 3.5 1 5 0" stroke="#fff" strokeWidth="1" fill="none" strokeLinecap="round"/>
-      </>
-    )}
   </svg>
 );
-
-// Format time ago
-const formatTimeAgo = (date: Date | null): string => {
-  if (!date) return '';
-  const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
-  if (seconds < 5) return '방금 저장됨';
-  if (seconds < 60) return `${seconds}초 전 저장`;
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}분 전 저장`;
-  const hours = Math.floor(minutes / 60);
-  return `${hours}시간 전 저장`;
-};
 
 export const Toolbar: React.FC<ToolbarProps> = ({
   onHeading,
@@ -104,8 +81,6 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onOpenDocuments,
   canUndo = false,
   canRedo = false,
-  isSaving = false,
-  lastSaved = null,
 }) => {
   return (
     <nav
@@ -226,27 +201,15 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         </svg>
       </ToolbarButton>
 
-      {/* Local Documents button with cute folder icon */}
+      {/* Local Documents button */}
       {onOpenDocuments && (
         <>
           <Divider />
-          <div className="relative group">
-            <ToolbarButton
-              onClick={onOpenDocuments}
-              title={`내 문서함${lastSaved ? ` - ${formatTimeAgo(lastSaved)}` : ''}`}
-            >
-              <div className={`flex items-center gap-1 ${isSaving ? 'text-yellow-500' : 'text-green-500'}`}>
-                <FolderIcon isSaving={isSaving} />
-                {isSaving && <span className="text-xs">저장 중...</span>}
-              </div>
-            </ToolbarButton>
-            {/* Save indicator tooltip */}
-            {lastSaved && !isSaving && (
-              <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
-                {formatTimeAgo(lastSaved)}
-              </div>
-            )}
-          </div>
+          <ToolbarButton onClick={onOpenDocuments} title="내 문서함">
+            <div className="flex items-center gap-1 text-green-500">
+              <FolderIcon />
+            </div>
+          </ToolbarButton>
         </>
       )}
     </nav>

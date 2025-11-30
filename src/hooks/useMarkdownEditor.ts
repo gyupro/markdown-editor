@@ -2,7 +2,6 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { KEYBOARD_SHORTCUTS, TABLE_TEMPLATE } from '@/constants/markdown';
 import { exportToPDF } from '@/utils/pdf';
 
-const STORAGE_KEY = 'markdown-editor-draft';
 const MAX_HISTORY_SIZE = 100;
 
 export const useMarkdownEditor = (initialMarkdown: string) => {
@@ -10,11 +9,8 @@ export const useMarkdownEditor = (initialMarkdown: string) => {
   const [isClient, setIsClient] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
-  const [lastSaved, setLastSaved] = useState<Date | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
-  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // History for undo/redo
   const [history, setHistory] = useState<string[]>([initialMarkdown]);
@@ -28,50 +24,7 @@ export const useMarkdownEditor = (initialMarkdown: string) => {
   // Initialize client-side
   useEffect(() => {
     setIsClient(true);
-
-    // Load from localStorage
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = window.localStorage.getItem(STORAGE_KEY);
-        if (saved !== null && saved !== initialMarkdown) {
-          setMarkdownState(saved);
-          setHistory([saved]);
-          setHistoryIndex(0);
-        }
-      } catch {
-        // Ignore localStorage errors
-      }
-    }
-  }, [initialMarkdown]);
-
-  // Debounced save to localStorage
-  useEffect(() => {
-    if (!isClient) return;
-
-    setIsSaving(true);
-
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
-
-    saveTimeoutRef.current = setTimeout(() => {
-      if (typeof window !== 'undefined') {
-        try {
-          window.localStorage.setItem(STORAGE_KEY, markdown);
-          setLastSaved(new Date());
-        } catch {
-          // Ignore localStorage errors
-        }
-      }
-      setIsSaving(false);
-    }, 1000);
-
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-    };
-  }, [markdown, isClient]);
+  }, []);
 
   // Combined setMarkdown that updates both state and history
   const setMarkdown = useCallback((newValue: string) => {
@@ -93,40 +46,6 @@ export const useMarkdownEditor = (initialMarkdown: string) => {
     }
     isUndoRedoRef.current = false;
   }, [historyIndex]);
-
-  // Manual save function
-  const saveNow = useCallback(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        window.localStorage.setItem(STORAGE_KEY, markdown);
-        setLastSaved(new Date());
-      } catch {
-        // Ignore
-      }
-    }
-  }, [markdown]);
-
-  // Clear saved data
-  const clearSaved = useCallback(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        window.localStorage.removeItem(STORAGE_KEY);
-        setLastSaved(null);
-      } catch {
-        // Ignore errors
-      }
-    }
-  }, []);
-
-  // Check if there's saved data
-  const hasSavedData = useCallback(() => {
-    if (typeof window === 'undefined') return false;
-    try {
-      return window.localStorage.getItem(STORAGE_KEY) !== null;
-    } catch {
-      return false;
-    }
-  }, []);
 
   // Undo function
   const undo = useCallback(() => {
@@ -340,10 +259,6 @@ export const useMarkdownEditor = (initialMarkdown: string) => {
             e.preventDefault();
             redo();
             break;
-          case 's':
-            e.preventDefault();
-            saveNow();
-            break;
         }
       }
       if (e.key === KEYBOARD_SHORTCUTS.ESCAPE && isFullscreen) {
@@ -353,7 +268,7 @@ export const useMarkdownEditor = (initialMarkdown: string) => {
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isFullscreen, insertFormatting, handleExportToPDF, undo, redo, saveNow]);
+  }, [isFullscreen, insertFormatting, handleExportToPDF, undo, redo]);
 
   return {
     markdown,
@@ -375,12 +290,6 @@ export const useMarkdownEditor = (initialMarkdown: string) => {
     redo,
     canUndo,
     canRedo,
-    // Local storage
-    lastSaved,
-    isSaving,
-    saveNow,
-    clearSaved,
-    hasSavedData,
     // Scroll sync
     handleEditorScroll,
     handlePreviewScroll,
