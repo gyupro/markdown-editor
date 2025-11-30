@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 
-const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
 
 export interface ImageUploadResult {
@@ -22,7 +22,7 @@ export const useImageUpload = () => {
   const validateFile = useCallback((file: File): ImageUploadError | null => {
     if (file.size > MAX_FILE_SIZE) {
       return {
-        message: `파일 크기가 너무 큽니다. 최대 20MB까지 업로드 가능합니다. (현재: ${(file.size / 1024 / 1024).toFixed(2)}MB)`,
+        message: `파일 크기가 너무 큽니다. 최대 10MB까지 업로드 가능합니다. (현재: ${(file.size / 1024 / 1024).toFixed(2)}MB)`,
         code: 'FILE_TOO_LARGE'
       };
     }
