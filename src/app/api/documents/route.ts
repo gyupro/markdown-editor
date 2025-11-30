@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { nanoid } from 'nanoid';
-import { 
-  validateTitle, 
-  validateContent, 
-  sanitizeInput, 
+import {
+  validateTitle,
+  validateContent,
+  sanitizeInput,
   globalRateLimiter,
-  validateEnvironment 
+  validateEnvironment
 } from '@/utils/validation';
 
 // 환경 변수 검증 (서버 시작 시)
@@ -14,6 +14,17 @@ const envValidation = validateEnvironment();
 if (!envValidation.isValid) {
   console.error('환경 변수 검증 실패:', envValidation.errors);
 }
+
+// Helper to check supabase availability
+const checkSupabaseAvailable = () => {
+  if (!isSupabaseConfigured() || !supabase) {
+    return NextResponse.json(
+      { error: 'Supabase is not configured. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY environment variables.' },
+      { status: 503 }
+    );
+  }
+  return null;
+};
 
 // 클라이언트 IP 추출 헬퍼 함수
 const getClientIP = (request: NextRequest): string => {
@@ -31,6 +42,10 @@ const getClientIP = (request: NextRequest): string => {
 // 문서 생성 (POST)
 export async function POST(request: NextRequest) {
   try {
+    // Check if Supabase is configured
+    const supabaseError = checkSupabaseAvailable();
+    if (supabaseError) return supabaseError;
+
     // Rate limiting 체크
     const clientIP = getClientIP(request);
     if (!globalRateLimiter.isAllowed(clientIP)) {
@@ -87,7 +102,7 @@ export async function POST(request: NextRequest) {
     const sanitizedContent = sanitizeInput(content, 10 * 1024 * 1024); // 10MB로 증가
     
     // 동일한 내용의 기존 공개 문서가 있는지 확인
-    const { data: existingDocument, error: searchError } = await supabase
+    const { data: existingDocument, error: searchError } = await supabase!
       .from('documents')
       .select('*')
       .eq('content', sanitizedContent)
@@ -114,7 +129,7 @@ export async function POST(request: NextRequest) {
     // 기존 문서가 없다면 새로운 문서 생성 (nanoid 사용으로 더 짧은 토큰 생성 - 10자)
     const shareToken = nanoid(10);
     
-    const { data: newDocument, error: insertError } = await supabase
+    const { data: newDocument, error: insertError } = await supabase!
       .from('documents')
       .insert([
         {

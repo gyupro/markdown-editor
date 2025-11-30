@@ -3,15 +3,15 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 const STORAGE_KEY = 'markdown-editor-draft';
 
 // Simple debounce implementation
-function debounce<T extends (...args: Parameters<T>) => void>(
-  func: T,
+function debounce(
+  func: (value: string) => void,
   wait: number
-): { (...args: Parameters<T>): void; cancel: () => void } {
+): { (value: string): void; cancel: () => void } {
   let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
-  const debouncedFn = (...args: Parameters<T>) => {
+  const debouncedFn = (value: string) => {
     if (timeoutId) clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => func(...args), wait);
+    timeoutId = setTimeout(() => func(value), wait);
   };
 
   debouncedFn.cancel = () => {
@@ -68,7 +68,7 @@ export const useLocalStorage = (key: string = STORAGE_KEY, initialValue: string)
   }, [key]);
 
   // Create debounced save function
-  const debouncedSaveRef = useRef<ReturnType<typeof debounce> | null>(null);
+  const debouncedSaveRef = useRef<{ (value: string): void; cancel: () => void } | null>(null);
 
   useEffect(() => {
     debouncedSaveRef.current = debounce((newValue: string) => {

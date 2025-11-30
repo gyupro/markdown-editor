@@ -11,15 +11,23 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   try {
     const { token } = await params;
-    
+
     // URL 해시가 포함된 경우 토큰만 추출
     const cleanToken = token.split('#')[0];
-    
+
     // 토큰 검증
     if (!validateShareToken(cleanToken)) {
       return {
         title: '잘못된 공유 링크 | FREE 마크다운 에디터',
         description: '유효하지 않은 공유 링크입니다.',
+      };
+    }
+
+    // Supabase가 설정되지 않은 경우
+    if (!supabase) {
+      return {
+        title: 'FREE 마크다운 에디터',
+        description: '무료 온라인 마크다운 에디터',
       };
     }
 

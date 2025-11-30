@@ -1,6 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase';
+import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { validateShareToken, globalRateLimiter } from '@/utils/validation';
+
+// Helper to check supabase availability
+const checkSupabaseAvailable = () => {
+  if (!isSupabaseConfigured() || !supabase) {
+    return NextResponse.json(
+      { error: 'Supabase is not configured.' },
+      { status: 503 }
+    );
+  }
+  return null;
+};
 
 // 클라이언트 IP 추출 헬퍼 함수
 const getClientIP = (request: NextRequest): string => {
@@ -21,6 +32,10 @@ export async function GET(
   { params }: { params: Promise<{ token: string }> }
 ) {
   try {
+    // Check if Supabase is configured
+    const supabaseError = checkSupabaseAvailable();
+    if (supabaseError) return supabaseError;
+
     // Rate limiting 체크 (조회는 더 관대하게 - 1분에 30번)
     const clientIP = getClientIP(request);
     if (!globalRateLimiter.isAllowed(clientIP)) {
@@ -41,7 +56,7 @@ export async function GET(
     }
 
     // 데이터베이스에서 문서 조회
-    const { data: document, error } = await supabase
+    const { data: document, error } = await supabase!
       .from('documents')
       .select('*')
       .eq('share_token', token)
@@ -78,6 +93,10 @@ export async function PUT(
   { params }: { params: Promise<{ token: string }> }
 ) {
   try {
+    // Check if Supabase is configured
+    const supabaseError = checkSupabaseAvailable();
+    if (supabaseError) return supabaseError;
+
     // Rate limiting 체크
     const clientIP = getClientIP(request);
     if (!globalRateLimiter.isAllowed(clientIP)) {
