@@ -152,19 +152,27 @@ export const useMarkdownEditor = (initialMarkdown: string) => {
   const canUndo = historyIndex > 0;
   const canRedo = historyIndex < history.length - 1;
 
+  // Scroll percent state for mobile tab sync
+  const scrollPercentRef = useRef(0);
+
   // Scroll sync handlers
   const handleEditorScroll = useCallback(() => {
     if (isScrollingRef.current) return;
     const editor = textareaRef.current;
     const preview = previewRef.current;
-    if (!editor || !preview) return;
+    if (!editor) return;
 
-    isScrollingRef.current = true;
     const scrollHeight = editor.scrollHeight - editor.clientHeight;
     if (scrollHeight > 0) {
-      const scrollPercent = editor.scrollTop / scrollHeight;
+      scrollPercentRef.current = editor.scrollTop / scrollHeight;
+    }
+
+    if (!preview) return;
+
+    isScrollingRef.current = true;
+    if (scrollHeight > 0) {
       const targetScrollHeight = preview.scrollHeight - preview.clientHeight;
-      preview.scrollTop = scrollPercent * targetScrollHeight;
+      preview.scrollTop = scrollPercentRef.current * targetScrollHeight;
     }
 
     if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
@@ -177,20 +185,52 @@ export const useMarkdownEditor = (initialMarkdown: string) => {
     if (isScrollingRef.current) return;
     const editor = textareaRef.current;
     const preview = previewRef.current;
-    if (!editor || !preview) return;
+    if (!preview) return;
 
-    isScrollingRef.current = true;
     const scrollHeight = preview.scrollHeight - preview.clientHeight;
     if (scrollHeight > 0) {
-      const scrollPercent = preview.scrollTop / scrollHeight;
+      scrollPercentRef.current = preview.scrollTop / scrollHeight;
+    }
+
+    if (!editor) return;
+
+    isScrollingRef.current = true;
+    if (scrollHeight > 0) {
       const targetScrollHeight = editor.scrollHeight - editor.clientHeight;
-      editor.scrollTop = scrollPercent * targetScrollHeight;
+      editor.scrollTop = scrollPercentRef.current * targetScrollHeight;
     }
 
     if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
     scrollTimeoutRef.current = setTimeout(() => {
       isScrollingRef.current = false;
     }, 50);
+  }, []);
+
+  // Sync scroll position when switching tabs (mobile)
+  const syncScrollToEditor = useCallback(() => {
+    const editor = textareaRef.current;
+    if (!editor) return;
+
+    // Use requestAnimationFrame to ensure DOM is updated
+    requestAnimationFrame(() => {
+      const scrollHeight = editor.scrollHeight - editor.clientHeight;
+      if (scrollHeight > 0) {
+        editor.scrollTop = scrollPercentRef.current * scrollHeight;
+      }
+    });
+  }, []);
+
+  const syncScrollToPreview = useCallback(() => {
+    const preview = previewRef.current;
+    if (!preview) return;
+
+    // Use requestAnimationFrame to ensure DOM is updated
+    requestAnimationFrame(() => {
+      const scrollHeight = preview.scrollHeight - preview.clientHeight;
+      if (scrollHeight > 0) {
+        preview.scrollTop = scrollPercentRef.current * scrollHeight;
+      }
+    });
   }, []);
 
   // PDF 출력 함수
@@ -344,5 +384,7 @@ export const useMarkdownEditor = (initialMarkdown: string) => {
     // Scroll sync
     handleEditorScroll,
     handlePreviewScroll,
+    syncScrollToEditor,
+    syncScrollToPreview,
   };
 }; 

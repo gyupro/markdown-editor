@@ -22,7 +22,7 @@ import { LocalStorageModal } from '@/components/LocalStorageModal';
 export default function HomePage() {
   const { copyToClipboard } = useCopyToClipboard();
   const { theme, toggleTheme, isLoaded: isThemeLoaded } = useTheme();
-  const [mobileActiveTab, setMobileActiveTab] = useState<MobileTab>('editor');
+  const [mobileActiveTab, setMobileActiveTabState] = useState<MobileTab>('editor');
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isAIModalOpen, setIsAIModalOpen] = useState(false);
   const [isDocumentsModalOpen, setIsDocumentsModalOpen] = useState(false);
@@ -60,7 +60,20 @@ export default function HomePage() {
     // Scroll sync
     handleEditorScroll,
     handlePreviewScroll,
+    syncScrollToEditor,
+    syncScrollToPreview,
   } = useMarkdownEditor(DEFAULT_MARKDOWN);
+
+  // Wrapper to sync scroll on mobile tab change
+  const setMobileActiveTab = useCallback((tab: MobileTab) => {
+    setMobileActiveTabState(tab);
+    // Sync scroll position when switching tabs
+    if (tab === 'editor') {
+      syncScrollToEditor();
+    } else {
+      syncScrollToPreview();
+    }
+  }, [syncScrollToEditor, syncScrollToPreview]);
 
   // 마크다운 내용이 변경될 때마다 제목 자동 추출
   useEffect(() => {
