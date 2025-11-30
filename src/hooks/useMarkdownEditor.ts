@@ -1,30 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { KEYBOARD_SHORTCUTS, TABLE_TEMPLATE } from '@/constants/markdown';
 import { exportToPDF } from '@/utils/pdf';
-import { useUndoRedo } from './useUndoRedo';
-import { useScrollSync } from './useScrollSync';
 
 const STORAGE_KEY = 'markdown-editor-draft';
-
-// Helper to safely access localStorage
-const getStorageItem = (key: string): string | null => {
-  if (typeof window === 'undefined') return null;
-  try {
-    return window.localStorage.getItem(key);
-  } catch {
-    return null;
-  }
-};
-
-const setStorageItem = (key: string, value: string): boolean => {
-  if (typeof window === 'undefined') return false;
-  try {
-    window.localStorage.setItem(key, value);
-    return true;
-  } catch {
-    return false;
-  }
-};
+const MAX_HISTORY_SIZE = 100;
 
 export const useMarkdownEditor = (initialMarkdown: string) => {
   const [markdown, setMarkdownState] = useState(initialMarkdown);
@@ -37,28 +16,33 @@ export const useMarkdownEditor = (initialMarkdown: string) => {
   const previewRef = useRef<HTMLDivElement>(null);
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Undo/Redo functionality
-  const {
-    pushValue: pushToHistory,
-    undo: undoAction,
-    redo: redoAction,
-    canUndo,
-    canRedo,
-    resetHistory,
-  } = useUndoRedo(initialMarkdown);
+  // History for undo/redo
+  const [history, setHistory] = useState<string[]>([initialMarkdown]);
+  const [historyIndex, setHistoryIndex] = useState(0);
+  const isUndoRedoRef = useRef(false);
 
-  // Scroll sync
-  const { handleEditorScroll, handlePreviewScroll } = useScrollSync(textareaRef, previewRef);
+  // Scroll sync state
+  const isScrollingRef = useRef(false);
+  const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Load from localStorage on mount (client-side only)
+  // Initialize client-side
   useEffect(() => {
     setIsClient(true);
-    const saved = getStorageItem(STORAGE_KEY);
-    if (saved !== null && saved !== initialMarkdown) {
-      setMarkdownState(saved);
-      resetHistory(saved);
+
+    // Load from localStorage
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = window.localStorage.getItem(STORAGE_KEY);
+        if (saved !== null && saved !== initialMarkdown) {
+          setMarkdownState(saved);
+          setHistory([saved]);
+          setHistoryIndex(0);
+        }
+      } catch {
+        // Ignore localStorage errors
+      }
     }
-  }, [initialMarkdown, resetHistory]);
+  }, [initialMarkdown]);
 
   // Debounced save to localStorage
   useEffect(() => {
@@ -71,8 +55,13 @@ export const useMarkdownEditor = (initialMarkdown: string) => {
     }
 
     saveTimeoutRef.current = setTimeout(() => {
-      if (setStorageItem(STORAGE_KEY, markdown)) {
-        setLastSaved(new Date());
+      if (typeof window !== 'undefined') {
+        try {
+          window.localStorage.setItem(STORAGE_KEY, markdown);
+          setLastSaved(new Date());
+        } catch {
+          // Ignore localStorage errors
+        }
       }
       setIsSaving(false);
     }, 1000);
@@ -87,13 +76,33 @@ export const useMarkdownEditor = (initialMarkdown: string) => {
   // Combined setMarkdown that updates both state and history
   const setMarkdown = useCallback((newValue: string) => {
     setMarkdownState(newValue);
-    pushToHistory(newValue);
-  }, [pushToHistory]);
+
+    // Push to history if not from undo/redo
+    if (!isUndoRedoRef.current) {
+      setHistory(prev => {
+        const newHistory = prev.slice(0, historyIndex + 1);
+        if (newHistory[newHistory.length - 1] !== newValue) {
+          newHistory.push(newValue);
+          if (newHistory.length > MAX_HISTORY_SIZE) {
+            return newHistory.slice(-MAX_HISTORY_SIZE);
+          }
+        }
+        return newHistory;
+      });
+      setHistoryIndex(prev => Math.min(prev + 1, MAX_HISTORY_SIZE - 1));
+    }
+    isUndoRedoRef.current = false;
+  }, [historyIndex]);
 
   // Manual save function
   const saveNow = useCallback(() => {
-    if (setStorageItem(STORAGE_KEY, markdown)) {
-      setLastSaved(new Date());
+    if (typeof window !== 'undefined') {
+      try {
+        window.localStorage.setItem(STORAGE_KEY, markdown);
+        setLastSaved(new Date());
+      } catch {
+        // Ignore
+      }
     }
   }, [markdown]);
 
@@ -111,24 +120,78 @@ export const useMarkdownEditor = (initialMarkdown: string) => {
 
   // Check if there's saved data
   const hasSavedData = useCallback(() => {
-    return getStorageItem(STORAGE_KEY) !== null;
+    if (typeof window === 'undefined') return false;
+    try {
+      return window.localStorage.getItem(STORAGE_KEY) !== null;
+    } catch {
+      return false;
+    }
   }, []);
 
   // Undo function
   const undo = useCallback(() => {
-    const previousValue = undoAction();
-    if (previousValue !== null) {
-      setMarkdownState(previousValue);
+    if (historyIndex > 0) {
+      isUndoRedoRef.current = true;
+      const newIndex = historyIndex - 1;
+      setHistoryIndex(newIndex);
+      setMarkdownState(history[newIndex]);
     }
-  }, [undoAction]);
+  }, [history, historyIndex]);
 
   // Redo function
   const redo = useCallback(() => {
-    const nextValue = redoAction();
-    if (nextValue !== null) {
-      setMarkdownState(nextValue);
+    if (historyIndex < history.length - 1) {
+      isUndoRedoRef.current = true;
+      const newIndex = historyIndex + 1;
+      setHistoryIndex(newIndex);
+      setMarkdownState(history[newIndex]);
     }
-  }, [redoAction]);
+  }, [history, historyIndex]);
+
+  // Undo/Redo availability
+  const canUndo = historyIndex > 0;
+  const canRedo = historyIndex < history.length - 1;
+
+  // Scroll sync handlers
+  const handleEditorScroll = useCallback(() => {
+    if (isScrollingRef.current) return;
+    const editor = textareaRef.current;
+    const preview = previewRef.current;
+    if (!editor || !preview) return;
+
+    isScrollingRef.current = true;
+    const scrollHeight = editor.scrollHeight - editor.clientHeight;
+    if (scrollHeight > 0) {
+      const scrollPercent = editor.scrollTop / scrollHeight;
+      const targetScrollHeight = preview.scrollHeight - preview.clientHeight;
+      preview.scrollTop = scrollPercent * targetScrollHeight;
+    }
+
+    if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+    scrollTimeoutRef.current = setTimeout(() => {
+      isScrollingRef.current = false;
+    }, 50);
+  }, []);
+
+  const handlePreviewScroll = useCallback(() => {
+    if (isScrollingRef.current) return;
+    const editor = textareaRef.current;
+    const preview = previewRef.current;
+    if (!editor || !preview) return;
+
+    isScrollingRef.current = true;
+    const scrollHeight = preview.scrollHeight - preview.clientHeight;
+    if (scrollHeight > 0) {
+      const scrollPercent = preview.scrollTop / scrollHeight;
+      const targetScrollHeight = editor.scrollHeight - editor.clientHeight;
+      editor.scrollTop = scrollPercent * targetScrollHeight;
+    }
+
+    if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+    scrollTimeoutRef.current = setTimeout(() => {
+      isScrollingRef.current = false;
+    }, 50);
+  }, []);
 
   // PDF 출력 함수
   const handleExportToPDF = useCallback(async () => {
