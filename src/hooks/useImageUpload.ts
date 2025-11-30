@@ -83,9 +83,9 @@ export const useImageUpload = () => {
 
       setUploadProgress(100);
 
-      // Generate markdown
+      // Generate markdown with newlines for proper rendering
       const altText = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
-      const markdown = `![${altText}](${publicUrl})`;
+      const markdown = `\n![${altText}](${publicUrl})\n`;
 
       return {
         url: publicUrl,
