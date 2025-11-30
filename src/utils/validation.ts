@@ -65,10 +65,7 @@ export const validateEnvironment = (): {
     errors.push('NEXT_PUBLIC_SUPABASE_ANON_KEY가 설정되지 않았습니다.');
   } else {
     const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    // Supabase 키 형식 검증: 새로운 포맷(sb_publishable_) 또는 레거시 JWT 형식
-    const isNewFormat = anonKey.startsWith('sb_publishable_') || anonKey.startsWith('sb_secret_');
-    const isLegacyJWT = anonKey.includes('.') && anonKey.split('.').length === 3;
-    if (!isNewFormat && !isLegacyJWT) {
+    if (!anonKey.startsWith('sb_publishable_')) {
       errors.push('NEXT_PUBLIC_SUPABASE_ANON_KEY가 올바른 형식이 아닙니다.');
     }
   }
