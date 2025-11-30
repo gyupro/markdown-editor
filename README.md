@@ -74,6 +74,7 @@ GEMINI_API_KEY=your_gemini_api_key
 | `Ctrl/Cmd + Z` | Undo |
 | `Ctrl/Cmd + Y` | Redo |
 | `Ctrl/Cmd + Shift + Z` | Redo (alternative) |
+| `Ctrl/Cmd + S` | Save to documents |
 | `ESC` | Exit fullscreen mode |
 
 ## 📁 Project Structure
@@ -159,6 +160,7 @@ GEMINI_API_KEY=your_gemini_api_key
 | `Ctrl/Cmd + Z` | 실행 취소 |
 | `Ctrl/Cmd + Y` | 다시 실행 |
 | `Ctrl/Cmd + Shift + Z` | 다시 실행 (대체) |
+| `Ctrl/Cmd + S` | 문서함에 저장 |
 | `ESC` | 전체화면 모드 종료 |
 
 ## 📁 프로젝트 구조

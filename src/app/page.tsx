@@ -17,7 +17,7 @@ import { PreviewSection } from '@/components/PreviewSection';
 import { FullscreenModal } from '@/components/FullscreenModal';
 import { ShareModal } from '@/components/ShareModal';
 import { AIModal } from '@/components/AIModal';
-import { LocalStorageModal } from '@/components/LocalStorageModal';
+import { LocalStorageModal, saveDocumentById, getDocumentById } from '@/components/LocalStorageModal';
 
 export default function HomePage() {
   const { copyToClipboard } = useCopyToClipboard();
@@ -26,6 +26,9 @@ export default function HomePage() {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isAIModalOpen, setIsAIModalOpen] = useState(false);
   const [isDocumentsModalOpen, setIsDocumentsModalOpen] = useState(false);
+  const [isSaveMode, setIsSaveMode] = useState(false); // true = direct save mode (Ctrl+S)
+  const [currentDocumentId, setCurrentDocumentId] = useState<string | null>(null);
+  const [lastAutoSaved, setLastAutoSaved] = useState<Date | null>(null);
   const [documentTitle, setDocumentTitle] = useState('FREE-마크다운 에디터');
   const [showSharedNotice, setShowSharedNotice] = useState(false);
   const hasLoadedSharedDocument = useRef(false);
@@ -77,6 +80,20 @@ export default function HomePage() {
     setDocumentTitle(extractedTitle);
   }, [markdown]);
 
+  // 30초 자동저장 (문서 ID가 있을 때만)
+  useEffect(() => {
+    if (!currentDocumentId) return;
+
+    const autoSaveInterval = setInterval(() => {
+      const success = saveDocumentById(currentDocumentId, markdown);
+      if (success) {
+        setLastAutoSaved(new Date());
+      }
+    }, 30000); // 30초
+
+    return () => clearInterval(autoSaveInterval);
+  }, [currentDocumentId, markdown]);
+
   // 공유받은 문서 로드 (한 번만 실행)
   useEffect(() => {
     if (hasLoadedSharedDocument.current) return;
@@ -117,6 +134,54 @@ export default function HomePage() {
   const handleCopyMarkdown = useCallback(async () => {
     await copyToClipboard(markdown);
   }, [copyToClipboard, markdown]);
+
+  // 저장 핸들러 (Ctrl+S 또는 저장 버튼)
+  const handleSave = useCallback(() => {
+    if (currentDocumentId) {
+      // 기존 문서면 바로 저장
+      const success = saveDocumentById(currentDocumentId, markdown);
+      if (success) {
+        setLastAutoSaved(new Date());
+      }
+    } else {
+      // 새 문서면 저장 모달 열기
+      setIsSaveMode(true);
+      setIsDocumentsModalOpen(true);
+    }
+  }, [currentDocumentId, markdown]);
+
+  // 문서 저장 완료 콜백
+  const handleDocumentSaved = useCallback((docId: string) => {
+    setCurrentDocumentId(docId);
+    setLastAutoSaved(new Date());
+    setIsSaveMode(false);
+  }, []);
+
+  // 문서 불러오기 콜백
+  const handleDocumentLoad = useCallback((content: string, docId: string) => {
+    setMarkdown(content);
+    setCurrentDocumentId(docId);
+  }, [setMarkdown]);
+
+  // 새 문서 시작
+  const handleNewDocument = useCallback(() => {
+    setMarkdown(DEFAULT_MARKDOWN);
+    setCurrentDocumentId(null);
+    setLastAutoSaved(null);
+  }, [setMarkdown]);
+
+  // Ctrl+S 키보드 단축키
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        handleSave();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handleSave]);
 
   // AI 콘텐츠 적용 핸들러
   const handleApplyAIContent = useCallback((content: string, replaceAll: boolean) => {
@@ -161,9 +226,16 @@ export default function HomePage() {
     onRedo: redo,
     canUndo,
     canRedo,
+    // Save
+    onSave: handleSave,
+    currentDocumentId,
+    lastAutoSaved,
     // Local documents
-    onOpenDocuments: () => setIsDocumentsModalOpen(true),
-  }), [insertHeading, insertFormatting, insertAtCursor, insertTable, selectAll, handleCopyMarkdown, handleExportToPDF, undo, redo, canUndo, canRedo]);
+    onOpenDocuments: () => {
+      setIsSaveMode(false);
+      setIsDocumentsModalOpen(true);
+    },
+  }), [insertHeading, insertFormatting, insertAtCursor, insertTable, selectAll, handleCopyMarkdown, handleExportToPDF, undo, redo, canUndo, canRedo, handleSave, currentDocumentId, lastAutoSaved]);
 
   return (
     <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
@@ -248,9 +320,15 @@ export default function HomePage() {
 
       <LocalStorageModal
         isOpen={isDocumentsModalOpen}
-        onClose={() => setIsDocumentsModalOpen(false)}
+        onClose={() => {
+          setIsDocumentsModalOpen(false);
+          setIsSaveMode(false);
+        }}
         currentContent={markdown}
-        onLoad={setMarkdown}
+        onLoad={handleDocumentLoad}
+        onSave={handleDocumentSaved}
+        currentDocumentId={currentDocumentId}
+        autoSaveMode={isSaveMode}
       />
     </div>
   );

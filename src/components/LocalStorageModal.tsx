@@ -21,7 +21,10 @@ interface LocalStorageModalProps {
   isOpen: boolean;
   onClose: () => void;
   currentContent: string;
-  onLoad: (content: string) => void;
+  onLoad: (content: string, documentId: string) => void;
+  onSave?: (documentId: string) => void; // Called after save with new doc ID
+  currentDocumentId?: string | null; // Currently editing document
+  autoSaveMode?: boolean; // If true, directly save to current doc without showing modal
 }
 
 const STORAGE_KEY = 'markdown-editor-documents';
@@ -364,11 +367,44 @@ const DocumentItem: React.FC<{
   );
 };
 
+// Export helper functions for external auto-save
+export const saveDocumentById = (documentId: string, content: string): boolean => {
+  if (typeof window === 'undefined') return false;
+  try {
+    const documents = getSavedDocuments();
+    const docIndex = documents.findIndex(d => d.id === documentId);
+    if (docIndex === -1) return false;
+
+    documents[docIndex] = {
+      ...documents[docIndex],
+      content,
+      updatedAt: new Date().toISOString(),
+    };
+    saveDocuments(documents);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+export const getDocumentById = (documentId: string): SavedDocument | null => {
+  if (typeof window === 'undefined') return null;
+  try {
+    const documents = getSavedDocuments();
+    return documents.find(d => d.id === documentId) || null;
+  } catch {
+    return null;
+  }
+};
+
 const LocalStorageModalComponent: React.FC<LocalStorageModalProps> = ({
   isOpen,
   onClose,
   currentContent,
   onLoad,
+  onSave,
+  currentDocumentId,
+  autoSaveMode,
 }) => {
   const [documents, setDocuments] = useState<SavedDocument[]>([]);
   const [folders, setFolders] = useState<Folder[]>([]);
@@ -389,8 +425,20 @@ const LocalStorageModalComponent: React.FC<LocalStorageModalProps> = ({
       setIsCreatingDoc(false);
       setIsCreatingFolder(false);
       setSearchQuery('');
+
+      // Auto-save mode: if we have a current document, just save and close
+      if (autoSaveMode && currentDocumentId) {
+        const success = saveDocumentById(currentDocumentId, currentContent);
+        if (success) {
+          onClose();
+        }
+      }
+      // Auto-save mode but no document yet: show save form directly
+      else if (autoSaveMode && !currentDocumentId) {
+        setIsCreatingDoc(true);
+      }
     }
-  }, [isOpen, currentContent]);
+  }, [isOpen, currentContent, autoSaveMode, currentDocumentId, onClose]);
 
   // Count documents in folder
   const getDocumentCount = useCallback((folderId: string | null): number => {
@@ -495,7 +543,13 @@ const LocalStorageModalComponent: React.FC<LocalStorageModalProps> = ({
     setDocuments(updatedDocs);
     setIsCreatingDoc(false);
     setNewDocName('');
-  }, [newDocName, currentContent, selectedFolderId, documents]);
+
+    // Notify parent about the new document ID for auto-save
+    if (onSave) {
+      onSave(newDoc.id);
+    }
+    onClose();
+  }, [newDocName, currentContent, selectedFolderId, documents, onSave, onClose]);
 
   // Update existing document
   const handleUpdate = useCallback((doc: SavedDocument) => {
@@ -510,7 +564,7 @@ const LocalStorageModalComponent: React.FC<LocalStorageModalProps> = ({
 
   // Load document
   const handleLoad = useCallback((doc: SavedDocument) => {
-    onLoad(doc.content);
+    onLoad(doc.content, doc.id);
     onClose();
   }, [onLoad, onClose]);
 

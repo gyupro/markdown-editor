@@ -25,6 +25,9 @@ interface ToolbarProps {
   onOpenDocuments?: () => void;
   canUndo?: boolean;
   canRedo?: boolean;
+  // Auto-save info
+  currentDocumentId?: string | null;
+  lastAutoSaved?: Date | null;
 }
 
 const ToolbarButton: React.FC<ToolbarButtonProps> = ({ onClick, title, children, disabled = false }) => (
@@ -58,6 +61,18 @@ const FolderIcon: React.FC = () => (
   </svg>
 );
 
+// Format time ago
+const formatTimeAgo = (date: Date | null): string => {
+  if (!date) return '';
+  const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
+  if (seconds < 5) return '방금 저장됨';
+  if (seconds < 60) return `${seconds}초 전`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}분 전`;
+  const hours = Math.floor(minutes / 60);
+  return `${hours}시간 전`;
+};
+
 export const Toolbar: React.FC<ToolbarProps> = ({
   onHeading,
   onBold,
@@ -81,6 +96,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onOpenDocuments,
   canUndo = false,
   canRedo = false,
+  currentDocumentId,
+  lastAutoSaved,
 }) => {
   return (
     <nav
@@ -201,10 +218,32 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         </svg>
       </ToolbarButton>
 
+      <Divider />
+
+      {/* Save button */}
+      {onSave && (
+        <div className="flex items-center gap-1">
+          <ToolbarButton
+            onClick={onSave}
+            title={currentDocumentId ? "저장 (Ctrl+S)" : "새 문서로 저장 (Ctrl+S)"}
+          >
+            <div className={`flex items-center gap-1 ${currentDocumentId ? 'text-blue-500' : 'text-gray-500'}`}>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+              </svg>
+            </div>
+          </ToolbarButton>
+          {currentDocumentId && lastAutoSaved && (
+            <span className="text-xs text-gray-400 hidden sm:inline">
+              {formatTimeAgo(lastAutoSaved)}
+            </span>
+          )}
+        </div>
+      )}
+
       {/* Local Documents button */}
       {onOpenDocuments && (
         <>
-          <Divider />
           <ToolbarButton onClick={onOpenDocuments} title="내 문서함">
             <div className="flex items-center gap-1 text-green-500">
               <FolderIcon />
