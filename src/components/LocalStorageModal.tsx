@@ -34,7 +34,7 @@ const FOLDERS_KEY = 'markdown-editor-folders';
 const getSavedDocuments = (): SavedDocument[] => {
   if (typeof window === 'undefined') return [];
   try {
-    const data = localStorage.getItem(STORAGE_KEY);
+    const data = window.localStorage.getItem(STORAGE_KEY);
     const docs = data ? JSON.parse(data) : [];
     // Migration: add folderId if missing
     return docs.map((doc: SavedDocument) => ({
@@ -50,7 +50,7 @@ const getSavedDocuments = (): SavedDocument[] => {
 const getSavedFolders = (): Folder[] => {
   if (typeof window === 'undefined') return [];
   try {
-    const data = localStorage.getItem(FOLDERS_KEY);
+    const data = window.localStorage.getItem(FOLDERS_KEY);
     return data ? JSON.parse(data) : [];
   } catch {
     return [];
@@ -60,13 +60,13 @@ const getSavedFolders = (): Folder[] => {
 // Save documents to localStorage
 const saveDocuments = (documents: SavedDocument[]) => {
   if (typeof window === 'undefined') return;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(documents));
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(documents));
 };
 
 // Save folders to localStorage
 const saveFolders = (folders: Folder[]) => {
   if (typeof window === 'undefined') return;
-  localStorage.setItem(FOLDERS_KEY, JSON.stringify(folders));
+  window.localStorage.setItem(FOLDERS_KEY, JSON.stringify(folders));
 };
 
 // Format date for display

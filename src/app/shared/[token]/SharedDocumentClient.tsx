@@ -144,7 +144,7 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
     if (!document) return;
     
     // 로컬 스토리지에 임시 저장
-    localStorage.setItem('temp_shared_document', JSON.stringify({
+    window.localStorage.setItem('temp_shared_document', JSON.stringify({
       title: document.title,
       content: document.content,
       fromShared: true
