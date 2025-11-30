@@ -57,27 +57,28 @@ export default function HomePage() {
   // 공유받은 문서 로드 (한 번만 실행)
   useEffect(() => {
     if (hasLoadedSharedDocument.current) return;
-    
+    if (typeof window === 'undefined') return;
+
     const loadSharedDocument = () => {
       try {
-        const sharedData = localStorage.getItem('temp_shared_document');
+        const sharedData = window.localStorage.getItem('temp_shared_document');
         if (sharedData) {
           const parsed = JSON.parse(sharedData);
           const content = parsed.content || '';
           setMarkdown(content);
-          
+
           // 마크다운 내용에서 제목 추출
           const extractedTitle = extractTitleFromMarkdown(content);
           setDocumentTitle(extractedTitle);
-          
+
           if (parsed.fromShared) {
             setShowSharedNotice(true);
             // 5초 후 알림 숨기기
             setTimeout(() => setShowSharedNotice(false), 5000);
           }
-          
+
           // 사용 후 로컬스토리지에서 제거
-          localStorage.removeItem('temp_shared_document');
+          window.localStorage.removeItem('temp_shared_document');
           hasLoadedSharedDocument.current = true;
         }
       } catch (error) {

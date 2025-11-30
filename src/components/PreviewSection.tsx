@@ -8,6 +8,7 @@ interface PreviewSectionProps {
   isClient: boolean;
   markdown: string;
   previewRef: React.RefObject<HTMLDivElement | null>;
+  onScroll?: () => void;
 }
 
 const PreviewSectionComponent: React.FC<PreviewSectionProps> = ({
@@ -15,6 +16,7 @@ const PreviewSectionComponent: React.FC<PreviewSectionProps> = ({
   isClient,
   markdown,
   previewRef,
+  onScroll,
 }) => {
   // 마크다운 렌더링 결과를 메모이제이션하여 성능 최적화
   const renderedMarkdown = useMemo(() => (
@@ -40,11 +42,14 @@ const PreviewSectionComponent: React.FC<PreviewSectionProps> = ({
           PREVIEW
         </h2>
       </header>
-      <div className="flex-1 overflow-auto bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
+      <div
+        ref={previewRef}
+        className="flex-1 overflow-auto bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800"
+        onScroll={onScroll}
+      >
         {isClient ? (
-          <article 
-            ref={previewRef}
-            className="max-w-4xl mx-auto p-4 md:p-8" 
+          <article
+            className="max-w-4xl mx-auto p-4 md:p-8"
             aria-label="렌더링된 마크다운 미리보기"
           >
             {renderedMarkdown}

@@ -1,6 +1,8 @@
 import React from 'react';
 import { MarkdownComponents } from '@/types/markdown';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
 // 텍스트를 URL 친화적인 ID로 변환하는 함수
 const createSlug = (text: string): string => {
@@ -101,8 +103,19 @@ const HeadingWithAnchor: React.FC<{
   }
 };
 
+// Extract language from code element className
+const extractLanguage = (codeElement: React.ReactNode): string => {
+  if (React.isValidElement(codeElement)) {
+    const props = codeElement.props as { className?: string };
+    const match = /language-(\w+)/.exec(props.className || '');
+    return match ? match[1] : '';
+  }
+  return '';
+};
+
 const CodeBlock: React.FC<{ children: React.ReactNode }> = ({ children: codeElementAsNode }) => {
   let actualCodeText = '';
+  let language = '';
 
   // Case 1: The node itself is a string (e.g., text directly inside <pre>)
   if (typeof codeElementAsNode === 'string') {
@@ -110,6 +123,9 @@ const CodeBlock: React.FC<{ children: React.ReactNode }> = ({ children: codeElem
   }
   // Case 2: The node is a React element (e.g., <pre><code>text</code></pre>, codeElementAsNode is the <code>)
   else if (React.isValidElement(codeElementAsNode)) {
+    // Extract language from className
+    language = extractLanguage(codeElementAsNode);
+
     // codeElementAsNode.props가 존재하고 객체인지 확인 (children에 접근하기 전)
     const elementProps = codeElementAsNode.props as { children?: React.ReactNode };
 
@@ -145,22 +161,51 @@ const CodeBlock: React.FC<{ children: React.ReactNode }> = ({ children: codeElem
   }
 
   const { isCopied, copyToClipboard } = useCopyToClipboard();
-  
+
   const handleCopy = async () => {
     await copyToClipboard(actualCodeText);
   };
 
+  // Remove trailing newline for cleaner display
+  const cleanedCode = actualCodeText.replace(/\n$/, '');
+
   return (
-    <div className="relative group">
-      <pre className="bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700 text-gray-100 p-4 md:p-6 rounded-xl shadow-lg my-4 md:my-6 overflow-x-auto text-sm md:text-base max-w-full">
-        <code className="leading-normal whitespace-pre-wrap break-words block">
-          {actualCodeText}
-        </code>
-      </pre>
-      
+    <div className="relative group my-4 md:my-6">
+      {/* Language badge */}
+      {language && (
+        <div className="absolute top-0 left-4 px-2 py-1 bg-gray-700/90 text-gray-300 text-xs rounded-b-md font-mono uppercase z-10">
+          {language}
+        </div>
+      )}
+
+      <SyntaxHighlighter
+        language={language || 'text'}
+        style={vscDarkPlus}
+        customStyle={{
+          margin: 0,
+          padding: '1.5rem',
+          paddingTop: language ? '2.5rem' : '1.5rem',
+          borderRadius: '0.75rem',
+          fontSize: '0.875rem',
+          lineHeight: '1.5',
+          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+        }}
+        showLineNumbers={cleanedCode.split('\n').length > 3}
+        lineNumberStyle={{
+          minWidth: '2.5em',
+          paddingRight: '1em',
+          color: '#6b7280',
+          userSelect: 'none',
+        }}
+        wrapLines={true}
+        wrapLongLines={true}
+      >
+        {cleanedCode}
+      </SyntaxHighlighter>
+
       <button
         onClick={handleCopy}
-        className="absolute top-3 right-3 bg-gray-700/90 hover:bg-gray-600 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs transition-all duration-200 opacity-0 group-hover:opacity-100 focus:opacity-100 shadow-lg"
+        className="absolute top-3 right-3 bg-gray-700/90 hover:bg-gray-600 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs transition-all duration-200 opacity-0 group-hover:opacity-100 focus:opacity-100 shadow-lg z-10"
         title={isCopied ? '복사됨!' : '코드 복사'}
         aria-label={isCopied ? '코드가 클립보드에 복사되었습니다' : '코드를 클립보드에 복사'}
       >

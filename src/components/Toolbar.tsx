@@ -18,6 +18,14 @@ interface ToolbarProps {
   onExportPDF: () => void;
   onSelectAll: () => void;
   onAI: () => void;
+  // New handlers
+  onUndo?: () => void;
+  onRedo?: () => void;
+  onSave?: () => void;
+  canUndo?: boolean;
+  canRedo?: boolean;
+  isSaving?: boolean;
+  lastSaved?: Date | null;
 }
 
 const ToolbarButton: React.FC<ToolbarButtonProps> = ({ onClick, title, children, disabled = false }) => (
@@ -37,6 +45,41 @@ const Divider: React.FC = () => (
   <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1" aria-hidden="true"></div>
 );
 
+// Cute folder icon component for save button
+const FolderIcon: React.FC<{ isSaving?: boolean }> = ({ isSaving }) => (
+  <svg
+    className={`w-4 h-4 ${isSaving ? 'animate-pulse' : ''}`}
+    fill="currentColor"
+    viewBox="0 0 24 24"
+  >
+    {/* Folder back */}
+    <path
+      d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"
+      fill="currentColor"
+    />
+    {/* Cute face when saving */}
+    {isSaving && (
+      <>
+        <circle cx="9" cy="13" r="1" fill="#fff"/>
+        <circle cx="15" cy="13" r="1" fill="#fff"/>
+        <path d="M9.5 15.5c1.5 1 3.5 1 5 0" stroke="#fff" strokeWidth="1" fill="none" strokeLinecap="round"/>
+      </>
+    )}
+  </svg>
+);
+
+// Format time ago
+const formatTimeAgo = (date: Date | null): string => {
+  if (!date) return '';
+  const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
+  if (seconds < 5) return '방금 저장됨';
+  if (seconds < 60) return `${seconds}초 전 저장`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}분 전 저장`;
+  const hours = Math.floor(minutes / 60);
+  return `${hours}시간 전 저장`;
+};
+
 export const Toolbar: React.FC<ToolbarProps> = ({
   onHeading,
   onBold,
@@ -54,12 +97,37 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onExportPDF,
   onSelectAll,
   onAI,
+  onUndo,
+  onRedo,
+  onSave,
+  canUndo = false,
+  canRedo = false,
+  isSaving = false,
+  lastSaved = null,
 }) => {
   return (
-    <nav 
-      className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 p-2 flex items-center gap-1 flex-wrap" 
+    <nav
+      className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 p-2 flex items-center gap-1 flex-wrap"
       aria-label="편집 도구"
     >
+      {/* Undo/Redo buttons */}
+      {onUndo && (
+        <ToolbarButton onClick={onUndo} title="실행 취소 (Ctrl+Z)" disabled={!canUndo}>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
+          </svg>
+        </ToolbarButton>
+      )}
+      {onRedo && (
+        <ToolbarButton onClick={onRedo} title="다시 실행 (Ctrl+Y)" disabled={!canRedo}>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 10h-10a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6"/>
+          </svg>
+        </ToolbarButton>
+      )}
+
+      {(onUndo || onRedo) && <Divider />}
+
       <ToolbarButton onClick={() => onHeading(1)} title="헤딩 1">
         <span className="font-bold text-lg">H1</span>
       </ToolbarButton>
@@ -155,6 +223,30 @@ export const Toolbar: React.FC<ToolbarProps> = ({
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
         </svg>
       </ToolbarButton>
+
+      {/* Local Save button with cute folder icon */}
+      {onSave && (
+        <>
+          <Divider />
+          <div className="relative group">
+            <ToolbarButton
+              onClick={onSave}
+              title={`로컬 저장 (Ctrl+S)${lastSaved ? ` - ${formatTimeAgo(lastSaved)}` : ''}`}
+            >
+              <div className={`flex items-center gap-1 ${isSaving ? 'text-yellow-500' : 'text-green-500'}`}>
+                <FolderIcon isSaving={isSaving} />
+                {isSaving && <span className="text-xs">저장 중...</span>}
+              </div>
+            </ToolbarButton>
+            {/* Save indicator tooltip */}
+            {lastSaved && !isSaving && (
+              <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1 px-2 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                {formatTimeAgo(lastSaved)}
+              </div>
+            )}
+          </div>
+        </>
+      )}
     </nav>
   );
 }; 

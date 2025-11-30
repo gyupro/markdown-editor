@@ -8,6 +8,7 @@ interface EditorSectionProps {
   onMarkdownChange: (value: string) => void;
   textareaRef: React.RefObject<HTMLTextAreaElement | null>;
   toolbarHandlers: ToolbarHandlers;
+  onScroll?: () => void;
 }
 
 const EditorSectionComponent: React.FC<EditorSectionProps> = ({
@@ -16,6 +17,7 @@ const EditorSectionComponent: React.FC<EditorSectionProps> = ({
   onMarkdownChange,
   textareaRef,
   toolbarHandlers,
+  onScroll,
 }) => {
   // 첫 번째 포커스 여부를 추적하는 ref
   const hasBeenFocused = useRef(false);
@@ -51,6 +53,7 @@ const EditorSectionComponent: React.FC<EditorSectionProps> = ({
         value={markdown}
         onChange={(e) => onMarkdownChange(e.target.value)}
         onFocus={handleFocus}
+        onScroll={onScroll}
         placeholder="여기에 마크다운을 입력하세요..."
         spellCheck={false}
         aria-label="마크다운 텍스트 입력 영역"

@@ -46,6 +46,18 @@ export default function HomePage() {
     insertHeading,
     insertTable,
     selectAll,
+    // Undo/Redo
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+    // Local storage
+    lastSaved,
+    isSaving,
+    saveNow,
+    // Scroll sync
+    handleEditorScroll,
+    handlePreviewScroll,
   } = useMarkdownEditor(DEFAULT_MARKDOWN);
 
   // 마크다운 내용이 변경될 때마다 제목 자동 추출
@@ -57,27 +69,28 @@ export default function HomePage() {
   // 공유받은 문서 로드 (한 번만 실행)
   useEffect(() => {
     if (hasLoadedSharedDocument.current) return;
-    
+    if (typeof window === 'undefined') return;
+
     const loadSharedDocument = () => {
       try {
-        const sharedData = localStorage.getItem('temp_shared_document');
+        const sharedData = window.localStorage.getItem('temp_shared_document');
         if (sharedData) {
           const parsed = JSON.parse(sharedData);
           const content = parsed.content || '';
           setMarkdown(content);
-          
+
           // 마크다운 내용에서 제목 추출
           const extractedTitle = extractTitleFromMarkdown(content);
           setDocumentTitle(extractedTitle);
-          
+
           if (parsed.fromShared) {
             setShowSharedNotice(true);
             // 5초 후 알림 숨기기
             setTimeout(() => setShowSharedNotice(false), 5000);
           }
-          
+
           // 사용 후 로컬스토리지에서 제거
-          localStorage.removeItem('temp_shared_document');
+          window.localStorage.removeItem('temp_shared_document');
           hasLoadedSharedDocument.current = true;
         }
       } catch (error) {
@@ -132,7 +145,16 @@ export default function HomePage() {
     onCopy: handleCopyMarkdown,
     onExportPDF: handleExportToPDF,
     onAI: () => setIsAIModalOpen(true),
-  }), [insertHeading, insertFormatting, insertAtCursor, insertTable, selectAll, handleCopyMarkdown, handleExportToPDF]);
+    // Undo/Redo
+    onUndo: undo,
+    onRedo: redo,
+    canUndo,
+    canRedo,
+    // Local save
+    onSave: saveNow,
+    isSaving,
+    lastSaved,
+  }), [insertHeading, insertFormatting, insertAtCursor, insertTable, selectAll, handleCopyMarkdown, handleExportToPDF, undo, redo, canUndo, canRedo, saveNow, isSaving, lastSaved]);
 
   return (
     <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
@@ -179,13 +201,15 @@ export default function HomePage() {
           onMarkdownChange={setMarkdown}
           textareaRef={textareaRef}
           toolbarHandlers={toolbarHandlers}
+          onScroll={handleEditorScroll}
         />
-        
+
         <PreviewSection
           isVisible={mobileActiveTab === 'preview'}
           isClient={isClient}
           markdown={markdown}
           previewRef={previewRef}
+          onScroll={handlePreviewScroll}
         />
       </main>
 

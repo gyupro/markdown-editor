@@ -58,4 +58,13 @@ export interface ToolbarHandlers {
   onExportPDF: () => void;
   onSelectAll: () => void;
   onAI: () => void;
+  // Undo/Redo
+  onUndo?: () => void;
+  onRedo?: () => void;
+  canUndo?: boolean;
+  canRedo?: boolean;
+  // Local save
+  onSave?: () => void;
+  isSaving?: boolean;
+  lastSaved?: Date | null;
 } 

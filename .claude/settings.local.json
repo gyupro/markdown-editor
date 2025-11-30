@@ -6,5 +6,11 @@
       "mcp__flow-nexus"
     ],
     "deny": []
-  }
+  },
+  "enabledMcpjsonServers": [
+    "claude-flow",
+    "ruv-swarm",
+    "claude-flow@alpha",
+    "flow-nexus"
+  ]
 }
