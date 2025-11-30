@@ -29,6 +29,10 @@
 - 🎯 **Code Highlighting** - Syntax highlighting for multiple languages
 - 🌙 **Dark/Light Theme** - Seamless theme switching
 - 📱 **Mobile Responsive** - Perfect experience on all devices
+- ↩️ **Undo/Redo** - Full history support with Ctrl+Z/Y shortcuts
+- 💾 **Local Storage** - Auto-save drafts and manage documents locally
+- 🖼️ **Image Upload** - Drag & drop or paste images directly
+- 🔄 **Scroll Sync** - Synchronized scrolling between editor and preview
 
 ## 🚀 Quick Start
 
@@ -67,6 +71,10 @@ GEMINI_API_KEY=your_gemini_api_key
 | `Ctrl/Cmd + I` | *Italic* text |
 | `Ctrl/Cmd + K` | Insert link |
 | `Ctrl/Cmd + P` | Export to PDF |
+| `Ctrl/Cmd + Z` | Undo |
+| `Ctrl/Cmd + Y` | Redo |
+| `Ctrl/Cmd + Shift + Z` | Redo (alternative) |
+| `Ctrl/Cmd + S` | Save now |
 | `ESC` | Exit fullscreen mode |
 
 ## 📁 Project Structure
@@ -107,6 +115,10 @@ src/
 - 🎯 **코드 하이라이팅** - 다양한 언어의 구문 강조
 - 🌙 **다크/라이트 테마** - 매끄러운 테마 전환
 - 📱 **모바일 반응형** - 모든 기기에서 완벽한 경험
+- ↩️ **실행 취소/다시 실행** - Ctrl+Z/Y 단축키로 전체 히스토리 지원
+- 💾 **로컬 저장소** - 초안 자동 저장 및 문서 로컬 관리
+- 🖼️ **이미지 업로드** - 드래그 앤 드롭 또는 붙여넣기로 이미지 삽입
+- 🔄 **스크롤 동기화** - 에디터와 미리보기 간 스크롤 동기화
 
 ## 🚀 빠른 시작
 
@@ -145,6 +157,10 @@ GEMINI_API_KEY=your_gemini_api_key
 | `Ctrl/Cmd + I` | *기울임꼴* |
 | `Ctrl/Cmd + K` | 링크 삽입 |
 | `Ctrl/Cmd + P` | PDF로 출력 |
+| `Ctrl/Cmd + Z` | 실행 취소 |
+| `Ctrl/Cmd + Y` | 다시 실행 |
+| `Ctrl/Cmd + Shift + Z` | 다시 실행 (대체) |
+| `Ctrl/Cmd + S` | 지금 저장 |
 | `ESC` | 전체화면 모드 종료 |
 
 ## 📁 프로젝트 구조
