@@ -155,24 +155,24 @@ export const useMarkdownEditor = (initialMarkdown: string) => {
   // Scroll percent state for mobile tab sync
   const scrollPercentRef = useRef(0);
 
-  // Scroll sync handlers
+  // Scroll sync handlers - percentage-based sync
   const handleEditorScroll = useCallback(() => {
     if (isScrollingRef.current) return;
     const editor = textareaRef.current;
     const preview = previewRef.current;
     if (!editor) return;
 
-    const scrollHeight = editor.scrollHeight - editor.clientHeight;
-    if (scrollHeight > 0) {
-      scrollPercentRef.current = editor.scrollTop / scrollHeight;
+    const editorScrollHeight = editor.scrollHeight - editor.clientHeight;
+    if (editorScrollHeight > 0) {
+      scrollPercentRef.current = editor.scrollTop / editorScrollHeight;
     }
 
     if (!preview) return;
 
-    isScrollingRef.current = true;
-    if (scrollHeight > 0) {
-      const targetScrollHeight = preview.scrollHeight - preview.clientHeight;
-      preview.scrollTop = scrollPercentRef.current * targetScrollHeight;
+    const previewScrollHeight = preview.scrollHeight - preview.clientHeight;
+    if (previewScrollHeight > 0) {
+      isScrollingRef.current = true;
+      preview.scrollTop = scrollPercentRef.current * previewScrollHeight;
     }
 
     if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
@@ -187,17 +187,17 @@ export const useMarkdownEditor = (initialMarkdown: string) => {
     const preview = previewRef.current;
     if (!preview) return;
 
-    const scrollHeight = preview.scrollHeight - preview.clientHeight;
-    if (scrollHeight > 0) {
-      scrollPercentRef.current = preview.scrollTop / scrollHeight;
+    const previewScrollHeight = preview.scrollHeight - preview.clientHeight;
+    if (previewScrollHeight > 0) {
+      scrollPercentRef.current = preview.scrollTop / previewScrollHeight;
     }
 
     if (!editor) return;
 
-    isScrollingRef.current = true;
-    if (scrollHeight > 0) {
-      const targetScrollHeight = editor.scrollHeight - editor.clientHeight;
-      editor.scrollTop = scrollPercentRef.current * targetScrollHeight;
+    const editorScrollHeight = editor.scrollHeight - editor.clientHeight;
+    if (editorScrollHeight > 0) {
+      isScrollingRef.current = true;
+      editor.scrollTop = scrollPercentRef.current * editorScrollHeight;
     }
 
     if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
