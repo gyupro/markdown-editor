@@ -4,7 +4,9 @@
       "mcp__ruv-swarm",
       "mcp__claude-flow@alpha",
       "mcp__flow-nexus",
-      "Bash(pip install:*)"
+      "Bash(pip install:*)",
+      "Bash(git remote add:*)",
+      "Bash(git push:*)"
     ],
     "deny": []
   },
