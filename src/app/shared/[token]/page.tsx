@@ -23,14 +23,6 @@ export async function generateMetadata(
       };
     }
 
-    // Supabase가 설정되지 않은 경우
-    if (!supabase) {
-      return {
-        title: 'FREE 마크다운 에디터',
-        description: '무료 온라인 마크다운 에디터',
-      };
-    }
-
     // 서버에서 문서 데이터 가져오기
     const { data: document, error } = await supabase
       .from('documents')
