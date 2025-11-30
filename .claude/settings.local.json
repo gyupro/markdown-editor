@@ -1,21 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm run build:*)",
-      "Bash(npm run dev:*)",
-      "Bash(ls:*)",
-      "Bash(rm:*)",
-      "Bash(mv:*)",
-      "Bash(npm install:*)",
-      "Bash(find:*)",
-      "Bash(cat:*)",
-      "Bash(git config:*)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)",
-      "Bash(grep:*)",
-      "Bash(rg:*)",
-      "Bash(node:*)",
-      "Bash(git push:*)"
+      "mcp__ruv-swarm",
+      "mcp__claude-flow@alpha",
+      "mcp__flow-nexus"
     ],
     "deny": []
   }
