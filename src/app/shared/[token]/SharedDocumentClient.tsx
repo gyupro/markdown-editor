@@ -69,19 +69,21 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
   // 문서가 로드되면 페이지 제목과 메타데이터 설정 (개선된 버전)
   useEffect(() => {
     if (document) {
+      // 콘텐츠에서 깔끔한 제목 추출 (마크다운 문법 제거)
+      const cleanTitle = extractTitleFromMarkdown(document.content);
       const summary = extractSummaryFromMarkdown(document.content);
-      const description = summary ? `${summary}` : `${document.title} - FREE 마크다운 에디터로 작성된 문서`;
-      
+      const description = summary ? `${summary}` : `${cleanTitle} - FREE 마크다운 에디터로 작성된 문서`;
+
       // 페이지 제목 동적 변경
       const originalTitle = window.document.title;
-      window.document.title = `${document.title} | FREE 마크다운 에디터`;
-      
+      window.document.title = `${cleanTitle} | FREE 마크다운 에디터`;
+
       // 메타태그 동적 설정/업데이트 (더 자세한 정보 포함)
       const updateMetaTag = (property: string, content: string) => {
-        const selector = property.startsWith('og:') || property.startsWith('twitter:') 
-          ? `meta[property="${property}"]` 
+        const selector = property.startsWith('og:') || property.startsWith('twitter:')
+          ? `meta[property="${property}"]`
           : `meta[name="${property}"]`;
-        
+
         let meta = window.document.querySelector(selector);
         if (!meta) {
           meta = window.document.createElement('meta');
@@ -97,18 +99,18 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
 
       // 기본 메타데이터
       updateMetaTag('description', description);
-      
+
       // Open Graph (Facebook, KakaoTalk 등)
-      updateMetaTag('og:title', document.title);
+      updateMetaTag('og:title', cleanTitle);
       updateMetaTag('og:description', description);
       updateMetaTag('og:type', 'article');
       updateMetaTag('og:url', window.location.href);
       updateMetaTag('og:site_name', 'FREE 마크다운 에디터');
       updateMetaTag('og:locale', 'ko_KR');
-      
+
       // Twitter Cards
       updateMetaTag('twitter:card', 'summary');
-      updateMetaTag('twitter:title', document.title);
+      updateMetaTag('twitter:title', cleanTitle);
       updateMetaTag('twitter:description', description);
       
       // 추가 메타데이터 (카카오톡 최적화)
@@ -219,9 +221,9 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
           <div className="space-y-3">
             {/* 제목과 로고 */}
             <div className="flex items-start gap-2">
-              <Image 
-                src="/logo.png" 
-                alt="Markdown Editor Logo" 
+              <Image
+                src="/logo.png"
+                alt="Markdown Editor Logo"
                 width={32}
                 height={32}
                 className="w-6 h-6 md:w-8 md:h-8 object-contain flex-shrink-0 mt-0.5"
@@ -230,7 +232,7 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
                 }}
               />
               <h1 className="text-base md:text-xl font-semibold text-gray-800 dark:text-white break-words flex-1">
-                {document.title}
+                {extractTitleFromMarkdown(document.content)}
               </h1>
             </div>
             

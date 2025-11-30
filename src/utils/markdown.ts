@@ -24,12 +24,14 @@ export const extractTitleFromMarkdown = (markdown: string): string => {
 
   // 마크다운 헤딩 패턴 제거 (# ## ### 등)
   const cleanedTitle = firstLine
+    .replace(/^\[.*?\]\(.*?\)\s*/, '') // 링크 패턴 제거 [text](url)
     .replace(/^#+\s*/, '') // 헤딩 마크 제거
     .replace(/^\*+\s*/, '') // 불릿 포인트 제거
     .replace(/^-+\s*/, '') // 대시 제거
     .replace(/^\d+\.\s*/, '') // 숫자 리스트 제거
     .replace(/^\>\s*/, '') // 인용 제거
     .replace(/^`+/, '') // 코드 블록 제거
+    .replace(/\[.*?\]\(.*?\)/g, '') // 나머지 링크 패턴도 제거
     .trim();
 
   // 제목이 너무 길면 자르기
