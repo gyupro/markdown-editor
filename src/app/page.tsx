@@ -17,6 +17,7 @@ import { PreviewSection } from '@/components/PreviewSection';
 import { FullscreenModal } from '@/components/FullscreenModal';
 import { ShareModal } from '@/components/ShareModal';
 import { AIModal } from '@/components/AIModal';
+import { LocalStorageModal } from '@/components/LocalStorageModal';
 
 export default function HomePage() {
   const { copyToClipboard } = useCopyToClipboard();
@@ -24,6 +25,7 @@ export default function HomePage() {
   const [mobileActiveTab, setMobileActiveTab] = useState<MobileTab>('editor');
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isAIModalOpen, setIsAIModalOpen] = useState(false);
+  const [isDocumentsModalOpen, setIsDocumentsModalOpen] = useState(false);
   const [documentTitle, setDocumentTitle] = useState('FREE-마크다운 에디터');
   const [showSharedNotice, setShowSharedNotice] = useState(false);
   const hasLoadedSharedDocument = useRef(false);
@@ -150,11 +152,11 @@ export default function HomePage() {
     onRedo: redo,
     canUndo,
     canRedo,
-    // Local save
-    onSave: saveNow,
+    // Local documents
+    onOpenDocuments: () => setIsDocumentsModalOpen(true),
     isSaving,
     lastSaved,
-  }), [insertHeading, insertFormatting, insertAtCursor, insertTable, selectAll, handleCopyMarkdown, handleExportToPDF, undo, redo, canUndo, canRedo, saveNow, isSaving, lastSaved]);
+  }), [insertHeading, insertFormatting, insertAtCursor, insertTable, selectAll, handleCopyMarkdown, handleExportToPDF, undo, redo, canUndo, canRedo, isSaving, lastSaved]);
 
   return (
     <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
@@ -235,6 +237,13 @@ export default function HomePage() {
         onClose={() => setIsAIModalOpen(false)}
         currentMarkdown={markdown}
         onApplyContent={handleApplyAIContent}
+      />
+
+      <LocalStorageModal
+        isOpen={isDocumentsModalOpen}
+        onClose={() => setIsDocumentsModalOpen(false)}
+        currentContent={markdown}
+        onLoad={setMarkdown}
       />
     </div>
   );

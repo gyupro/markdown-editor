@@ -22,6 +22,7 @@ interface ToolbarProps {
   onUndo?: () => void;
   onRedo?: () => void;
   onSave?: () => void;
+  onOpenDocuments?: () => void;
   canUndo?: boolean;
   canRedo?: boolean;
   isSaving?: boolean;
@@ -100,6 +101,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   onUndo,
   onRedo,
   onSave,
+  onOpenDocuments,
   canUndo = false,
   canRedo = false,
   isSaving = false,
@@ -224,14 +226,14 @@ export const Toolbar: React.FC<ToolbarProps> = ({
         </svg>
       </ToolbarButton>
 
-      {/* Local Save button with cute folder icon */}
-      {onSave && (
+      {/* Local Documents button with cute folder icon */}
+      {onOpenDocuments && (
         <>
           <Divider />
           <div className="relative group">
             <ToolbarButton
-              onClick={onSave}
-              title={`로컬 저장 (Ctrl+S)${lastSaved ? ` - ${formatTimeAgo(lastSaved)}` : ''}`}
+              onClick={onOpenDocuments}
+              title={`내 문서함${lastSaved ? ` - ${formatTimeAgo(lastSaved)}` : ''}`}
             >
               <div className={`flex items-center gap-1 ${isSaving ? 'text-yellow-500' : 'text-green-500'}`}>
                 <FolderIcon isSaving={isSaving} />
