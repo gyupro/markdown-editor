@@ -1,5 +1,9 @@
 User-agent: *
 Allow: /
+Allow: /en/
+Allow: /zh/
+Allow: /ja/
+Allow: /ko/
 Disallow: /api/
 Disallow: /_next/
 Disallow: /node_modules/
@@ -8,20 +12,40 @@ Disallow: /.well-known/
 # Google bots
 User-agent: Googlebot
 Allow: /
+Allow: /en/
+Allow: /zh/
+Allow: /ja/
+Allow: /ko/
 Disallow: /api/
 
 # Bing bots
 User-agent: Bingbot
 Allow: /
+Allow: /en/
+Allow: /zh/
+Allow: /ja/
+Allow: /ko/
 Disallow: /api/
 
-# Naver bots
+# Naver bots (Korea)
 User-agent: Yeti
 Allow: /
+Allow: /ko/
+Allow: /en/
 Disallow: /api/
+
+# Baidu bots (China)
+User-agent: Baiduspider
+Allow: /zh/
+Crawl-delay: 1
+
+# Yahoo Japan bots
+User-agent: Y!J
+Allow: /ja/
+Allow: /en/
 
 # Sitemap location
 Sitemap: https://markdown.develop-on.co.kr/sitemap.xml
 
 # Crawl-delay for respectful crawling
-Crawl-delay: 1 
+Crawl-delay: 1

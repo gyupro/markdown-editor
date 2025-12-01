@@ -1,4 +1,7 @@
+'use client';
+
 import React, { useState, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import { useDocumentShare, DocumentWithMeta } from '@/hooks/useDocumentShare';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 
@@ -9,12 +12,13 @@ interface ShareModalProps {
   title?: string;
 }
 
-const ShareModalComponent: React.FC<ShareModalProps> = ({ 
-  isOpen, 
-  onClose, 
-  markdown, 
-  title = 'Untitled Document' 
+const ShareModalComponent: React.FC<ShareModalProps> = ({
+  isOpen,
+  onClose,
+  markdown,
+  title = 'Untitled Document'
 }) => {
+  const t = useTranslations('share');
   const [shareUrl, setShareUrl] = useState<string>('');
   const [isSharing, setIsSharing] = useState(false);
   const [documentMeta, setDocumentMeta] = useState<DocumentWithMeta['_meta'] | null>(null);
@@ -24,7 +28,7 @@ const ShareModalComponent: React.FC<ShareModalProps> = ({
   const handleCreateShare = useCallback(async () => {
     setIsSharing(true);
     const document = await createShareableDocument(title, markdown);
-    
+
     if (document) {
       const url = generateShareUrl(document.share_token);
       setShareUrl(url);
@@ -53,12 +57,12 @@ const ShareModalComponent: React.FC<ShareModalProps> = ({
       <div className="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full p-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-            문서 공유
+            {t('title')}
           </h2>
           <button
             onClick={handleClose}
             className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-            aria-label="닫기"
+            aria-label={t('close')}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -70,7 +74,7 @@ const ShareModalComponent: React.FC<ShareModalProps> = ({
           {!shareUrl ? (
             <div>
               <p className="text-gray-600 dark:text-gray-300 mb-4">
-                현재 문서를 공유 가능한 링크로 만들어보세요.
+                {t('description')}
               </p>
               <button
                 onClick={handleCreateShare}
@@ -83,11 +87,11 @@ const ShareModalComponent: React.FC<ShareModalProps> = ({
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    공유 링크 생성 중...
+                    {t('loading')}
                   </>
                 ) : (
                   <>
-                    🔗 공유 링크 생성
+                    🔗 {t('createLink')}
                   </>
                 )}
               </button>
@@ -96,8 +100,8 @@ const ShareModalComponent: React.FC<ShareModalProps> = ({
             <div>
               {documentMeta && (
                 <div className={`mb-3 p-3 rounded-md ${
-                  documentMeta.isReused 
-                    ? 'bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800' 
+                  documentMeta.isReused
+                    ? 'bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800'
                     : 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
                 }`}>
                   <div className="flex items-center gap-2">
@@ -105,8 +109,8 @@ const ShareModalComponent: React.FC<ShareModalProps> = ({
                       {documentMeta.isReused ? '♻️' : '✨'}
                     </span>
                     <p className={`text-sm font-medium ${
-                      documentMeta.isReused 
-                        ? 'text-yellow-800 dark:text-yellow-300' 
+                      documentMeta.isReused
+                        ? 'text-yellow-800 dark:text-yellow-300'
                         : 'text-green-800 dark:text-green-300'
                     }`}>
                       {documentMeta.message}
@@ -114,12 +118,12 @@ const ShareModalComponent: React.FC<ShareModalProps> = ({
                   </div>
                 </div>
               )}
-              
+
               <p className="text-green-600 dark:text-green-400 mb-3 font-medium">
-                ✅ 공유 링크가 준비되었습니다!
+                ✅ {t('linkReady')}
               </p>
               <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-md">
-                <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">공유 링크:</p>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{t('shareLink')}</p>
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -131,24 +135,24 @@ const ShareModalComponent: React.FC<ShareModalProps> = ({
                     <button
                       onClick={handleCopyLink}
                       className={`px-3 py-2 rounded text-sm transition-all duration-200 ${
-                        isCopied 
-                          ? 'bg-green-100 hover:bg-green-200 dark:bg-green-900 dark:hover:bg-green-800 text-green-700 dark:text-green-300' 
+                        isCopied
+                          ? 'bg-green-100 hover:bg-green-200 dark:bg-green-900 dark:hover:bg-green-800 text-green-700 dark:text-green-300'
                           : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-700 dark:text-gray-300'
                       }`}
-                      title={isCopied ? '복사됨!' : '링크 복사'}
+                      title={isCopied ? t('copied') : t('copyLink')}
                     >
                       {isCopied ? '✓' : '📋'}
                     </button>
                     {isCopied && (
                       <div className="absolute top-1/2 left-full ml-2 transform -translate-y-1/2 bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded shadow-lg animate-pulse whitespace-nowrap">
-                        복사됨!
+                        {t('copied')}
                       </div>
                     )}
                   </div>
                 </div>
               </div>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                이 링크를 가진 누구나 문서를 볼 수 있습니다.
+                {t('anyoneWithLink')}
               </p>
             </div>
           )}
@@ -165,7 +169,7 @@ const ShareModalComponent: React.FC<ShareModalProps> = ({
             onClick={handleClose}
             className="px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 transition-colors"
           >
-            닫기
+            {t('close')}
           </button>
         </div>
       </div>
@@ -173,4 +177,4 @@ const ShareModalComponent: React.FC<ShareModalProps> = ({
   );
 };
 
-export const ShareModal = React.memo(ShareModalComponent); 
+export const ShareModal = React.memo(ShareModalComponent);

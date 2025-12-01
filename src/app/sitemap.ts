@@ -2,20 +2,33 @@ import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://markdown.develop-on.co.kr'
-  
+  const locales = ['en', 'zh', 'ja', 'ko']
+  const currentDate = new Date()
+
+  // Generate sitemap entries for each locale
+  const localeEntries = locales.map(locale => ({
+    url: `${baseUrl}/${locale}`,
+    lastModified: currentDate,
+    changeFrequency: 'weekly' as const,
+    priority: locale === 'en' ? 1.0 : 0.9,
+    alternates: {
+      languages: locales.reduce((acc, loc) => {
+        acc[loc === 'zh' ? 'zh-CN' : loc === 'ja' ? 'ja-JP' : loc === 'ko' ? 'ko-KR' : 'en'] = `${baseUrl}/${loc}`
+        return acc
+      }, {} as Record<string, string>)
+    }
+  }))
+
+  // Root URL redirects to default locale
+  const rootEntry = {
+    url: baseUrl,
+    lastModified: currentDate,
+    changeFrequency: 'weekly' as const,
+    priority: 1.0,
+  }
+
   return [
-    {
-      url: baseUrl,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 1,
-    },
-    // 추가 페이지들이 있다면 여기에 추가
-    // {
-    //   url: `${baseUrl}/about`,
-    //   lastModified: new Date(),
-    //   changeFrequency: 'monthly',
-    //   priority: 0.8,
-    // },
+    rootEntry,
+    ...localeEntries,
   ]
-} 
+}

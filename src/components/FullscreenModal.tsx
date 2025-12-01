@@ -1,6 +1,9 @@
+'use client';
+
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { useTranslations } from 'next-intl';
 import { markdownComponents } from './MarkdownComponents';
 
 interface FullscreenModalProps {
@@ -23,79 +26,84 @@ export const FullscreenModal: React.FC<FullscreenModalProps> = ({
   markdown,
   onExportPDF,
   onClose,
-}) => (
-  <div 
-    className="fixed inset-0 z-50 bg-gradient-to-br from-white to-gray-100 dark:from-gray-900 dark:to-gray-800"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="fullscreen-title"
-  >
-    <div className="flex flex-col h-full">
-      <header className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 py-3 md:py-4" role="banner">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 md:gap-4">
-            <h1 id="fullscreen-title" className="text-lg md:text-xl font-semibold text-gray-800 dark:text-white">🖥️ 전체화면 미리보기</h1>
-            <a 
-              href="https://github.com/gyupro/markdown-editor" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 text-sm items-center gap-1"
-              title="GitHub Repository"
-              aria-label="GitHub에서 오픈소스 코드 보기"
-            >
-              <GitHubIcon />
-              <span className="hidden md:inline">Open Source</span>
-            </a>
+}) => {
+  const t = useTranslations('fullscreen');
+  const tHeader = useTranslations('header');
+
+  return (
+    <div
+      className="fixed inset-0 z-50 bg-gradient-to-br from-white to-gray-100 dark:from-gray-900 dark:to-gray-800"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="fullscreen-title"
+    >
+      <div className="flex flex-col h-full">
+        <header className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 py-3 md:py-4" role="banner">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 md:gap-4">
+              <h1 id="fullscreen-title" className="text-lg md:text-xl font-semibold text-gray-800 dark:text-white">{t('title')}</h1>
+              <a
+                href="https://github.com/gyupro/markdown-editor"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 text-sm items-center gap-1"
+                title="GitHub Repository"
+                aria-label={t('openSourceLabel')}
+              >
+                <GitHubIcon />
+                <span className="hidden md:inline">{tHeader('openSource')}</span>
+              </a>
+            </div>
+            <nav className="flex gap-2 md:gap-3" aria-label={t('actions')}>
+              <button
+                onClick={onExportPDF}
+                disabled={isExporting}
+                className="px-3 md:px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-green-400 transition-colors shadow-md hover:shadow-lg text-sm"
+                aria-label={isExporting ? t('exportingPDF') : t('exportPDF')}
+              >
+                {isExporting ? (
+                  <>
+                    <span className="text-xs md:text-base"></span>
+                    <span className="hidden sm:inline"> {t('exportingPDF')}</span>
+                    <span className="sm:hidden"> {t('exportingShort')}</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-xs md:text-base"></span>
+                    <span className="hidden sm:inline"> {t('exportPDF')}</span>
+                    <span className="sm:hidden"> PDF</span>
+                  </>
+                )}
+              </button>
+              <button
+                onClick={onClose}
+                className="px-3 md:px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors shadow-md hover:shadow-lg text-sm"
+                aria-label={t('exitLabel')}
+              >
+                <span className="text-xs md:text-base"></span>
+                <span className="hidden sm:inline"> {t('closeEsc')}</span>
+                <span className="sm:hidden"> {t('close')}</span>
+              </button>
+            </nav>
           </div>
-          <nav className="flex gap-2 md:gap-3" aria-label="전체화면 작업">
-            <button
-              onClick={onExportPDF}
-              disabled={isExporting}
-              className="px-3 md:px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-green-400 transition-colors shadow-md hover:shadow-lg text-sm"
-              aria-label={isExporting ? "PDF 생성 중입니다" : "현재 문서를 PDF로 출력합니다"}
-            >
-              {isExporting ? (
-                <>
-                  <span className="text-xs md:text-base">📄</span>
-                  <span className="hidden sm:inline"> PDF 생성 중...</span>
-                  <span className="sm:hidden"> 생성중...</span>
-                </>
-              ) : (
-                <>
-                  <span className="text-xs md:text-base">📄</span>
-                  <span className="hidden sm:inline"> PDF 출력</span>
-                  <span className="sm:hidden"> PDF</span>
-                </>
-              )}
-            </button>
-            <button
-              onClick={onClose}
-              className="px-3 md:px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors shadow-md hover:shadow-lg text-sm"
-              aria-label="전체화면 미리보기를 닫고 편집 화면으로 돌아갑니다"
-            >
-              <span className="text-xs md:text-base">✕</span>
-              <span className="hidden sm:inline"> 닫기 (ESC)</span>
-              <span className="sm:hidden"> 닫기</span>
-            </button>
-          </nav>
-        </div>
-      </header>
-      <main className="flex-1 overflow-auto">
-        {isClient ? (
-          <article className="max-w-4xl mx-auto p-4 md:p-8" aria-label="전체화면 마크다운 미리보기">
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
-              components={markdownComponents}
-            >
-              {markdown}
-            </ReactMarkdown>
-          </article>
-        ) : (
-          <div className="text-gray-500 dark:text-gray-400" role="status" aria-live="polite">
-            미리보기를 로드하는 중...
-          </div>
-        )}
-      </main>
+        </header>
+        <main className="flex-1 overflow-auto">
+          {isClient ? (
+            <article className="max-w-4xl mx-auto p-4 md:p-8" aria-label={t('previewLabel')}>
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={markdownComponents}
+              >
+                {markdown}
+              </ReactMarkdown>
+            </article>
+          ) : (
+            <div className="text-gray-500 dark:text-gray-400" role="status" aria-live="polite">
+              {t('loadingPreview')}
+            </div>
+          )}
+        </main>
+      </div>
     </div>
-  </div>
-); 
+  );
+}; 

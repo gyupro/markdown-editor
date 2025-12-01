@@ -1,6 +1,9 @@
+'use client';
+
 import React, { useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { useTranslations } from 'next-intl';
 import { markdownComponents } from './MarkdownComponents';
 
 interface PreviewSectionProps {
@@ -18,7 +21,9 @@ const PreviewSectionComponent: React.FC<PreviewSectionProps> = ({
   previewRef,
   onScroll,
 }) => {
-  // 마크다운 렌더링 결과를 메모이제이션하여 성능 최적화
+  const t = useTranslations('preview');
+
+  // Memoize markdown rendering for performance
   const renderedMarkdown = useMemo(() => (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
@@ -29,9 +34,9 @@ const PreviewSectionComponent: React.FC<PreviewSectionProps> = ({
   ), [markdown]);
 
   return (
-    <section 
-      className={`${isVisible ? 'flex' : 'hidden'} md:flex w-full md:w-1/2 flex-col`} 
-      aria-label="미리보기"
+    <section
+      className={`${isVisible ? 'flex' : 'hidden'} md:flex w-full md:w-1/2 flex-col`}
+      aria-label={t('title')}
     >
       <header className="hidden md:block bg-gray-100 dark:bg-gray-800 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
         <h2 className="text-sm font-medium text-gray-600 dark:text-gray-300 flex items-center gap-2">
@@ -39,7 +44,7 @@ const PreviewSectionComponent: React.FC<PreviewSectionProps> = ({
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
           </svg>
-          PREVIEW
+          {t('title').toUpperCase()}
         </h2>
       </header>
       <div
@@ -50,13 +55,13 @@ const PreviewSectionComponent: React.FC<PreviewSectionProps> = ({
         {isClient ? (
           <article
             className="max-w-4xl mx-auto p-4 md:p-8"
-            aria-label="렌더링된 마크다운 미리보기"
+            aria-label={t('livePreview')}
           >
             {renderedMarkdown}
           </article>
         ) : (
           <div className="text-gray-500 dark:text-gray-400" role="status" aria-live="polite">
-            미리보기를 로드하는 중...
+            {t('noContent')}
           </div>
         )}
       </div>

@@ -58,12 +58,12 @@ const HeadingWithAnchor: React.FC<{
     return (
       <h1 id={id} className={`text-2xl md:text-4xl font-bold mb-4 md:mb-6 text-gray-900 dark:text-white pb-2 md:pb-3 leading-tight ${baseStyles}`} {...props}>
         {children}
-        <a 
+        <a
           href={`#${id}`}
           onClick={handleAnchorClick}
           className="ml-2 opacity-0 group-hover:opacity-50 hover:!opacity-100 text-blue-500 hover:text-blue-600 transition-opacity duration-200 text-xl"
-          aria-label={`${text} 섹션으로 이동`}
-          title="링크 복사"
+          aria-label={`Go to ${text} section`}
+          title="Copy link"
         >
           #
         </a>
@@ -74,12 +74,12 @@ const HeadingWithAnchor: React.FC<{
       <h2 id={id} className={`text-xl md:text-3xl font-semibold mb-3 md:mb-4 mt-6 md:mt-8 text-gray-800 dark:text-gray-100 flex items-center leading-tight ${baseStyles}`} {...props}>
         <span className="w-1 h-6 md:h-8 bg-gradient-to-b from-blue-500 to-purple-500 mr-2 md:mr-3 rounded-full"></span>
         {children}
-        <a 
+        <a
           href={`#${id}`}
           onClick={handleAnchorClick}
           className="ml-2 opacity-0 group-hover:opacity-50 hover:!opacity-100 text-blue-500 hover:text-blue-600 transition-opacity duration-200 text-lg"
-          aria-label={`${text} 섹션으로 이동`}
-          title="링크 복사"
+          aria-label={`Go to ${text} section`}
+          title="Copy link"
         >
           #
         </a>
@@ -89,12 +89,12 @@ const HeadingWithAnchor: React.FC<{
     return (
       <h3 id={id} className={`text-lg md:text-2xl font-semibold mb-2 md:mb-3 mt-4 md:mt-6 text-gray-800 dark:text-gray-100 leading-tight ${baseStyles}`} {...props}>
         {children}
-        <a 
+        <a
           href={`#${id}`}
           onClick={handleAnchorClick}
           className="ml-2 opacity-0 group-hover:opacity-50 hover:!opacity-100 text-blue-500 hover:text-blue-600 transition-opacity duration-200 text-base"
-          aria-label={`${text} 섹션으로 이동`}
-          title="링크 복사"
+          aria-label={`Go to ${text} section`}
+          title="Copy link"
         >
           #
         </a>
@@ -206,8 +206,8 @@ const CodeBlock: React.FC<{ children: React.ReactNode }> = ({ children: codeElem
       <button
         onClick={handleCopy}
         className="absolute top-3 right-3 bg-gray-700/90 hover:bg-gray-600 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs transition-all duration-200 opacity-0 group-hover:opacity-100 focus:opacity-100 shadow-lg z-10"
-        title={isCopied ? '복사됨!' : '코드 복사'}
-        aria-label={isCopied ? '코드가 클립보드에 복사되었습니다' : '코드를 클립보드에 복사'}
+        title={isCopied ? 'Copied!' : 'Copy code'}
+        aria-label={isCopied ? 'Code copied to clipboard' : 'Copy code to clipboard'}
       >
         {isCopied ? '✅' : '📋'}
       </button>

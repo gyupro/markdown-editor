@@ -1,37 +1,82 @@
 {
+  "metadata": {
+    "title": "FREE Markdown Editor - Online Editor with Real-Time Preview",
+    "description": "Free online Markdown editor with real-time preview, PDF export, syntax highlighting, and AI content generation. Supports English, Chinese, Japanese. No registration required.",
+    "ogTitle": "FREE Markdown Editor - Write Better with Real-Time Preview",
+    "ogDescription": "Create beautiful Markdown documents with real-time preview, export to PDF, and AI-powered content generation. 100% free, no sign-up needed."
+  },
   "common": {
     "title": "FREE Markdown Editor",
     "description": "A powerful, feature-rich markdown editor with document sharing",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "confirm": "Confirm",
+    "error": "Error",
+    "success": "Success"
   },
   "header": {
     "fullscreen": "Fullscreen",
     "share": "Share",
+    "shareDocument": "Share Document",
     "export": "Export PDF",
+    "exportPDF": "Export PDF",
     "ai": "AI",
-    "theme": "Theme"
+    "theme": "Theme",
+    "darkMode": "Switch to dark mode",
+    "lightMode": "Switch to light mode",
+    "openSource": "Open Source",
+    "viewOnGitHub": "View source code on GitHub",
+    "fullscreenPreview": "Fullscreen Preview",
+    "exportingPDF": "Exporting PDF..."
   },
   "editor": {
-    "placeholder": "Start writing your markdown here...",
+    "placeholder": "Start writing your markdown here... (paste or drag images to upload)",
+    "title": "Editor",
+    "ariaLabel": "Markdown Editor",
+    "textareaLabel": "Markdown text input area",
+    "helpText": "Use markdown syntax to format your text. Keyboard shortcuts: Ctrl+B (bold), Ctrl+I (italic), Ctrl+K (link), Ctrl+P (export PDF). Paste or drag images to upload.",
+    "uploading": "Uploading image...",
+    "dropImageHere": "Drop image here",
+    "maxFileSize": "Max 10MB",
     "toolbar": {
-      "bold": "Bold",
-      "italic": "Italic",
+      "ariaLabel": "Editing tools",
+      "undo": "Undo (Ctrl+Z)",
+      "redo": "Redo (Ctrl+Y)",
+      "heading1": "Heading 1",
+      "heading2": "Heading 2",
+      "heading3": "Heading 3",
+      "bold": "Bold (Ctrl+B)",
+      "italic": "Italic (Ctrl+I)",
       "strikethrough": "Strikethrough",
-      "code": "Code",
-      "link": "Link",
+      "inlineCode": "Inline Code",
+      "link": "Link (Ctrl+K)",
       "image": "Image",
       "bulletList": "Bullet List",
       "numberedList": "Numbered List",
       "quote": "Quote",
       "table": "Table",
       "codeBlock": "Code Block",
-      "selectAll": "Select All",
-      "copy": "Copy"
+      "aiGenerate": "AI Content Generation",
+      "selectAll": "Select All (Ctrl+A)",
+      "copy": "Copy Markdown",
+      "exportPDF": "Export PDF (Ctrl+P)",
+      "save": "Save (Ctrl+S)",
+      "saveNew": "Save as New (Ctrl+S)",
+      "myDocuments": "My Documents",
+      "justSaved": "Just saved",
+      "secondsAgo": "{seconds}s ago",
+      "minutesAgo": "{minutes}m ago",
+      "hoursAgo": "{hours}h ago"
     }
   },
   "preview": {
     "title": "Preview",
-    "noContent": "No content to preview"
+    "noContent": "No content to preview",
+    "livePreview": "Live Preview",
+    "goToSection": "Go to {section} section",
+    "copyLink": "Copy link"
   },
   "share": {
     "title": "Share Document",
@@ -40,7 +85,14 @@
     "copyLink": "Copy Link",
     "linkCopied": "Link copied to clipboard!",
     "close": "Close",
-    "loading": "Creating share link..."
+    "loading": "Creating share link...",
+    "documentLoaded": "Shared document loaded",
+    "expireTime": "Link expires in 7 days",
+    "description": "Create a shareable link for this document.",
+    "linkReady": "Share link is ready!",
+    "shareLink": "Share link:",
+    "copied": "Copied!",
+    "anyoneWithLink": "Anyone with this link can view the document."
   },
   "ai": {
     "title": "AI Content Generator",
@@ -54,6 +106,7 @@
     "enhanceButton": "Enhance Content",
     "loading": "Generating content...",
     "error": "Error generating content",
+    "errorStream": "Unable to read stream.",
     "close": "Close",
     "suggestions": {
       "title": "Suggested Topics",
@@ -64,10 +117,43 @@
         "Getting started with TypeScript",
         "Modern CSS techniques"
       ]
+    },
+    "modal": {
+      "whatToDo": "What would you like to do?",
+      "selectMode": "Please select a mode",
+      "createNew": "Create New Content",
+      "createNewDesc": "Generate a new markdown document from scratch",
+      "improveExisting": "Improve Existing Text",
+      "improveExistingDesc": "Improve and expand the current text",
+      "change": "Change",
+      "descriptionLabel": "Content description *",
+      "improvementLabel": "Improvement requests *",
+      "createPlaceholder": "e.g., React hooks guide, Python data analysis tutorial, JavaScript async processing methods...",
+      "improvePlaceholder": "e.g., Add more examples, include code blocks, add detailed explanations, add table of contents...",
+      "createHint": "Please describe the topic or content you want to generate",
+      "improveHint": "Please describe how you want to improve the content",
+      "working": "AI is working...",
+      "generateContent": "Generate Content",
+      "improveText": "Improve Text",
+      "generatedContent": "Generated Content:",
+      "addAtCursor": "Add at cursor",
+      "replaceAll": "Replace all",
+      "regenerate": "Regenerate"
     }
   },
   "fullscreen": {
-    "exit": "Exit Fullscreen"
+    "title": "Fullscreen Preview",
+    "exit": "Exit Fullscreen",
+    "exitLabel": "Exit fullscreen mode and return to editor",
+    "close": "Close",
+    "closeEsc": "Close (ESC)",
+    "actions": "Fullscreen actions",
+    "exportPDF": "Export PDF",
+    "exportingPDF": "Exporting PDF...",
+    "exportingShort": "Exporting...",
+    "openSourceLabel": "View open source code on GitHub",
+    "previewLabel": "Fullscreen markdown preview",
+    "loadingPreview": "Loading preview..."
   },
   "tabs": {
     "editor": "Editor",
@@ -80,7 +166,16 @@
     "link": "Insert link",
     "pdf": "Export to PDF",
     "fullscreen": "Toggle fullscreen",
-    "exit": "Exit fullscreen"
+    "exit": "Exit fullscreen",
+    "hint": "Keyboard shortcuts: Ctrl+P (PDF), ESC (Exit fullscreen)"
+  },
+  "mobileMenu": {
+    "open": "Open menu",
+    "exportPDF": "Export PDF",
+    "exportingPDF": "Exporting PDF...",
+    "fullscreenPreview": "Fullscreen Preview",
+    "darkMode": "Dark Mode",
+    "lightMode": "Light Mode"
   },
   "language": {
     "select": "Select Language",
@@ -88,5 +183,37 @@
     "korean": "한국어",
     "japanese": "日本語",
     "chinese": "中文"
+  },
+  "notifications": {
+    "sharedDocumentLoaded": "Shared document loaded successfully"
+  },
+  "localStorage": {
+    "title": "My Documents",
+    "documentCount": "{count} documents, {folderCount} folders",
+    "searchPlaceholder": "Search documents...",
+    "newFolder": "New Folder",
+    "saveCurrentDocument": "Save Current Document",
+    "folderName": "Folder name",
+    "documentName": "Document name",
+    "create": "Create",
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "emptyState": "No documents yet",
+    "emptyStateHint": "Create a folder or save your current document!",
+    "noSearchResults": "No search results",
+    "root": "Root",
+    "rename": "Rename",
+    "delete": "Delete",
+    "open": "Open",
+    "overwrite": "Overwrite with current content",
+    "move": "Move",
+    "footerHint": "Drag documents to folders or use the move button",
+    "untitled": "Untitled",
+    "emptyDocument": "Empty document",
+    "justNow": "Just now",
+    "minutesAgo": "{minutes}m ago",
+    "hoursAgo": "{hours}h ago",
+    "daysAgo": "{days}d ago"
   }
-} 
+}

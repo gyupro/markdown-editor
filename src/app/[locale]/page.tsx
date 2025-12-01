@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import { useMarkdownEditor } from '@/hooks/useMarkdownEditor';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import { useHashNavigation } from '@/hooks/useHashNavigation';
@@ -9,7 +10,7 @@ import { DEFAULT_MARKDOWN } from '@/constants/markdown';
 import { MobileTab } from '@/types/markdown';
 import { extractTitleFromMarkdown } from '@/utils/markdown';
 
-// 새로 분리된 컴포넌트들 임포트
+// Import components
 import { Header } from '@/components/Header';
 import { MobileTabs } from '@/components/MobileTabs';
 import { EditorSection } from '@/components/EditorSection';
@@ -17,18 +18,24 @@ import { PreviewSection } from '@/components/PreviewSection';
 import { FullscreenModal } from '@/components/FullscreenModal';
 import { ShareModal } from '@/components/ShareModal';
 import { AIModal } from '@/components/AIModal';
+import { LocalStorageModal, saveDocumentById } from '@/components/LocalStorageModal';
 
 export default function HomePage() {
+  const t = useTranslations();
   const { copyToClipboard } = useCopyToClipboard();
   const { theme, toggleTheme, isLoaded: isThemeLoaded } = useTheme();
-  const [mobileActiveTab, setMobileActiveTab] = useState<MobileTab>('editor');
+  const [mobileActiveTab, setMobileActiveTabState] = useState<MobileTab>('editor');
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isAIModalOpen, setIsAIModalOpen] = useState(false);
-  const [documentTitle, setDocumentTitle] = useState('FREE-마크다운 에디터');
+  const [isDocumentsModalOpen, setIsDocumentsModalOpen] = useState(false);
+  const [isSaveMode, setIsSaveMode] = useState(false);
+  const [currentDocumentId, setCurrentDocumentId] = useState<string | null>(null);
+  const [lastAutoSaved, setLastAutoSaved] = useState<Date | null>(null);
+  const [documentTitle, setDocumentTitle] = useState(t('common.title'));
   const [showSharedNotice, setShowSharedNotice] = useState(false);
   const hasLoadedSharedDocument = useRef(false);
 
-  // 해시 네비게이션 훅 사용
+  // Hash navigation hook
   useHashNavigation();
 
   const {
@@ -46,15 +53,47 @@ export default function HomePage() {
     insertHeading,
     insertTable,
     selectAll,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
+    handleEditorScroll,
+    handlePreviewScroll,
+    syncScrollToEditor,
+    syncScrollToPreview,
   } = useMarkdownEditor(DEFAULT_MARKDOWN);
 
-  // 마크다운 내용이 변경될 때마다 제목 자동 추출
+  // Wrapper to sync scroll on mobile tab change
+  const setMobileActiveTab = useCallback((tab: MobileTab) => {
+    setMobileActiveTabState(tab);
+    if (tab === 'editor') {
+      syncScrollToEditor();
+    } else {
+      syncScrollToPreview();
+    }
+  }, [syncScrollToEditor, syncScrollToPreview]);
+
+  // Auto extract title from markdown content
   useEffect(() => {
     const extractedTitle = extractTitleFromMarkdown(markdown);
     setDocumentTitle(extractedTitle);
   }, [markdown]);
 
-  // 공유받은 문서 로드 (한 번만 실행)
+  // Auto-save every 30 seconds (only when document ID exists)
+  useEffect(() => {
+    if (!currentDocumentId) return;
+
+    const autoSaveInterval = setInterval(() => {
+      const success = saveDocumentById(currentDocumentId, markdown);
+      if (success) {
+        setLastAutoSaved(new Date());
+      }
+    }, 30000);
+
+    return () => clearInterval(autoSaveInterval);
+  }, [currentDocumentId, markdown]);
+
+  // Load shared document (run once)
   useEffect(() => {
     if (hasLoadedSharedDocument.current) return;
     if (typeof window === 'undefined') return;
@@ -67,35 +106,78 @@ export default function HomePage() {
           const content = parsed.content || '';
           setMarkdown(content);
 
-          // 마크다운 내용에서 제목 추출
           const extractedTitle = extractTitleFromMarkdown(content);
           setDocumentTitle(extractedTitle);
 
           if (parsed.fromShared) {
             setShowSharedNotice(true);
-            // 5초 후 알림 숨기기
             setTimeout(() => setShowSharedNotice(false), 5000);
           }
 
-          // 사용 후 로컬스토리지에서 제거
           window.localStorage.removeItem('temp_shared_document');
           hasLoadedSharedDocument.current = true;
         }
       } catch (error) {
-        console.error('공유 문서 로드 실패:', error);
+        console.error('Failed to load shared document:', error);
       }
     };
 
     loadSharedDocument();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // 빈 의존성 배열로 마운트 시에만 실행
+  }, []);
 
-  // 마크다운 복사 핸들러 - useCallback으로 메모이제이션
+  // Copy markdown handler
   const handleCopyMarkdown = useCallback(async () => {
     await copyToClipboard(markdown);
   }, [copyToClipboard, markdown]);
 
-  // AI 콘텐츠 적용 핸들러
+  // Save handler (Ctrl+S or save button)
+  const handleSave = useCallback(() => {
+    if (currentDocumentId) {
+      const success = saveDocumentById(currentDocumentId, markdown);
+      if (success) {
+        setLastAutoSaved(new Date());
+      }
+    } else {
+      setIsSaveMode(true);
+      setIsDocumentsModalOpen(true);
+    }
+  }, [currentDocumentId, markdown]);
+
+  // Document saved callback
+  const handleDocumentSaved = useCallback((docId: string) => {
+    setCurrentDocumentId(docId);
+    setLastAutoSaved(new Date());
+    setIsSaveMode(false);
+  }, []);
+
+  // Document load callback
+  const handleDocumentLoad = useCallback((content: string, docId: string) => {
+    setMarkdown(content);
+    setCurrentDocumentId(docId);
+  }, [setMarkdown]);
+
+  // New document
+  const handleNewDocument = useCallback(() => {
+    setMarkdown(DEFAULT_MARKDOWN);
+    setCurrentDocumentId(null);
+    setLastAutoSaved(null);
+  }, [setMarkdown]);
+
+  // Ctrl+S keyboard shortcut
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        handleSave();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [handleSave]);
+
+  // AI content apply handler
   const handleApplyAIContent = useCallback((content: string, replaceAll: boolean) => {
     if (replaceAll) {
       setMarkdown(content);
@@ -105,8 +187,7 @@ export default function HomePage() {
         const start = textarea.selectionStart;
         const newText = markdown.substring(0, start) + '\n\n' + content + '\n\n' + markdown.substring(start);
         setMarkdown(newText);
-        
-        // 커서를 새로 추가된 콘텐츠 뒤로 이동
+
         setTimeout(() => {
           textarea.focus();
           textarea.setSelectionRange(start + content.length + 4, start + content.length + 4);
@@ -115,7 +196,7 @@ export default function HomePage() {
     }
   }, [markdown, setMarkdown, textareaRef]);
 
-  // 툴바 액션 핸들러들 - useMemo로 메모이제이션하여 불필요한 리렌더링 방지
+  // Toolbar action handlers - memoized to prevent unnecessary re-renders
   const toolbarHandlers = useMemo(() => ({
     onHeading: insertHeading,
     onBold: () => insertFormatting('**', '**'),
@@ -133,11 +214,22 @@ export default function HomePage() {
     onCopy: handleCopyMarkdown,
     onExportPDF: handleExportToPDF,
     onAI: () => setIsAIModalOpen(true),
-  }), [insertHeading, insertFormatting, insertAtCursor, insertTable, selectAll, handleCopyMarkdown, handleExportToPDF]);
+    onUndo: undo,
+    onRedo: redo,
+    canUndo,
+    canRedo,
+    onSave: handleSave,
+    currentDocumentId,
+    lastAutoSaved,
+    onOpenDocuments: () => {
+      setIsSaveMode(false);
+      setIsDocumentsModalOpen(true);
+    },
+  }), [insertHeading, insertFormatting, insertAtCursor, insertTable, selectAll, handleCopyMarkdown, handleExportToPDF, undo, redo, canUndo, canRedo, handleSave, currentDocumentId, lastAutoSaved]);
 
   return (
     <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
-      {/* 공유받은 문서 로드 알림 */}
+      {/* Shared document load notice */}
       {showSharedNotice && (
         <div className="bg-green-50 dark:bg-green-900/20 border-b border-green-200 dark:border-green-800 px-4 py-2">
           <div className="flex items-center justify-between">
@@ -145,7 +237,7 @@ export default function HomePage() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
               </svg>
-              <span className="text-sm font-medium">공유받은 문서가 로드되었습니다: &ldquo;{documentTitle}&rdquo;</span>
+              <span className="text-sm font-medium">{t('notifications.sharedDocumentLoaded')}: &ldquo;{documentTitle}&rdquo;</span>
             </div>
             <button
               onClick={() => setShowSharedNotice(false)}
@@ -168,12 +260,12 @@ export default function HomePage() {
         onThemeToggle={toggleTheme}
         isThemeLoaded={isThemeLoaded}
       />
-      
-      <MobileTabs 
+
+      <MobileTabs
         activeTab={mobileActiveTab}
         onTabChange={setMobileActiveTab}
       />
-      
+
       <main className="flex-1 flex overflow-hidden" role="main">
         <EditorSection
           isVisible={mobileActiveTab === 'editor'}
@@ -181,13 +273,15 @@ export default function HomePage() {
           onMarkdownChange={setMarkdown}
           textareaRef={textareaRef}
           toolbarHandlers={toolbarHandlers}
+          onScroll={handleEditorScroll}
         />
-        
+
         <PreviewSection
           isVisible={mobileActiveTab === 'preview'}
           isClient={isClient}
           markdown={markdown}
           previewRef={previewRef}
+          onScroll={handlePreviewScroll}
         />
       </main>
 
@@ -213,6 +307,19 @@ export default function HomePage() {
         onClose={() => setIsAIModalOpen(false)}
         currentMarkdown={markdown}
         onApplyContent={handleApplyAIContent}
+      />
+
+      <LocalStorageModal
+        isOpen={isDocumentsModalOpen}
+        onClose={() => {
+          setIsDocumentsModalOpen(false);
+          setIsSaveMode(false);
+        }}
+        currentContent={markdown}
+        onLoad={handleDocumentLoad}
+        onSave={handleDocumentSaved}
+        currentDocumentId={currentDocumentId}
+        autoSaveMode={isSaveMode}
       />
     </div>
   );

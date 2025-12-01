@@ -1,37 +1,82 @@
 {
+  "metadata": {
+    "title": "免费Markdown编辑器 - 在线实时预览编辑器",
+    "description": "免费在线Markdown编辑器，支持实时预览、PDF导出、语法高亮和AI内容生成。支持中文、英文、日文，无需注册即可使用。",
+    "ogTitle": "免费Markdown编辑器 - 实时预览让写作更高效",
+    "ogDescription": "使用实时预览、PDF导出和AI智能内容生成，创建精美的Markdown文档。完全免费，无需注册。"
+  },
   "common": {
     "title": "免费Markdown编辑器",
     "description": "功能强大、功能丰富的Markdown编辑器，支持文档共享",
-    "loading": "加载中..."
+    "loading": "加载中...",
+    "save": "保存",
+    "cancel": "取消",
+    "close": "关闭",
+    "confirm": "确认",
+    "error": "错误",
+    "success": "成功"
   },
   "header": {
     "fullscreen": "全屏",
     "share": "分享",
+    "shareDocument": "分享文档",
     "export": "导出PDF",
+    "exportPDF": "导出PDF",
     "ai": "AI",
-    "theme": "主题"
+    "theme": "主题",
+    "darkMode": "切换到深色模式",
+    "lightMode": "切换到浅色模式",
+    "openSource": "开源代码",
+    "viewOnGitHub": "在GitHub上查看源代码",
+    "fullscreenPreview": "全屏预览",
+    "exportingPDF": "正在导出PDF..."
   },
   "editor": {
-    "placeholder": "在这里开始编写您的Markdown...",
+    "placeholder": "在这里开始编写Markdown...（粘贴或拖放图片上传）",
+    "title": "编辑器",
+    "ariaLabel": "Markdown编辑器",
+    "textareaLabel": "Markdown文本输入区",
+    "helpText": "使用Markdown语法格式化文本。快捷键：Ctrl+B（粗体）、Ctrl+I（斜体）、Ctrl+K（链接）、Ctrl+P（导出PDF）。粘贴或拖放图片即可上传。",
+    "uploading": "正在上传图片...",
+    "dropImageHere": "将图片拖放到这里",
+    "maxFileSize": "最大10MB",
     "toolbar": {
-      "bold": "粗体",
-      "italic": "斜体",
+      "ariaLabel": "编辑工具",
+      "undo": "撤销 (Ctrl+Z)",
+      "redo": "重做 (Ctrl+Y)",
+      "heading1": "标题1",
+      "heading2": "标题2",
+      "heading3": "标题3",
+      "bold": "粗体 (Ctrl+B)",
+      "italic": "斜体 (Ctrl+I)",
       "strikethrough": "删除线",
-      "code": "代码",
-      "link": "链接",
+      "inlineCode": "行内代码",
+      "link": "链接 (Ctrl+K)",
       "image": "图片",
       "bulletList": "项目符号列表",
       "numberedList": "编号列表",
       "quote": "引用",
       "table": "表格",
       "codeBlock": "代码块",
-      "selectAll": "全选",
-      "copy": "复制"
+      "aiGenerate": "AI内容生成",
+      "selectAll": "全选 (Ctrl+A)",
+      "copy": "复制Markdown",
+      "exportPDF": "导出PDF (Ctrl+P)",
+      "save": "保存 (Ctrl+S)",
+      "saveNew": "另存为新文档 (Ctrl+S)",
+      "myDocuments": "我的文档",
+      "justSaved": "刚刚保存",
+      "secondsAgo": "{seconds}秒前",
+      "minutesAgo": "{minutes}分钟前",
+      "hoursAgo": "{hours}小时前"
     }
   },
   "preview": {
     "title": "预览",
-    "noContent": "没有内容可预览"
+    "noContent": "没有内容可预览",
+    "livePreview": "实时预览",
+    "goToSection": "跳转到{section}部分",
+    "copyLink": "复制链接"
   },
   "share": {
     "title": "分享文档",
@@ -40,7 +85,14 @@
     "copyLink": "复制链接",
     "linkCopied": "链接已复制到剪贴板！",
     "close": "关闭",
-    "loading": "创建分享链接中..."
+    "loading": "创建分享链接中...",
+    "documentLoaded": "已加载分享文档",
+    "expireTime": "链接7天后过期",
+    "description": "创建一个可分享的文档链接。",
+    "linkReady": "分享链接已准备好！",
+    "shareLink": "分享链接：",
+    "copied": "已复制！",
+    "anyoneWithLink": "拥有此链接的任何人都可以查看文档。"
   },
   "ai": {
     "title": "AI内容生成器",
@@ -53,7 +105,8 @@
     "generate": "生成",
     "enhanceButton": "增强内容",
     "loading": "生成内容中...",
-    "error": "内容生成错误",
+    "error": "AI生成过程中发生错误。",
+    "errorStream": "无法读取流。",
     "close": "关闭",
     "suggestions": {
       "title": "推荐主题",
@@ -64,10 +117,43 @@
         "TypeScript入门",
         "现代CSS技术"
       ]
+    },
+    "modal": {
+      "whatToDo": "您想做什么？",
+      "selectMode": "请选择一个模式",
+      "createNew": "创建新内容",
+      "createNewDesc": "从头开始生成新的Markdown文档",
+      "improveExisting": "改进现有文本",
+      "improveExistingDesc": "改进和扩展当前文本",
+      "change": "更改",
+      "descriptionLabel": "内容描述 *",
+      "improvementLabel": "改进要求 *",
+      "createPlaceholder": "例如：React hooks指南、Python数据分析教程、JavaScript异步处理方法...",
+      "improvePlaceholder": "例如：添加更多示例、包含代码块、添加详细说明、添加目录...",
+      "createHint": "请具体描述您想要生成的主题或内容",
+      "improveHint": "请具体描述您想如何改进内容",
+      "working": "AI正在工作...",
+      "generateContent": "生成内容",
+      "improveText": "改进文本",
+      "generatedContent": "生成的内容：",
+      "addAtCursor": "在光标处添加",
+      "replaceAll": "全部替换",
+      "regenerate": "重新生成"
     }
   },
   "fullscreen": {
-    "exit": "退出全屏"
+    "title": "全屏预览",
+    "exit": "退出全屏",
+    "exitLabel": "退出全屏模式返回编辑器",
+    "close": "关闭",
+    "closeEsc": "关闭 (ESC)",
+    "actions": "全屏操作",
+    "exportPDF": "导出PDF",
+    "exportingPDF": "正在导出PDF...",
+    "exportingShort": "导出中...",
+    "openSourceLabel": "在GitHub上查看开源代码",
+    "previewLabel": "全屏Markdown预览",
+    "loadingPreview": "正在加载预览..."
   },
   "tabs": {
     "editor": "编辑器",
@@ -80,7 +166,16 @@
     "link": "插入链接",
     "pdf": "导出到PDF",
     "fullscreen": "切换全屏",
-    "exit": "退出全屏"
+    "exit": "退出全屏",
+    "hint": "键盘快捷键：Ctrl+P（PDF）、ESC（退出全屏）"
+  },
+  "mobileMenu": {
+    "open": "打开菜单",
+    "exportPDF": "导出PDF",
+    "exportingPDF": "正在导出PDF...",
+    "fullscreenPreview": "全屏预览",
+    "darkMode": "深色模式",
+    "lightMode": "浅色模式"
   },
   "language": {
     "select": "选择语言",
@@ -88,5 +183,37 @@
     "korean": "한국어",
     "japanese": "日本語",
     "chinese": "中文"
+  },
+  "notifications": {
+    "sharedDocumentLoaded": "分享文档加载成功"
+  },
+  "localStorage": {
+    "title": "我的文档",
+    "documentCount": "{count}个文档，{folderCount}个文件夹",
+    "searchPlaceholder": "搜索文档...",
+    "newFolder": "新建文件夹",
+    "saveCurrentDocument": "保存当前文档",
+    "folderName": "文件夹名称",
+    "documentName": "文档名称",
+    "create": "创建",
+    "save": "保存",
+    "cancel": "取消",
+    "close": "关闭",
+    "emptyState": "文档库为空",
+    "emptyStateHint": "创建文件夹或保存当前文档！",
+    "noSearchResults": "没有搜索结果",
+    "root": "根目录",
+    "rename": "重命名",
+    "delete": "删除",
+    "open": "打开",
+    "overwrite": "用当前内容覆盖",
+    "move": "移动",
+    "footerHint": "将文档拖到文件夹或使用移动按钮",
+    "untitled": "无标题",
+    "emptyDocument": "空文档",
+    "justNow": "刚刚",
+    "minutesAgo": "{minutes}分钟前",
+    "hoursAgo": "{hours}小时前",
+    "daysAgo": "{days}天前"
   }
-} 
+}

@@ -1,46 +1,98 @@
 {
+  "metadata": {
+    "title": "무료 마크다운 에디터 - 실시간 미리보기 온라인 에디터",
+    "description": "실시간 미리보기, PDF 출력, 문법 강조, AI 콘텐츠 생성을 지원하는 무료 온라인 마크다운 에디터입니다. 한국어, 영어, 중국어, 일본어 지원. 회원가입 없이 사용 가능.",
+    "ogTitle": "무료 마크다운 에디터 - 실시간 미리보기로 효율적인 글쓰기",
+    "ogDescription": "실시간 미리보기, PDF 출력, AI 콘텐츠 생성으로 아름다운 마크다운 문서를 작성하세요. 100% 무료, 회원가입 필요 없음."
+  },
   "common": {
     "title": "무료 마크다운 에디터",
-    "description": "문서 공유 기능이 있는 강력하고 기능이 풍부한 마크다운 에디터",
-    "loading": "로딩 중..."
+    "description": "문서 공유 기능을 갖춘 강력하고 기능이 풍부한 마크다운 에디터",
+    "loading": "로딩 중...",
+    "save": "저장",
+    "cancel": "취소",
+    "close": "닫기",
+    "confirm": "확인",
+    "error": "오류",
+    "success": "성공"
   },
   "header": {
     "fullscreen": "전체화면",
     "share": "공유",
+    "shareDocument": "문서 공유",
     "export": "PDF 출력",
+    "exportPDF": "PDF 출력",
     "ai": "AI",
-    "theme": "테마"
+    "theme": "테마",
+    "darkMode": "다크 모드로 전환",
+    "lightMode": "라이트 모드로 전환",
+    "openSource": "오픈소스",
+    "viewOnGitHub": "GitHub에서 소스코드 보기",
+    "fullscreenPreview": "전체화면 미리보기",
+    "exportingPDF": "PDF 생성 중..."
   },
   "editor": {
-    "placeholder": "여기에 마크다운을 작성해보세요...",
+    "placeholder": "여기에 마크다운을 입력하세요... (이미지를 붙여넣거나 드래그하여 업로드)",
+    "title": "에디터",
+    "ariaLabel": "마크다운 편집기",
+    "textareaLabel": "마크다운 텍스트 입력 영역",
+    "helpText": "마크다운 문법을 사용하여 텍스트를 작성할 수 있습니다. 키보드 단축키: Ctrl+B (굵게), Ctrl+I (기울임), Ctrl+K (링크), Ctrl+P (PDF 출력). 이미지를 복사하여 붙여넣거나 드래그하여 업로드할 수 있습니다.",
+    "uploading": "이미지 업로드 중...",
+    "dropImageHere": "이미지를 여기에 놓으세요",
+    "maxFileSize": "최대 10MB",
     "toolbar": {
-      "bold": "굵게",
-      "italic": "기울임",
+      "ariaLabel": "편집 도구",
+      "undo": "실행 취소 (Ctrl+Z)",
+      "redo": "다시 실행 (Ctrl+Y)",
+      "heading1": "헤딩 1",
+      "heading2": "헤딩 2",
+      "heading3": "헤딩 3",
+      "bold": "굵게 (Ctrl+B)",
+      "italic": "기울임 (Ctrl+I)",
       "strikethrough": "취소선",
-      "code": "코드",
-      "link": "링크",
+      "inlineCode": "인라인 코드",
+      "link": "링크 (Ctrl+K)",
       "image": "이미지",
-      "bulletList": "불릿 목록",
-      "numberedList": "번호 목록",
-      "quote": "인용",
+      "bulletList": "불릿 리스트",
+      "numberedList": "번호 리스트",
+      "quote": "인용구",
       "table": "테이블",
       "codeBlock": "코드 블록",
-      "selectAll": "전체 선택",
-      "copy": "복사"
+      "aiGenerate": "AI 콘텐츠 생성",
+      "selectAll": "전체 선택 (Ctrl+A)",
+      "copy": "마크다운 복사",
+      "exportPDF": "PDF 출력 (Ctrl+P)",
+      "save": "저장 (Ctrl+S)",
+      "saveNew": "새 문서로 저장 (Ctrl+S)",
+      "myDocuments": "내 문서함",
+      "justSaved": "방금 저장됨",
+      "secondsAgo": "{seconds}초 전",
+      "minutesAgo": "{minutes}분 전",
+      "hoursAgo": "{hours}시간 전"
     }
   },
   "preview": {
     "title": "미리보기",
-    "noContent": "미리볼 내용이 없습니다"
+    "noContent": "미리볼 내용이 없습니다",
+    "livePreview": "실시간 미리보기",
+    "goToSection": "{section} 섹션으로 이동",
+    "copyLink": "링크 복사"
   },
   "share": {
     "title": "문서 공유",
     "createLink": "공유 링크 생성",
-    "linkCreated": "공유 링크가 성공적으로 생성되었습니다!",
+    "linkCreated": "공유 링크가 생성되었습니다!",
     "copyLink": "링크 복사",
     "linkCopied": "링크가 클립보드에 복사되었습니다!",
     "close": "닫기",
-    "loading": "공유 링크 생성 중..."
+    "loading": "공유 링크 생성 중...",
+    "documentLoaded": "공유 문서 로드됨",
+    "expireTime": "링크는 7일 후 만료됩니다",
+    "description": "현재 문서를 공유 가능한 링크로 만들어보세요.",
+    "linkReady": "공유 링크가 준비되었습니다!",
+    "shareLink": "공유 링크:",
+    "copied": "복사됨!",
+    "anyoneWithLink": "이 링크를 가진 누구나 문서를 볼 수 있습니다."
   },
   "ai": {
     "title": "AI 콘텐츠 생성기",
@@ -53,21 +105,55 @@
     "generate": "생성",
     "enhanceButton": "콘텐츠 개선",
     "loading": "콘텐츠 생성 중...",
-    "error": "콘텐츠 생성 오류",
+    "error": "AI 생성 중 오류가 발생했습니다.",
+    "errorStream": "스트림을 읽을 수 없습니다.",
     "close": "닫기",
     "suggestions": {
       "title": "추천 주제",
       "topics": [
-        "깨끗한 코드 작성 방법",
-        "React 훅 소개",
+        "클린 코드 작성법",
+        "React Hooks 소개",
         "API 설계 모범 사례",
         "TypeScript 시작하기",
-        "최신 CSS 기법"
+        "모던 CSS 기법"
       ]
+    },
+    "modal": {
+      "whatToDo": "어떤 작업을 하시겠어요?",
+      "selectMode": "원하시는 모드를 선택해주세요",
+      "createNew": "새로운 콘텐츠 생성",
+      "createNewDesc": "처음부터 새로운 마크다운 문서를 생성합니다",
+      "improveExisting": "기존 텍스트 개선",
+      "improveExistingDesc": "현재 작성된 텍스트를 개선하고 확장합니다",
+      "change": "변경",
+      "descriptionLabel": "생성할 콘텐츠 설명 *",
+      "improvementLabel": "개선 요청사항 *",
+      "createPlaceholder": "예: React 훅 사용법에 대한 가이드, Python 데이터 분석 튜토리얼, JavaScript 비동기 처리 방법 등...",
+      "improvePlaceholder": "예: 더 자세한 예시 추가, 코드 블록 포함, 구체적인 설명, 목차 추가, 전문 용어 설명 등...",
+      "createHint": "생성하고 싶은 콘텐츠의 주제나 내용을 구체적으로 입력해주세요",
+      "improveHint": "어떤 방향으로 개선하고 싶은지 구체적으로 입력해주세요",
+      "working": "AI 작업 중...",
+      "generateContent": "콘텐츠 생성",
+      "improveText": "텍스트 개선",
+      "generatedContent": "생성된 콘텐츠:",
+      "addAtCursor": "현재 위치에 추가",
+      "replaceAll": "전체 교체",
+      "regenerate": "다시 생성"
     }
   },
   "fullscreen": {
-    "exit": "전체화면 종료"
+    "title": "전체화면 미리보기",
+    "exit": "전체화면 종료",
+    "exitLabel": "전체화면 미리보기를 닫고 편집 화면으로 돌아갑니다",
+    "close": "닫기",
+    "closeEsc": "닫기 (ESC)",
+    "actions": "전체화면 작업",
+    "exportPDF": "PDF 출력",
+    "exportingPDF": "PDF 생성 중...",
+    "exportingShort": "생성중...",
+    "openSourceLabel": "GitHub에서 오픈소스 코드 보기",
+    "previewLabel": "전체화면 마크다운 미리보기",
+    "loadingPreview": "미리보기를 로드하는 중..."
   },
   "tabs": {
     "editor": "에디터",
@@ -75,12 +161,21 @@
   },
   "shortcuts": {
     "title": "키보드 단축키",
-    "bold": "굵은 글씨",
-    "italic": "기울임꼴",
+    "bold": "굵은 텍스트",
+    "italic": "기울임 텍스트",
     "link": "링크 삽입",
-    "pdf": "PDF로 출력",
+    "pdf": "PDF로 내보내기",
     "fullscreen": "전체화면 전환",
-    "exit": "전체화면 종료"
+    "exit": "전체화면 종료",
+    "hint": "키보드 단축키: Ctrl+P (PDF), ESC (전체화면 종료)"
+  },
+  "mobileMenu": {
+    "open": "메뉴 열기",
+    "exportPDF": "PDF 출력",
+    "exportingPDF": "PDF 생성 중...",
+    "fullscreenPreview": "전체화면 미리보기",
+    "darkMode": "다크 모드",
+    "lightMode": "라이트 모드"
   },
   "language": {
     "select": "언어 선택",
@@ -88,5 +183,37 @@
     "korean": "한국어",
     "japanese": "日本語",
     "chinese": "中文"
+  },
+  "notifications": {
+    "sharedDocumentLoaded": "공유 문서가 성공적으로 로드되었습니다"
+  },
+  "localStorage": {
+    "title": "내 문서함",
+    "documentCount": "{count}개 문서, {folderCount}개 폴더",
+    "searchPlaceholder": "문서 검색...",
+    "newFolder": "새 폴더",
+    "saveCurrentDocument": "현재 문서 저장",
+    "folderName": "폴더 이름",
+    "documentName": "문서 이름",
+    "create": "생성",
+    "save": "저장",
+    "cancel": "취소",
+    "close": "닫기",
+    "emptyState": "문서함이 비어있습니다",
+    "emptyStateHint": "새 폴더를 만들거나 현재 문서를 저장해보세요!",
+    "noSearchResults": "검색 결과가 없습니다",
+    "root": "루트",
+    "rename": "이름 변경",
+    "delete": "삭제",
+    "open": "열기",
+    "overwrite": "현재 내용으로 덮어쓰기",
+    "move": "이동",
+    "footerHint": "문서를 폴더로 드래그하거나 이동 버튼을 사용하세요",
+    "untitled": "제목 없음",
+    "emptyDocument": "빈 문서",
+    "justNow": "방금 전",
+    "minutesAgo": "{minutes}분 전",
+    "hoursAgo": "{hours}시간 전",
+    "daysAgo": "{days}일 전"
   }
-} 
+}

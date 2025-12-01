@@ -1,6 +1,10 @@
+'use client';
+
 import React from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { MobileMenu } from './MobileMenu';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 interface HeaderProps {
   isExporting: boolean;
@@ -30,101 +34,108 @@ const MoonIcon = () => (
   </svg>
 );
 
-export const Header: React.FC<HeaderProps> = ({ isExporting, onExportPDF, onFullscreen, onShare, theme, onThemeToggle, isThemeLoaded = false }) => (
-  <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 py-3 md:py-4" role="banner">
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-2 md:gap-4 min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <Image 
-            src="/logo.png" 
-            alt="Markdown Editor Logo" 
-            width={32}
-            height={32}
-            className="w-6 h-6 md:w-8 md:h-8 object-contain"
-            onError={(e) => {
-              e.currentTarget.style.display = 'none';
-            }}
-          />
-          <h1 className="text-base md:text-xl font-semibold text-gray-800 dark:text-white truncate">
-            Markdown Editor
-          </h1>
-        </div>
-        <a 
-          href="https://github.com/gyupro/markdown-editor" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="flex text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 text-sm items-center gap-1 flex-shrink-0"
-          title="GitHub Repository"
-          aria-label="GitHub에서 오픈소스 코드 보기"
-        >
-          <GitHubIcon />
-          <span className="hidden sm:inline">Open Source</span>
-        </a>
-      </div>
-      <nav className="flex items-center gap-2" aria-label="메인 작업">
-        <button
-          onClick={onThemeToggle}
-          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
-          aria-label={theme === 'light' ? '다크 모드로 전환' : '라이트 모드로 전환'}
-          title={theme === 'light' ? '다크 모드로 전환' : '라이트 모드로 전환'}
-          suppressHydrationWarning
-        >
-          {/* Show placeholder during SSR, then actual icon after hydration */}
-          {!isThemeLoaded ? (
-            <span className="w-5 h-5 block" />
-          ) : theme === 'light' ? (
-            <MoonIcon />
-          ) : (
-            <SunIcon />
-          )}
-        </button>
-        <button
-          onClick={onShare}
-          className="px-3 md:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-1 md:gap-2 text-sm flex-shrink-0"
-          aria-label="현재 문서를 공유 가능한 링크로 만듭니다"
-        >
-          <span className="text-sm md:text-base" aria-hidden="true">🌐</span> 
-          <span className="hidden sm:inline">문서 공유</span>
-          <span className="sm:hidden">공유</span>
-        </button>
-        <div className="hidden md:flex gap-3">
-          <button
-            onClick={onExportPDF}
-            disabled={isExporting}
-            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-green-400 transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2 text-sm"
-            aria-label={isExporting ? "PDF 생성 중입니다. 잠시만 기다려주세요." : "현재 문서를 PDF로 출력합니다"}
+export const Header: React.FC<HeaderProps> = ({ isExporting, onExportPDF, onFullscreen, onShare, theme, onThemeToggle, isThemeLoaded = false }) => {
+  const t = useTranslations('header');
+
+  return (
+    <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 py-3 md:py-4" role="banner">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 md:gap-4 min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <Image
+              src="/logo.png"
+              alt="Markdown Editor Logo"
+              width={32}
+              height={32}
+              className="w-6 h-6 md:w-8 md:h-8 object-contain"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+            <h1 className="text-base md:text-xl font-semibold text-gray-800 dark:text-white truncate">
+              Markdown Editor
+            </h1>
+          </div>
+          <a
+            href="https://github.com/gyupro/markdown-editor"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 text-sm items-center gap-1 flex-shrink-0"
+            title="GitHub Repository"
+            aria-label={t('viewOnGitHub')}
           >
-            {isExporting ? (
-              <>
-                <span className="animate-spin text-base" aria-hidden="true">⏳</span>
-                <span>PDF 생성 중...</span>
-              </>
+            <GitHubIcon />
+            <span className="hidden sm:inline">{t('openSource')}</span>
+          </a>
+        </div>
+        <nav className="flex items-center gap-2" aria-label="Main actions">
+          {/* Language Switcher */}
+          <LanguageSwitcher />
+
+          <button
+            onClick={onThemeToggle}
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+            aria-label={theme === 'light' ? t('darkMode') : t('lightMode')}
+            title={theme === 'light' ? t('darkMode') : t('lightMode')}
+            suppressHydrationWarning
+          >
+            {/* Show placeholder during SSR, then actual icon after hydration */}
+            {!isThemeLoaded ? (
+              <span className="w-5 h-5 block" />
+            ) : theme === 'light' ? (
+              <MoonIcon />
             ) : (
-              <>
-                <span className="text-base" aria-hidden="true">📄</span> 
-                <span>PDF 출력</span>
-              </>
+              <SunIcon />
             )}
           </button>
           <button
-            onClick={onFullscreen}
-            className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg text-sm"
-            aria-label="전체화면으로 미리보기를 확인합니다"
+            onClick={onShare}
+            className="px-3 md:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-1 md:gap-2 text-sm flex-shrink-0"
+            aria-label={t('shareDocument')}
           >
-            <span className="text-base" aria-hidden="true">🖥️</span> 
-            <span>전체화면 미리보기</span>
+            <span className="text-sm md:text-base" aria-hidden="true">🌐</span>
+            <span className="hidden sm:inline">{t('shareDocument')}</span>
+            <span className="sm:hidden">{t('share')}</span>
           </button>
-        </div>
-        <div className="md:hidden">
-          <MobileMenu 
-            isExporting={isExporting}
-            onExportPDF={onExportPDF}
-            onFullscreen={onFullscreen}
-            theme={theme}
-            onThemeToggle={onThemeToggle}
-          />
-        </div>
-      </nav>
-    </div>
-  </header>
-); 
+          <div className="hidden md:flex gap-3">
+            <button
+              onClick={onExportPDF}
+              disabled={isExporting}
+              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-green-400 transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2 text-sm"
+              aria-label={isExporting ? t('exportingPDF') : t('exportPDF')}
+            >
+              {isExporting ? (
+                <>
+                  <span className="animate-spin text-base" aria-hidden="true">⏳</span>
+                  <span>{t('exportingPDF')}</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-base" aria-hidden="true">📄</span>
+                  <span>{t('exportPDF')}</span>
+                </>
+              )}
+            </button>
+            <button
+              onClick={onFullscreen}
+              className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg text-sm"
+              aria-label={t('fullscreenPreview')}
+            >
+              <span className="text-base" aria-hidden="true">🖥️</span>
+              <span>{t('fullscreenPreview')}</span>
+            </button>
+          </div>
+          <div className="md:hidden">
+            <MobileMenu
+              isExporting={isExporting}
+              onExportPDF={onExportPDF}
+              onFullscreen={onFullscreen}
+              theme={theme}
+              onThemeToggle={onThemeToggle}
+            />
+          </div>
+        </nav>
+      </div>
+    </header>
+  );
+}; 

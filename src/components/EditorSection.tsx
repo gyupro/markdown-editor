@@ -1,4 +1,7 @@
+'use client';
+
 import React, { useRef, useState, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import { Toolbar } from './Toolbar';
 import { ToolbarHandlers } from '@/types/markdown';
 import { useImageUpload, ImageUploadError } from '@/hooks/useImageUpload';
@@ -20,7 +23,8 @@ const EditorSectionComponent: React.FC<EditorSectionProps> = ({
   toolbarHandlers,
   onScroll,
 }) => {
-  // 첫 번째 포커스 여부를 추적하는 ref
+  const t = useTranslations('editor');
+  // Track first focus
   const hasBeenFocused = useRef(false);
   const [isDragOver, setIsDragOver] = useState(false);
 
@@ -110,16 +114,16 @@ const EditorSectionComponent: React.FC<EditorSectionProps> = ({
   }, [uploadFromDrop, insertAtCursor]);
 
   return (
-    <section 
-      className={`${isVisible ? 'flex' : 'hidden'} md:flex md:w-1/2 flex-col border-r border-gray-200 dark:border-gray-700`} 
-      aria-label="마크다운 편집기"
+    <section
+      className={`${isVisible ? 'flex' : 'hidden'} md:flex md:w-1/2 flex-col border-r border-gray-200 dark:border-gray-700`}
+      aria-label={t('ariaLabel')}
     >
       <header className="hidden md:block bg-gray-100 dark:bg-gray-800 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
         <h2 className="text-sm font-medium text-gray-600 dark:text-gray-300 flex items-center gap-2">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
           </svg>
-          EDITOR
+          {t('title').toUpperCase()}
         </h2>
       </header>
       
@@ -150,7 +154,7 @@ const EditorSectionComponent: React.FC<EditorSectionProps> = ({
         <div className="mx-4 mt-2 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
           <div className="flex items-center gap-3">
             <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-500 border-t-transparent"></div>
-            <span className="text-sm text-blue-700 dark:text-blue-300">이미지 업로드 중...</span>
+            <span className="text-sm text-blue-700 dark:text-blue-300">{t('uploading')}</span>
             <span className="text-sm text-blue-500 dark:text-blue-400 ml-auto">{uploadProgress}%</span>
           </div>
           <div className="mt-2 w-full bg-blue-200 dark:bg-blue-800 rounded-full h-1.5">
@@ -176,8 +180,8 @@ const EditorSectionComponent: React.FC<EditorSectionProps> = ({
               <svg className="w-10 h-10 mx-auto text-blue-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
-              <p className="text-blue-700 dark:text-blue-300 font-medium">이미지를 여기에 놓으세요</p>
-              <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">최대 10MB</p>
+              <p className="text-blue-700 dark:text-blue-300 font-medium">{t('dropImageHere')}</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">{t('maxFileSize')}</p>
             </div>
           </div>
         )}
@@ -190,16 +194,14 @@ const EditorSectionComponent: React.FC<EditorSectionProps> = ({
           onFocus={handleFocus}
           onScroll={onScroll}
           onPaste={handlePaste}
-          placeholder="여기에 마크다운을 입력하세요... (이미지를 붙여넣거나 드래그하여 업로드)"
+          placeholder={t('placeholder')}
           spellCheck={false}
-          aria-label="마크다운 텍스트 입력 영역"
+          aria-label={t('textareaLabel')}
           aria-describedby="editor-help"
         />
       </div>
       <div id="editor-help" className="sr-only">
-        마크다운 문법을 사용하여 텍스트를 작성할 수 있습니다.
-        키보드 단축키: Ctrl+B (굵게), Ctrl+I (기울임), Ctrl+K (링크), Ctrl+P (PDF 출력).
-        이미지를 복사하여 붙여넣거나 드래그하여 업로드할 수 있습니다.
+        {t('helpText')}
       </div>
     </section>
   );

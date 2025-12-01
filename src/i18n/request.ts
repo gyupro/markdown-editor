@@ -1,16 +1,21 @@
-import { notFound } from 'next/navigation';
 import { getRequestConfig } from 'next-intl/server';
+import { routing } from './routing';
 
-// 지원하는 언어 목록
-export const locales = ['en', 'ko', 'ja', 'zh'] as const;
-export type Locale = (typeof locales)[number];
+export default getRequestConfig(async ({ requestLocale }) => {
+  // This typically corresponds to the `[locale]` segment
+  let locale = await requestLocale;
 
-export default getRequestConfig(async ({ locale }) => {
-  // 지원하지 않는 언어인 경우 404 페이지로 이동
-  if (!locale || !locales.includes(locale as Locale)) notFound();
+  // Ensure that a valid locale is used
+  if (!locale || !routing.locales.includes(locale as typeof routing.locales[number])) {
+    locale = routing.defaultLocale;
+  }
 
   return {
     locale,
     messages: (await import(`../messages/${locale}.json`)).default
   };
-}); 
+});
+
+// Re-export for convenience
+export const locales = ['en', 'ko', 'ja', 'zh'] as const;
+export type Locale = (typeof locales)[number];
