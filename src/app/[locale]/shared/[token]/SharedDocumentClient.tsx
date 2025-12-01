@@ -14,6 +14,7 @@ import { createMarkdownComponents } from '@/components/MarkdownComponents';
 import { validateShareToken } from '@/utils/validation';
 import { extractSummaryFromMarkdown, extractTitleFromMarkdown } from '@/utils/markdown';
 import Image from 'next/image';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 interface SharedDocumentClientProps {
   initialToken?: string;
@@ -262,27 +263,30 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
               </h1>
             </div>
             
-            {/* Date and dark mode toggle */}
+            {/* Date and controls */}
             <div className="flex items-center justify-between">
               <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
                 {t('sharedDocument')} · {new Date(document.created_at).toLocaleDateString(locale === 'ko' ? 'ko-KR' : locale === 'ja' ? 'ja-JP' : locale === 'zh' ? 'zh-CN' : 'en-US')}
               </p>
-              <button
-                onClick={toggleTheme}
-                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
-                aria-label={theme === 'light' ? tHeader('darkMode') : tHeader('lightMode')}
-                title={theme === 'light' ? tHeader('darkMode') : tHeader('lightMode')}
-              >
-                {theme === 'light' ? (
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                  </svg>
-                ) : (
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                  </svg>
-                )}
-              </button>
+              <div className="flex items-center gap-1">
+                <LanguageSwitcher />
+                <button
+                  onClick={toggleTheme}
+                  className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                  aria-label={theme === 'light' ? tHeader('darkMode') : tHeader('lightMode')}
+                  title={theme === 'light' ? tHeader('darkMode') : tHeader('lightMode')}
+                >
+                  {theme === 'light' ? (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                  ) : (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
           
