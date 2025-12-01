@@ -6,7 +6,7 @@ export const routing = defineRouting({
   locales: ['ko', 'en', 'ja', 'zh'],
 
   // Used when no locale matches (fallback)
-  defaultLocale: 'ko',
+  defaultLocale: 'en',
 
   // Locale prefix strategy - 'always' shows locale in URL for all languages
   localePrefix: 'always',

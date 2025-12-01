@@ -10,7 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     url: `${baseUrl}/${locale}`,
     lastModified: currentDate,
     changeFrequency: 'weekly' as const,
-    priority: locale === 'ko' ? 1.0 : 0.9,
+    priority: locale === 'en' ? 1.0 : 0.9,
     alternates: {
       languages: locales.reduce((acc, loc) => {
         acc[loc === 'zh' ? 'zh-CN' : loc === 'ja' ? 'ja-JP' : loc === 'ko' ? 'ko-KR' : 'en'] = `${baseUrl}/${loc}`

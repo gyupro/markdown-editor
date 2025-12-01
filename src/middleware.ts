@@ -14,7 +14,7 @@ export const config = {
     '/(ko|en|ja|zh)/:path*',
 
     // Enable redirects that add missing locales
-    // (e.g. `/pathnames` -> `/ko/pathnames`)
+    // (e.g. `/pathnames` -> `/en/pathnames`)
     '/((?!api|_next|_vercel|.*\\..*).*)'
   ]
 };
