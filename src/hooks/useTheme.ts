@@ -36,18 +36,23 @@ const setStorageTheme = (theme: Theme): void => {
 };
 
 export const useTheme = () => {
+  // Always initialize with 'light' for SSR consistency
+  // The blocking script in layout.tsx handles the CSS immediately
+  // This state will sync with localStorage/DOM in useEffect
   const [theme, setTheme] = useState<Theme>('light');
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // 초기 테마 로드
+  // 초기 테마 로드 - sync with localStorage and DOM
   useEffect(() => {
+    // Read from DOM first (blocking script already applied)
+    const isDarkFromDOM = document.documentElement.classList.contains('dark');
     const savedTheme = getStorageTheme();
 
     if (savedTheme) {
-      // 저장된 테마가 있으면 사용
       setTheme(savedTheme);
-    } else if (typeof window !== 'undefined') {
-      // 저장된 테마가 없으면 시스템 설정 확인
+    } else if (isDarkFromDOM) {
+      setTheme('dark');
+    } else {
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       setTheme(prefersDark ? 'dark' : 'light');
     }

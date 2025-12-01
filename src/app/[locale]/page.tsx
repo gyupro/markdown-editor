@@ -159,13 +159,14 @@ export default function HomePage() {
         </div>
       )}
 
-      <Header 
+      <Header
         isExporting={isExporting}
         onExportPDF={handleExportToPDF}
         onFullscreen={() => setIsFullscreen(true)}
         onShare={() => setIsShareModalOpen(true)}
         theme={theme}
         onThemeToggle={toggleTheme}
+        isThemeLoaded={isThemeLoaded}
       />
       
       <MobileTabs 

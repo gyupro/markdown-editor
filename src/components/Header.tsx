@@ -9,6 +9,7 @@ interface HeaderProps {
   onShare: () => void;
   theme: 'light' | 'dark';
   onThemeToggle: () => void;
+  isThemeLoaded?: boolean;
 }
 
 const GitHubIcon = () => (
@@ -29,7 +30,7 @@ const MoonIcon = () => (
   </svg>
 );
 
-export const Header: React.FC<HeaderProps> = ({ isExporting, onExportPDF, onFullscreen, onShare, theme, onThemeToggle }) => (
+export const Header: React.FC<HeaderProps> = ({ isExporting, onExportPDF, onFullscreen, onShare, theme, onThemeToggle, isThemeLoaded = false }) => (
   <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 py-3 md:py-4" role="banner">
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-2 md:gap-4 min-w-0 flex-1">
@@ -66,8 +67,16 @@ export const Header: React.FC<HeaderProps> = ({ isExporting, onExportPDF, onFull
           className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
           aria-label={theme === 'light' ? '다크 모드로 전환' : '라이트 모드로 전환'}
           title={theme === 'light' ? '다크 모드로 전환' : '라이트 모드로 전환'}
+          suppressHydrationWarning
         >
-          {theme === 'light' ? <MoonIcon /> : <SunIcon />}
+          {/* Show placeholder during SSR, then actual icon after hydration */}
+          {!isThemeLoaded ? (
+            <span className="w-5 h-5 block" />
+          ) : theme === 'light' ? (
+            <MoonIcon />
+          ) : (
+            <SunIcon />
+          )}
         </button>
         <button
           onClick={onShare}
