@@ -30,9 +30,24 @@ interface LocalStorageModalProps {
 const STORAGE_KEY = 'markdown-editor-documents';
 const FOLDERS_KEY = 'markdown-editor-folders';
 
+// Safe check for browser localStorage (handles Node.js v22+ built-in localStorage)
+const isBrowserLocalStorageAvailable = (): boolean => {
+  try {
+    if (typeof window === 'undefined') return false;
+    if (!window.localStorage) return false;
+    // Test if localStorage actually works (Node.js v22+ may have partial implementation)
+    const testKey = '__test_storage__';
+    window.localStorage.setItem(testKey, 'test');
+    window.localStorage.removeItem(testKey);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 // Get all saved documents
 const getSavedDocuments = (): SavedDocument[] => {
-  if (typeof window === 'undefined') return [];
+  if (!isBrowserLocalStorageAvailable()) return [];
   try {
     const data = window.localStorage.getItem(STORAGE_KEY);
     const docs = data ? JSON.parse(data) : [];
@@ -48,7 +63,7 @@ const getSavedDocuments = (): SavedDocument[] => {
 
 // Get all folders
 const getSavedFolders = (): Folder[] => {
-  if (typeof window === 'undefined') return [];
+  if (!isBrowserLocalStorageAvailable()) return [];
   try {
     const data = window.localStorage.getItem(FOLDERS_KEY);
     return data ? JSON.parse(data) : [];
@@ -59,13 +74,13 @@ const getSavedFolders = (): Folder[] => {
 
 // Save documents to localStorage
 const saveDocuments = (documents: SavedDocument[]) => {
-  if (typeof window === 'undefined') return;
+  if (!isBrowserLocalStorageAvailable()) return;
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(documents));
 };
 
 // Save folders to localStorage
 const saveFolders = (folders: Folder[]) => {
-  if (typeof window === 'undefined') return;
+  if (!isBrowserLocalStorageAvailable()) return;
   window.localStorage.setItem(FOLDERS_KEY, JSON.stringify(folders));
 };
 
@@ -369,7 +384,7 @@ const DocumentItem: React.FC<{
 
 // Export helper functions for external auto-save
 export const saveDocumentById = (documentId: string, content: string): boolean => {
-  if (typeof window === 'undefined') return false;
+  if (!isBrowserLocalStorageAvailable()) return false;
   try {
     const documents = getSavedDocuments();
     const docIndex = documents.findIndex(d => d.id === documentId);
@@ -388,7 +403,7 @@ export const saveDocumentById = (documentId: string, content: string): boolean =
 };
 
 export const getDocumentById = (documentId: string): SavedDocument | null => {
-  if (typeof window === 'undefined') return null;
+  if (!isBrowserLocalStorageAvailable()) return null;
   try {
     const documents = getSavedDocuments();
     return documents.find(d => d.id === documentId) || null;

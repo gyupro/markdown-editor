@@ -21,9 +21,23 @@ function debounce(
   return debouncedFn;
 }
 
+// Safe check for browser localStorage (handles Node.js v22+ built-in localStorage)
+const isBrowserLocalStorageAvailable = (): boolean => {
+  try {
+    if (typeof window === 'undefined') return false;
+    if (!window.localStorage) return false;
+    const testKey = '__test_storage__';
+    window.localStorage.setItem(testKey, 'test');
+    window.localStorage.removeItem(testKey);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 // Helper to safely access localStorage
 const getStorageItem = (key: string): string | null => {
-  if (typeof window === 'undefined') return null;
+  if (!isBrowserLocalStorageAvailable()) return null;
   try {
     return window.localStorage.getItem(key);
   } catch {
@@ -32,7 +46,7 @@ const getStorageItem = (key: string): string | null => {
 };
 
 const setStorageItem = (key: string, value: string): boolean => {
-  if (typeof window === 'undefined') return false;
+  if (!isBrowserLocalStorageAvailable()) return false;
   try {
     window.localStorage.setItem(key, value);
     return true;
@@ -42,7 +56,7 @@ const setStorageItem = (key: string, value: string): boolean => {
 };
 
 const removeStorageItem = (key: string): boolean => {
-  if (typeof window === 'undefined') return false;
+  if (!isBrowserLocalStorageAvailable()) return false;
   try {
     window.localStorage.removeItem(key);
     return true;

@@ -2,9 +2,23 @@ import { useEffect, useState } from 'react';
 
 type Theme = 'light' | 'dark';
 
+// Safe check for browser localStorage (handles Node.js v22+ built-in localStorage)
+const isBrowserLocalStorageAvailable = (): boolean => {
+  try {
+    if (typeof window === 'undefined') return false;
+    if (!window.localStorage) return false;
+    const testKey = '__test_storage__';
+    window.localStorage.setItem(testKey, 'test');
+    window.localStorage.removeItem(testKey);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 // Safe localStorage access
 const getStorageTheme = (): Theme | null => {
-  if (typeof window === 'undefined') return null;
+  if (!isBrowserLocalStorageAvailable()) return null;
   try {
     return window.localStorage.getItem('theme') as Theme | null;
   } catch {
@@ -13,7 +27,7 @@ const getStorageTheme = (): Theme | null => {
 };
 
 const setStorageTheme = (theme: Theme): void => {
-  if (typeof window === 'undefined') return;
+  if (!isBrowserLocalStorageAvailable()) return;
   try {
     window.localStorage.setItem('theme', theme);
   } catch {
