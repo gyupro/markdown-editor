@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://markdown.develop-on.co.kr'
-  const locales = ['en', 'zh', 'ja', 'ko']
+  const locales = ['ko', 'en', 'ja', 'zh']
   const currentDate = new Date()
 
   // Generate sitemap entries for each locale
@@ -10,7 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     url: `${baseUrl}/${locale}`,
     lastModified: currentDate,
     changeFrequency: 'weekly' as const,
-    priority: locale === 'en' ? 1.0 : 0.9,
+    priority: locale === 'ko' ? 1.0 : 0.9,
     alternates: {
       languages: locales.reduce((acc, loc) => {
         acc[loc === 'zh' ? 'zh-CN' : loc === 'ja' ? 'ja-JP' : loc === 'ko' ? 'ko-KR' : 'en'] = `${baseUrl}/${loc}`

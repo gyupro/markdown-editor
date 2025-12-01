@@ -12,10 +12,10 @@ interface Language {
 }
 
 const languages: Language[] = [
-  { code: 'en', name: 'English', nativeName: 'English', flag: '🇺🇸' },
-  { code: 'zh', name: 'Chinese', nativeName: '中文', flag: '🇨🇳' },
-  { code: 'ja', name: 'Japanese', nativeName: '日本語', flag: '🇯🇵' },
   { code: 'ko', name: 'Korean', nativeName: '한국어', flag: '🇰🇷' },
+  { code: 'en', name: 'English', nativeName: 'English', flag: '🇺🇸' },
+  { code: 'ja', name: 'Japanese', nativeName: '日本語', flag: '🇯🇵' },
+  { code: 'zh', name: 'Chinese', nativeName: '中文', flag: '🇨🇳' },
 ];
 
 export const LanguageSwitcher: React.FC = () => {
@@ -50,7 +50,7 @@ export const LanguageSwitcher: React.FC = () => {
 
   const handleLanguageChange = (langCode: string) => {
     // Get the current path without locale prefix
-    const pathWithoutLocale = pathname.replace(/^\/(en|ko|ja|zh)/, '') || '/';
+    const pathWithoutLocale = pathname.replace(/^\/(ko|en|ja|zh)/, '') || '/';
 
     // Navigate to the same path with new locale
     router.push(`/${langCode}${pathWithoutLocale}`);

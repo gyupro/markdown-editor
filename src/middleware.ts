@@ -11,10 +11,10 @@ export const config = {
 
     // Set a cookie to remember the previous locale for
     // all requests that have a locale prefix
-    '/(en|ko|ja|zh)/:path*',
+    '/(ko|en|ja|zh)/:path*',
 
     // Enable redirects that add missing locales
-    // (e.g. `/pathnames` -> `/en/pathnames`)
+    // (e.g. `/pathnames` -> `/ko/pathnames`)
     '/((?!api|_next|_vercel|.*\\..*).*)'
   ]
 };

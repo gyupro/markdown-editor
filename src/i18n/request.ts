@@ -17,5 +17,5 @@ export default getRequestConfig(async ({ requestLocale }) => {
 });
 
 // Re-export for convenience
-export const locales = ['en', 'ko', 'ja', 'zh'] as const;
+export const locales = ['ko', 'en', 'ja', 'zh'] as const;
 export type Locale = (typeof locales)[number];
