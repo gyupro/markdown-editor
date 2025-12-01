@@ -259,9 +259,13 @@ export const useDocumentShare = () => {
     }
   }, []);
 
-  // 공유 링크 생성
-  const generateShareUrl = useCallback((token: string): string => {
-    return `${window.location.origin}/shared/${token}`;
+  // 공유 링크 생성 (현재 locale 포함)
+  const generateShareUrl = useCallback((token: string, locale?: string): string => {
+    // locale이 제공되지 않으면 현재 URL에서 추출
+    const currentLocale = locale || window.location.pathname.split('/')[1] || 'en';
+    const validLocales = ['ko', 'en', 'ja', 'zh'];
+    const finalLocale = validLocales.includes(currentLocale) ? currentLocale : 'en';
+    return `${window.location.origin}/${finalLocale}/shared/${token}`;
   }, []);
 
   return {
