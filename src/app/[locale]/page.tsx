@@ -6,7 +6,6 @@ import { useMarkdownEditor } from '@/hooks/useMarkdownEditor';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import { useHashNavigation } from '@/hooks/useHashNavigation';
 import { useTheme } from '@/hooks/useTheme';
-import { DEFAULT_MARKDOWN } from '@/constants/markdown';
 import { MobileTab } from '@/types/markdown';
 import { extractTitleFromMarkdown } from '@/utils/markdown';
 
@@ -22,6 +21,7 @@ import { LocalStorageModal, saveDocumentById } from '@/components/LocalStorageMo
 
 export default function HomePage() {
   const t = useTranslations();
+  const defaultReadme = t.raw('readme') as string;
   const { copyToClipboard } = useCopyToClipboard();
   const { theme, toggleTheme, isLoaded: isThemeLoaded } = useTheme();
   const [mobileActiveTab, setMobileActiveTabState] = useState<MobileTab>('editor');
@@ -61,7 +61,7 @@ export default function HomePage() {
     handlePreviewScroll,
     syncScrollToEditor,
     syncScrollToPreview,
-  } = useMarkdownEditor(DEFAULT_MARKDOWN);
+  } = useMarkdownEditor(defaultReadme);
 
   // Wrapper to sync scroll on mobile tab change
   const setMobileActiveTab = useCallback((tab: MobileTab) => {
@@ -159,10 +159,10 @@ export default function HomePage() {
 
   // New document
   const handleNewDocument = useCallback(() => {
-    setMarkdown(DEFAULT_MARKDOWN);
+    setMarkdown(defaultReadme);
     setCurrentDocumentId(null);
     setLastAutoSaved(null);
-  }, [setMarkdown]);
+  }, [setMarkdown, defaultReadme]);
 
   // Ctrl+S keyboard shortcut
   useEffect(() => {
