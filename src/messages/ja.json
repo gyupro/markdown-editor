@@ -76,7 +76,11 @@
     "noContent": "プレビューするコンテンツがありません",
     "livePreview": "ライブプレビュー",
     "goToSection": "{section}セクションへ移動",
-    "copyLink": "リンクをコピー"
+    "copyLink": "リンクをコピー",
+    "copyCode": "コードをコピー",
+    "codeCopied": "コピーしました！",
+    "copyCodeAriaLabel": "コードをクリップボードにコピー",
+    "codeCopiedAriaLabel": "コードがクリップボードにコピーされました"
   },
   "share": {
     "title": "ドキュメント共有",

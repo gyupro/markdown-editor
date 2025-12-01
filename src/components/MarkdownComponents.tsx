@@ -4,6 +4,26 @@ import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
+// Translation interface for markdown components
+export interface MarkdownTranslations {
+  goToSection: string;  // Template: "Go to {section} section"
+  copyLink: string;
+  copyCode: string;
+  codeCopied: string;
+  copyCodeAriaLabel: string;
+  codeCopiedAriaLabel: string;
+}
+
+// Default English translations (fallback)
+const defaultTranslations: MarkdownTranslations = {
+  goToSection: 'Go to {section} section',
+  copyLink: 'Copy link',
+  copyCode: 'Copy code',
+  codeCopied: 'Copied!',
+  copyCodeAriaLabel: 'Copy code to clipboard',
+  codeCopiedAriaLabel: 'Code copied to clipboard',
+};
+
 // 텍스트를 URL 친화적인 ID로 변환하는 함수
 const createSlug = (text: string): string => {
   const slug = text
@@ -38,10 +58,12 @@ const HeadingWithAnchor: React.FC<{
   level: 1 | 2 | 3;
   children: React.ReactNode;
   props?: React.HTMLAttributes<HTMLHeadingElement>;
-}> = ({ level, children, props }) => {
+  translations: MarkdownTranslations;
+}> = ({ level, children, props, translations }) => {
   const text = extractText(children);
   const id = createSlug(text);
-  
+  const goToSectionLabel = translations.goToSection.replace('{section}', text);
+
   const handleAnchorClick = (e: React.MouseEvent) => {
     e.preventDefault();
     const element = document.getElementById(id);
@@ -62,8 +84,8 @@ const HeadingWithAnchor: React.FC<{
           href={`#${id}`}
           onClick={handleAnchorClick}
           className="ml-2 opacity-0 group-hover:opacity-50 hover:!opacity-100 text-blue-500 hover:text-blue-600 transition-opacity duration-200 text-xl"
-          aria-label={`Go to ${text} section`}
-          title="Copy link"
+          aria-label={goToSectionLabel}
+          title={translations.copyLink}
         >
           #
         </a>
@@ -78,8 +100,8 @@ const HeadingWithAnchor: React.FC<{
           href={`#${id}`}
           onClick={handleAnchorClick}
           className="ml-2 opacity-0 group-hover:opacity-50 hover:!opacity-100 text-blue-500 hover:text-blue-600 transition-opacity duration-200 text-lg"
-          aria-label={`Go to ${text} section`}
-          title="Copy link"
+          aria-label={goToSectionLabel}
+          title={translations.copyLink}
         >
           #
         </a>
@@ -93,8 +115,8 @@ const HeadingWithAnchor: React.FC<{
           href={`#${id}`}
           onClick={handleAnchorClick}
           className="ml-2 opacity-0 group-hover:opacity-50 hover:!opacity-100 text-blue-500 hover:text-blue-600 transition-opacity duration-200 text-base"
-          aria-label={`Go to ${text} section`}
-          title="Copy link"
+          aria-label={goToSectionLabel}
+          title={translations.copyLink}
         >
           #
         </a>
@@ -113,7 +135,7 @@ const extractLanguage = (codeElement: React.ReactNode): string => {
   return '';
 };
 
-const CodeBlock: React.FC<{ children: React.ReactNode }> = ({ children: codeElementAsNode }) => {
+const CodeBlock: React.FC<{ children: React.ReactNode; translations: MarkdownTranslations }> = ({ children: codeElementAsNode, translations }) => {
   let actualCodeText = '';
   let language = '';
 
@@ -206,8 +228,8 @@ const CodeBlock: React.FC<{ children: React.ReactNode }> = ({ children: codeElem
       <button
         onClick={handleCopy}
         className="absolute top-3 right-3 bg-gray-700/90 hover:bg-gray-600 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs transition-all duration-200 opacity-0 group-hover:opacity-100 focus:opacity-100 shadow-lg z-10"
-        title={isCopied ? 'Copied!' : 'Copy code'}
-        aria-label={isCopied ? 'Code copied to clipboard' : 'Copy code to clipboard'}
+        title={isCopied ? translations.codeCopied : translations.copyCode}
+        aria-label={isCopied ? translations.codeCopiedAriaLabel : translations.copyCodeAriaLabel}
       >
         {isCopied ? '✅' : '📋'}
       </button>
@@ -215,114 +237,122 @@ const CodeBlock: React.FC<{ children: React.ReactNode }> = ({ children: codeElem
   );
 };
 
-export const markdownComponents: MarkdownComponents = {
-  h1: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <HeadingWithAnchor level={1} props={props}>
-      {children}
-    </HeadingWithAnchor>
-  ),
-  h2: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <HeadingWithAnchor level={2} props={props}>
-      {children}
-    </HeadingWithAnchor>
-  ),
-  h3: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <HeadingWithAnchor level={3} props={props}>
-      {children}
-    </HeadingWithAnchor>
-  ),
-  p: ({ children, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => (
-    <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3 md:mb-4 text-base md:text-lg" {...props}>
-      {children}
-    </p>
-  ),
-  blockquote: ({ children, ...props }: React.HTMLAttributes<HTMLQuoteElement>) => (
-    <blockquote className="border-l-4 border-blue-500 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 pl-4 md:pl-6 py-3 md:py-4 my-4 md:my-6 rounded-r-lg shadow-sm" {...props}>
-      <div className="text-gray-700 dark:text-gray-300 italic text-sm md:text-base">
+// Factory function to create markdown components with translations
+export const createMarkdownComponents = (translations?: Partial<MarkdownTranslations>): MarkdownComponents => {
+  const t: MarkdownTranslations = { ...defaultTranslations, ...translations };
+
+  return {
+    h1: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
+      <HeadingWithAnchor level={1} props={props} translations={t}>
         {children}
+      </HeadingWithAnchor>
+    ),
+    h2: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
+      <HeadingWithAnchor level={2} props={props} translations={t}>
+        {children}
+      </HeadingWithAnchor>
+    ),
+    h3: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
+      <HeadingWithAnchor level={3} props={props} translations={t}>
+        {children}
+      </HeadingWithAnchor>
+    ),
+    p: ({ children, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => (
+      <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3 md:mb-4 text-base md:text-lg" {...props}>
+        {children}
+      </p>
+    ),
+    blockquote: ({ children, ...props }: React.HTMLAttributes<HTMLQuoteElement>) => (
+      <blockquote className="border-l-4 border-blue-500 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 pl-4 md:pl-6 py-3 md:py-4 my-4 md:my-6 rounded-r-lg shadow-sm" {...props}>
+        <div className="text-gray-700 dark:text-gray-300 italic text-sm md:text-base">
+          {children}
+        </div>
+      </blockquote>
+    ),
+    code: ({ children, ...props }: React.HTMLAttributes<HTMLElement>) => (
+      <code className="bg-gradient-to-r from-pink-100 to-purple-100 dark:from-pink-900/30 dark:to-purple-900/30 text-pink-700 dark:text-pink-300 px-1.5 md:px-2 py-0.5 md:py-1 rounded-md font-mono text-xs md:text-sm border border-pink-200 dark:border-pink-700" {...props}>
+        {children}
+      </code>
+    ),
+    pre: ({ children, ...props }: React.HTMLAttributes<HTMLPreElement>) => (
+      <CodeBlock {...props} translations={t}>
+        {children}
+      </CodeBlock>
+    ),
+    a: ({ children, href, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
+      <a
+        href={href}
+        className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline decoration-2 underline-offset-2 hover:decoration-blue-500 transition-all duration-200 font-medium touch-manipulation"
+        {...props}
+      >
+        {children}
+      </a>
+    ),
+    ul: ({ children, ...props }: React.HTMLAttributes<HTMLUListElement>) => (
+      <ul className="space-y-1.5 md:space-y-2 mb-4 md:mb-6 ml-4 md:ml-6" {...props}>
+        {children}
+      </ul>
+    ),
+    ol: ({ children, ...props }: React.HTMLAttributes<HTMLOListElement>) => (
+      <ol className="space-y-1.5 md:space-y-2 mb-4 md:mb-6 ml-4 md:ml-6" {...props}>
+        {children}
+      </ol>
+    ),
+    li: ({ children, ...props }: React.HTMLAttributes<HTMLLIElement>) => (
+      <li className="text-gray-700 dark:text-gray-300 leading-relaxed flex items-start text-sm md:text-base" {...props}>
+        <span className="text-blue-500 mr-2 mt-1 text-xs md:text-sm">•</span>
+        <span>{children}</span>
+      </li>
+    ),
+    hr: ({ ...props }: React.HTMLAttributes<HTMLHRElement>) => (
+      <hr className="my-6 md:my-8 border-0 h-1 bg-gradient-to-r from-blue-300 via-purple-300 to-pink-300 rounded-full opacity-60" {...props} />
+    ),
+    table: ({ children, ...props }: React.HTMLAttributes<HTMLTableElement>) => (
+      <div className="overflow-x-auto my-4 md:my-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 -mx-0 md:mx-0">
+        <table className="w-full text-sm md:text-base" {...props}>
+          {children}
+        </table>
       </div>
-    </blockquote>
-  ),
-  code: ({ children, ...props }: React.HTMLAttributes<HTMLElement>) => (
-    <code className="bg-gradient-to-r from-pink-100 to-purple-100 dark:from-pink-900/30 dark:to-purple-900/30 text-pink-700 dark:text-pink-300 px-1.5 md:px-2 py-0.5 md:py-1 rounded-md font-mono text-xs md:text-sm border border-pink-200 dark:border-pink-700" {...props}>
-      {children}
-    </code>
-  ),
-  pre: ({ children, ...props }: React.HTMLAttributes<HTMLPreElement>) => (
-    <CodeBlock {...props}>
-      {children}
-    </CodeBlock>
-  ),
-  a: ({ children, href, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
-    <a 
-      href={href}
-      className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline decoration-2 underline-offset-2 hover:decoration-blue-500 transition-all duration-200 font-medium touch-manipulation"
-      {...props}
-    >
-      {children}
-    </a>
-  ),
-  ul: ({ children, ...props }: React.HTMLAttributes<HTMLUListElement>) => (
-    <ul className="space-y-1.5 md:space-y-2 mb-4 md:mb-6 ml-4 md:ml-6" {...props}>
-      {children}
-    </ul>
-  ),
-  ol: ({ children, ...props }: React.HTMLAttributes<HTMLOListElement>) => (
-    <ol className="space-y-1.5 md:space-y-2 mb-4 md:mb-6 ml-4 md:ml-6" {...props}>
-      {children}
-    </ol>
-  ),
-  li: ({ children, ...props }: React.HTMLAttributes<HTMLLIElement>) => (
-    <li className="text-gray-700 dark:text-gray-300 leading-relaxed flex items-start text-sm md:text-base" {...props}>
-      <span className="text-blue-500 mr-2 mt-1 text-xs md:text-sm">•</span>
-      <span>{children}</span>
-    </li>
-  ),
-  hr: ({ ...props }: React.HTMLAttributes<HTMLHRElement>) => (
-    <hr className="my-6 md:my-8 border-0 h-1 bg-gradient-to-r from-blue-300 via-purple-300 to-pink-300 rounded-full opacity-60" {...props} />
-  ),
-  table: ({ children, ...props }: React.HTMLAttributes<HTMLTableElement>) => (
-    <div className="overflow-x-auto my-4 md:my-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 -mx-0 md:mx-0">
-      <table className="w-full text-sm md:text-base" {...props}>
+    ),
+    thead: ({ children, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) => (
+      <thead className="bg-gray-800 dark:bg-gray-900" {...props}>
         {children}
-      </table>
-    </div>
-  ),
-  thead: ({ children, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) => (
-    <thead className="bg-gray-800 dark:bg-gray-900" {...props}>
-      {children}
-    </thead>
-  ),
-  tbody: ({ children, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) => (
-    <tbody className="divide-y divide-gray-200 dark:divide-gray-600 bg-white dark:bg-gray-800" {...props}>
-      {children}
-    </tbody>
-  ),
-  th: ({ children, ...props }: React.HTMLAttributes<HTMLTableCellElement>) => (
-    <th className="px-2 md:px-4 py-2 md:py-3 text-left text-xs md:text-sm font-bold text-white bg-gray-800 dark:bg-gray-900 tracking-wider border-r border-gray-600 last:border-r-0 min-w-0 whitespace-nowrap" {...props}>
-      {children}
-    </th>
-  ),
-  td: ({ children, ...props }: React.HTMLAttributes<HTMLTableCellElement>) => (
-    <td className="px-2 md:px-4 py-2 md:py-3 text-sm md:text-base font-medium text-gray-800 dark:text-gray-200 min-w-0" {...props}>
-      <div className="leading-relaxed">
+      </thead>
+    ),
+    tbody: ({ children, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) => (
+      <tbody className="divide-y divide-gray-200 dark:divide-gray-600 bg-white dark:bg-gray-800" {...props}>
         {children}
-      </div>
-    </td>
-  ),
-  tr: ({ children, ...props }: React.HTMLAttributes<HTMLTableRowElement>) => (
-    <tr className="bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-150 border-b border-gray-100 dark:border-gray-700" {...props}>
-      {children}
-    </tr>
-  ),
-  strong: ({ children, ...props }: React.HTMLAttributes<HTMLElement>) => (
-    <strong className="font-bold text-blue-600 dark:text-blue-400" {...props}>
-      {children}
-    </strong>
-  ),
-  em: ({ children, ...props }: React.HTMLAttributes<HTMLElement>) => (
-    <em className="italic text-purple-600 dark:text-purple-400" {...props}>
-      {children}
-    </em>
-  ),
-}; 
+      </tbody>
+    ),
+    th: ({ children, ...props }: React.HTMLAttributes<HTMLTableCellElement>) => (
+      <th className="px-2 md:px-4 py-2 md:py-3 text-left text-xs md:text-sm font-bold text-white bg-gray-800 dark:bg-gray-900 tracking-wider border-r border-gray-600 last:border-r-0 min-w-0 whitespace-nowrap" {...props}>
+        {children}
+      </th>
+    ),
+    td: ({ children, ...props }: React.HTMLAttributes<HTMLTableCellElement>) => (
+      <td className="px-2 md:px-4 py-2 md:py-3 text-sm md:text-base font-medium text-gray-800 dark:text-gray-200 min-w-0" {...props}>
+        <div className="leading-relaxed">
+          {children}
+        </div>
+      </td>
+    ),
+    tr: ({ children, ...props }: React.HTMLAttributes<HTMLTableRowElement>) => (
+      <tr className="bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-150 border-b border-gray-100 dark:border-gray-700" {...props}>
+        {children}
+      </tr>
+    ),
+    strong: ({ children, ...props }: React.HTMLAttributes<HTMLElement>) => (
+      <strong className="font-bold text-blue-600 dark:text-blue-400" {...props}>
+        {children}
+      </strong>
+    ),
+    em: ({ children, ...props }: React.HTMLAttributes<HTMLElement>) => (
+      <em className="italic text-purple-600 dark:text-purple-400" {...props}>
+        {children}
+      </em>
+    ),
+  };
+};
+
+// Default export for backward compatibility (uses English translations)
+export const markdownComponents: MarkdownComponents = createMarkdownComponents(); 

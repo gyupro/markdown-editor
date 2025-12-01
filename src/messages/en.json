@@ -76,7 +76,11 @@
     "noContent": "No content to preview",
     "livePreview": "Live Preview",
     "goToSection": "Go to {section} section",
-    "copyLink": "Copy link"
+    "copyLink": "Copy link",
+    "copyCode": "Copy code",
+    "codeCopied": "Copied!",
+    "copyCodeAriaLabel": "Copy code to clipboard",
+    "codeCopiedAriaLabel": "Code copied to clipboard"
   },
   "share": {
     "title": "Share Document",

@@ -76,7 +76,11 @@
     "noContent": "没有内容可预览",
     "livePreview": "实时预览",
     "goToSection": "跳转到{section}部分",
-    "copyLink": "复制链接"
+    "copyLink": "复制链接",
+    "copyCode": "复制代码",
+    "codeCopied": "已复制！",
+    "copyCodeAriaLabel": "复制代码到剪贴板",
+    "codeCopiedAriaLabel": "代码已复制到剪贴板"
   },
   "share": {
     "title": "分享文档",

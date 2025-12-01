@@ -4,7 +4,7 @@ import React, { useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useTranslations } from 'next-intl';
-import { markdownComponents } from './MarkdownComponents';
+import { createMarkdownComponents } from './MarkdownComponents';
 
 interface PreviewSectionProps {
   isVisible: boolean;
@@ -23,6 +23,17 @@ const PreviewSectionComponent: React.FC<PreviewSectionProps> = ({
 }) => {
   const t = useTranslations('preview');
 
+  // Create markdown components with current locale translations
+  // Note: goToSection uses {section} as a placeholder that gets replaced in the component
+  const markdownComponents = useMemo(() => createMarkdownComponents({
+    goToSection: t.raw('goToSection'),
+    copyLink: t('copyLink'),
+    copyCode: t('copyCode'),
+    codeCopied: t('codeCopied'),
+    copyCodeAriaLabel: t('copyCodeAriaLabel'),
+    codeCopiedAriaLabel: t('codeCopiedAriaLabel'),
+  }), [t]);
+
   // Memoize markdown rendering for performance
   const renderedMarkdown = useMemo(() => (
     <ReactMarkdown
@@ -31,7 +42,7 @@ const PreviewSectionComponent: React.FC<PreviewSectionProps> = ({
     >
       {markdown}
     </ReactMarkdown>
-  ), [markdown]);
+  ), [markdown, markdownComponents]);
 
   return (
     <section

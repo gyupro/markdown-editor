@@ -1,10 +1,10 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useTranslations } from 'next-intl';
-import { markdownComponents } from './MarkdownComponents';
+import { createMarkdownComponents } from './MarkdownComponents';
 
 interface FullscreenModalProps {
   isClient: boolean;
@@ -29,6 +29,18 @@ export const FullscreenModal: React.FC<FullscreenModalProps> = ({
 }) => {
   const t = useTranslations('fullscreen');
   const tHeader = useTranslations('header');
+  const tPreview = useTranslations('preview');
+
+  // Create markdown components with current locale translations
+  // Note: goToSection uses {section} as a placeholder that gets replaced in the component
+  const markdownComponents = useMemo(() => createMarkdownComponents({
+    goToSection: tPreview.raw('goToSection'),
+    copyLink: tPreview('copyLink'),
+    copyCode: tPreview('copyCode'),
+    codeCopied: tPreview('codeCopied'),
+    copyCodeAriaLabel: tPreview('copyCodeAriaLabel'),
+    codeCopiedAriaLabel: tPreview('codeCopiedAriaLabel'),
+  }), [tPreview]);
 
   return (
     <div

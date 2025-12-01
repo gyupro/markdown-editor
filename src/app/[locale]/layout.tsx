@@ -18,6 +18,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const baseUrl = 'https://markdown.develop-on.co.kr';
+
 // SEO content for each locale
 const seoContent: Record<Locale, {
   title: string;
@@ -82,6 +84,98 @@ const seoContent: Record<Locale, {
   }
 };
 
+// Pre-generate structured data JSON strings for each locale to avoid hydration mismatches
+const structuredDataByLocale: Record<Locale, string> = {
+  en: JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Markdown Editor",
+    "description": seoContent.en.description,
+    "url": `${baseUrl}/en`,
+    "applicationCategory": "TextEditor",
+    "operatingSystem": "Web Browser",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "softwareVersion": "1.0",
+    "featureList": [
+      "Real-time Markdown preview", "PDF document export", "Keyboard shortcuts support",
+      "GitHub Flavored Markdown support", "Table and code block support", "Fullscreen mode",
+      "AI content generation", "Multilingual support", "Free to use"
+    ],
+    "author": { "@type": "Organization", "name": "Markdown Editor Team" },
+    "datePublished": "2024-01-01",
+    "dateModified": "2025-01-01",
+    "inLanguage": "en-US",
+    "availableLanguage": ["en", "zh-CN", "ja", "ko"],
+    "isAccessibleForFree": true
+  }),
+  zh: JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Markdown Editor",
+    "description": seoContent.zh.description,
+    "url": `${baseUrl}/zh`,
+    "applicationCategory": "TextEditor",
+    "operatingSystem": "Web Browser",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "softwareVersion": "1.0",
+    "featureList": [
+      "实时Markdown预览", "PDF文档导出", "键盘快捷键支持",
+      "GitHub Flavored Markdown支持", "表格和代码块支持", "全屏模式",
+      "AI内容生成", "多语言支持", "免费使用"
+    ],
+    "author": { "@type": "Organization", "name": "Markdown Editor Team" },
+    "datePublished": "2024-01-01",
+    "dateModified": "2025-01-01",
+    "inLanguage": "zh-CN",
+    "availableLanguage": ["en", "zh-CN", "ja", "ko"],
+    "isAccessibleForFree": true
+  }),
+  ja: JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Markdown Editor",
+    "description": seoContent.ja.description,
+    "url": `${baseUrl}/ja`,
+    "applicationCategory": "TextEditor",
+    "operatingSystem": "Web Browser",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "softwareVersion": "1.0",
+    "featureList": [
+      "リアルタイムMarkdownプレビュー", "PDFドキュメント出力", "キーボードショートカット対応",
+      "GitHub Flavored Markdown対応", "テーブルとコードブロック対応", "フルスクリーンモード",
+      "AIコンテンツ生成", "多言語サポート", "無料で利用可能"
+    ],
+    "author": { "@type": "Organization", "name": "Markdown Editor Team" },
+    "datePublished": "2024-01-01",
+    "dateModified": "2025-01-01",
+    "inLanguage": "ja-JP",
+    "availableLanguage": ["en", "zh-CN", "ja", "ko"],
+    "isAccessibleForFree": true
+  }),
+  ko: JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Markdown Editor",
+    "description": seoContent.ko.description,
+    "url": `${baseUrl}/ko`,
+    "applicationCategory": "TextEditor",
+    "operatingSystem": "Web Browser",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "softwareVersion": "1.0",
+    "featureList": [
+      "실시간 마크다운 미리보기", "PDF 문서 출력", "키보드 단축키 지원",
+      "GitHub Flavored Markdown 지원", "테이블 및 코드 블록 지원", "전체화면 모드",
+      "AI 콘텐츠 생성", "다국어 지원", "무료 사용"
+    ],
+    "author": { "@type": "Organization", "name": "Markdown Editor Team" },
+    "datePublished": "2024-01-01",
+    "dateModified": "2025-01-01",
+    "inLanguage": "ko-KR",
+    "availableLanguage": ["en", "zh-CN", "ja", "ko"],
+    "isAccessibleForFree": true
+  })
+};
+
 // Generate metadata for each locale
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -91,7 +185,6 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   }
 
   const seo = seoContent[locale as Locale];
-  const baseUrl = 'https://markdown.develop-on.co.kr';
 
   // Generate alternates for all locales
   const alternateLanguages: Record<string, string> = {};
@@ -201,74 +294,6 @@ export default async function LocaleLayout({
   // Get messages for the locale
   const messages = await getMessages();
   const seo = seoContent[locale as Locale];
-  const baseUrl = 'https://markdown.develop-on.co.kr';
-
-  // Generate structured data for the locale
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    "name": "Markdown Editor",
-    "description": seo.description,
-    "url": `${baseUrl}/${locale}`,
-    "applicationCategory": "TextEditor",
-    "operatingSystem": "Web Browser",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    },
-    "softwareVersion": "1.0",
-    "featureList": locale === 'zh' ? [
-      "实时Markdown预览",
-      "PDF文档导出",
-      "键盘快捷键支持",
-      "GitHub Flavored Markdown支持",
-      "表格和代码块支持",
-      "全屏模式",
-      "AI内容生成",
-      "多语言支持",
-      "免费使用"
-    ] : locale === 'ja' ? [
-      "リアルタイムMarkdownプレビュー",
-      "PDFドキュメント出力",
-      "キーボードショートカット対応",
-      "GitHub Flavored Markdown対応",
-      "テーブルとコードブロック対応",
-      "フルスクリーンモード",
-      "AIコンテンツ生成",
-      "多言語サポート",
-      "無料で利用可能"
-    ] : locale === 'ko' ? [
-      "실시간 마크다운 미리보기",
-      "PDF 문서 출력",
-      "키보드 단축키 지원",
-      "GitHub Flavored Markdown 지원",
-      "테이블 및 코드 블록 지원",
-      "전체화면 모드",
-      "AI 콘텐츠 생성",
-      "다국어 지원",
-      "무료 사용"
-    ] : [
-      "Real-time Markdown preview",
-      "PDF document export",
-      "Keyboard shortcuts support",
-      "GitHub Flavored Markdown support",
-      "Table and code block support",
-      "Fullscreen mode",
-      "AI content generation",
-      "Multilingual support",
-      "Free to use"
-    ],
-    "author": {
-      "@type": "Organization",
-      "name": "Markdown Editor Team"
-    },
-    "datePublished": "2024-01-01",
-    "dateModified": new Date().toISOString().split('T')[0],
-    "inLanguage": locale === 'zh' ? 'zh-CN' : locale === 'ja' ? 'ja-JP' : locale === 'ko' ? 'ko-KR' : 'en-US',
-    "availableLanguage": ["en", "zh-CN", "ja", "ko"],
-    "isAccessibleForFree": true
-  };
 
   return (
     <html lang={locale} suppressHydrationWarning={true}>
@@ -300,11 +325,11 @@ export default async function LocaleLayout({
         ))}
         <link rel="alternate" hrefLang="x-default" href={`${baseUrl}/en`} />
 
-        {/* Structured Data */}
+        {/* Structured Data - pre-generated at module level for hydration consistency */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(structuredData)
+            __html: structuredDataByLocale[locale as Locale]
           }}
         />
 

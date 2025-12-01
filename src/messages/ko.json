@@ -76,7 +76,11 @@
     "noContent": "미리볼 내용이 없습니다",
     "livePreview": "실시간 미리보기",
     "goToSection": "{section} 섹션으로 이동",
-    "copyLink": "링크 복사"
+    "copyLink": "링크 복사",
+    "copyCode": "코드 복사",
+    "codeCopied": "복사됨!",
+    "copyCodeAriaLabel": "코드를 클립보드에 복사",
+    "codeCopiedAriaLabel": "코드가 클립보드에 복사됨"
   },
   "share": {
     "title": "문서 공유",

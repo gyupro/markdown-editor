@@ -9,7 +9,17 @@ import { useTheme } from '@/hooks/useTheme';
 import { Document } from '@/lib/supabase';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { markdownComponents } from '@/components/MarkdownComponents';
+import { createMarkdownComponents } from '@/components/MarkdownComponents';
+
+// Default translations for non-locale shared route (Korean)
+const markdownComponents = createMarkdownComponents({
+  goToSection: '{section} 섹션으로 이동',
+  copyLink: '링크 복사',
+  copyCode: '코드 복사',
+  codeCopied: '복사됨!',
+  copyCodeAriaLabel: '코드를 클립보드에 복사',
+  codeCopiedAriaLabel: '코드가 클립보드에 복사됨',
+});
 import { validateShareToken } from '@/utils/validation';
 import { extractSummaryFromMarkdown, extractTitleFromMarkdown } from '@/utils/markdown';
 import Image from 'next/image';
