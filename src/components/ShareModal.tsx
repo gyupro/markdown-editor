@@ -113,7 +113,7 @@ const ShareModalComponent: React.FC<ShareModalProps> = ({
                         ? 'text-yellow-800 dark:text-yellow-300'
                         : 'text-green-800 dark:text-green-300'
                     }`}>
-                      {documentMeta.message}
+                      {documentMeta.isReused ? t('existingLinkReused') : t('newLinkCreated')}
                     </p>
                   </div>
                 </div>

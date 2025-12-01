@@ -96,7 +96,9 @@
     "linkReady": "共有リンクの準備ができました！",
     "shareLink": "共有リンク：",
     "copied": "コピーしました！",
-    "anyoneWithLink": "このリンクを持っている人は誰でもドキュメントを見ることができます。"
+    "anyoneWithLink": "このリンクを持っている人は誰でもドキュメントを見ることができます。",
+    "newLinkCreated": "新しい共有リンクが作成されました。",
+    "existingLinkReused": "同じ内容のドキュメントが既に存在するため、既存の共有リンクを使用します。"
   },
   "ai": {
     "title": "AIコンテンツジェネレーター",
@@ -190,6 +192,35 @@
   },
   "notifications": {
     "sharedDocumentLoaded": "共有ドキュメントが正常に読み込まれました"
+  },
+  "defaultContent": {
+    "welcome": "# マークダウンエディタへようこそ！",
+    "intro": "これは**無料のオンラインマークダウンエディタ**です。マークダウンを書いてすぐにプレビューできます。",
+    "features": "## 主な機能",
+    "feature1": "- **リアルタイムプレビュー**: 変更内容を即座に確認",
+    "feature2": "- **PDF出力**: ドキュメントをPDFで保存",
+    "feature3": "- **AIコンテンツ生成**: AIでコンテンツを自動生成",
+    "feature4": "- **ドキュメント共有**: リンクでドキュメントを共有",
+    "feature5": "- **多言語対応**: 日本語、英語、韓国語、中国語",
+    "startWriting": "## はじめましょう",
+    "startWritingDesc": "上の内容を削除して、自由に書き始めましょう！",
+    "codeExample": "```javascript\n// コードブロックにも対応！\nconsole.log('Hello, Markdown!');\n```"
+  },
+  "sharedPage": {
+    "title": "共有ドキュメント",
+    "viewingShared": "共有されたドキュメントを表示しています",
+    "openInEditor": "エディタで開く",
+    "copyToClipboard": "クリップボードにコピー",
+    "copied": "コピーしました！",
+    "documentCopied": "ドキュメントをクリップボードにコピーしました",
+    "loading": "ドキュメントを読み込み中...",
+    "error": "ドキュメントを読み込めませんでした",
+    "expiredOrNotFound": "ドキュメントの有効期限が切れたか、存在しません",
+    "backToEditor": "エディタに戻る",
+    "sharedDocument": "共有ドキュメント",
+    "freeMarkdownEditor": "無料マークダウンエディタ",
+    "preview": "プレビュー",
+    "tableOfContents": "目次"
   },
   "localStorage": {
     "title": "マイドキュメント",

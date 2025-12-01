@@ -96,7 +96,9 @@
     "linkReady": "分享链接已准备好！",
     "shareLink": "分享链接：",
     "copied": "已复制！",
-    "anyoneWithLink": "拥有此链接的任何人都可以查看文档。"
+    "anyoneWithLink": "拥有此链接的任何人都可以查看文档。",
+    "newLinkCreated": "已创建新的分享链接。",
+    "existingLinkReused": "相同内容的文档已存在，使用现有的分享链接。"
   },
   "ai": {
     "title": "AI内容生成器",
@@ -190,6 +192,35 @@
   },
   "notifications": {
     "sharedDocumentLoaded": "分享文档加载成功"
+  },
+  "defaultContent": {
+    "welcome": "# 欢迎使用Markdown编辑器！",
+    "intro": "这是一个**免费的在线Markdown编辑器**。在这里编写Markdown并即时预览。",
+    "features": "## 主要功能",
+    "feature1": "- **实时预览**: 即时查看更改效果",
+    "feature2": "- **PDF导出**: 将文档保存为PDF",
+    "feature3": "- **AI内容生成**: 使用AI自动生成内容",
+    "feature4": "- **文档共享**: 通过链接分享文档",
+    "feature5": "- **多语言支持**: 中文、英文、日文、韩文",
+    "startWriting": "## 开始使用",
+    "startWritingDesc": "清除以上内容，开始您的写作！",
+    "codeExample": "```javascript\n// 支持代码块！\nconsole.log('Hello, Markdown!');\n```"
+  },
+  "sharedPage": {
+    "title": "共享文档",
+    "viewingShared": "您正在查看共享文档",
+    "openInEditor": "在编辑器中打开",
+    "copyToClipboard": "复制到剪贴板",
+    "copied": "已复制！",
+    "documentCopied": "文档已复制到剪贴板",
+    "loading": "正在加载文档...",
+    "error": "无法加载文档",
+    "expiredOrNotFound": "文档已过期或不存在",
+    "backToEditor": "返回编辑器",
+    "sharedDocument": "共享文档",
+    "freeMarkdownEditor": "免费Markdown编辑器",
+    "preview": "预览",
+    "tableOfContents": "目录"
   },
   "localStorage": {
     "title": "我的文档",

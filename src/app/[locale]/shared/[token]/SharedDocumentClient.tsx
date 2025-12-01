@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useDocumentShare } from '@/hooks/useDocumentShare';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import { useHashNavigation } from '@/hooks/useHashNavigation';
@@ -10,16 +11,6 @@ import { Document } from '@/lib/supabase';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { createMarkdownComponents } from '@/components/MarkdownComponents';
-
-// Default translations for shared route (Korean - since this component uses Korean strings)
-const markdownComponents = createMarkdownComponents({
-  goToSection: '{section} 섹션으로 이동',
-  copyLink: '링크 복사',
-  copyCode: '코드 복사',
-  codeCopied: '복사됨!',
-  copyCodeAriaLabel: '코드를 클립보드에 복사',
-  codeCopiedAriaLabel: '코드가 클립보드에 복사됨',
-});
 import { validateShareToken } from '@/utils/validation';
 import { extractSummaryFromMarkdown, extractTitleFromMarkdown } from '@/utils/markdown';
 import Image from 'next/image';
@@ -31,6 +22,10 @@ interface SharedDocumentClientProps {
 export default function SharedDocumentClient({ initialToken }: SharedDocumentClientProps = {}) {
   const params = useParams();
   const router = useRouter();
+  const t = useTranslations('sharedPage');
+  const tPreview = useTranslations('preview');
+  const tHeader = useTranslations('header');
+  const locale = params.locale as string || 'en';
   const token = initialToken || (params.token as string);
   const [document, setDocument] = useState<Document | null>(null);
   const { loadSharedDocument, isLoading, error } = useDocumentShare();
@@ -38,7 +33,18 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
   const { theme, toggleTheme } = useTheme();
   const [showMoreMenu, setShowMoreMenu] = useState(false);
 
-  // 해시 네비게이션 훅 사용
+  // Create markdown components with translations
+  // Note: goToSection uses {section} as a placeholder that gets replaced in the component
+  const markdownComponents = useMemo(() => createMarkdownComponents({
+    goToSection: tPreview.raw('goToSection'),
+    copyLink: tPreview('copyLink'),
+    copyCode: tPreview('copyCode'),
+    codeCopied: tPreview('codeCopied'),
+    copyCodeAriaLabel: tPreview('copyCodeAriaLabel'),
+    codeCopiedAriaLabel: tPreview('codeCopiedAriaLabel'),
+  }), [tPreview]);
+
+  // Hash navigation hook
   useHashNavigation();
 
   const loadDocument = useCallback(async () => {
@@ -76,22 +82,34 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
     }
   }, [token, loadDocument]);
 
-  // 문서가 로드되면 페이지 제목과 메타데이터 설정 (개선된 버전)
+  // Get og:locale based on current locale
+  const getOgLocale = (loc: string): string => {
+    const localeMap: Record<string, string> = {
+      'en': 'en_US',
+      'ko': 'ko_KR',
+      'ja': 'ja_JP',
+      'zh': 'zh_CN'
+    };
+    return localeMap[loc] || 'en_US';
+  };
+
+  // Set page title and metadata when document loads
   useEffect(() => {
     if (document) {
       const summary = extractSummaryFromMarkdown(document.content);
-      const description = summary ? `${summary}` : `${document.title} - FREE 마크다운 에디터로 작성된 문서`;
-      
-      // 페이지 제목 동적 변경
+      const siteName = t('freeMarkdownEditor');
+      const description = summary ? `${summary}` : `${document.title} - ${siteName}`;
+
+      // Dynamic page title
       const originalTitle = window.document.title;
-      window.document.title = `${document.title} | FREE 마크다운 에디터`;
-      
-      // 메타태그 동적 설정/업데이트 (더 자세한 정보 포함)
+      window.document.title = `${document.title} | ${siteName}`;
+
+      // Dynamic meta tag update helper
       const updateMetaTag = (property: string, content: string) => {
-        const selector = property.startsWith('og:') || property.startsWith('twitter:') 
-          ? `meta[property="${property}"]` 
+        const selector = property.startsWith('og:') || property.startsWith('twitter:')
+          ? `meta[property="${property}"]`
           : `meta[name="${property}"]`;
-        
+
         let meta = window.document.querySelector(selector);
         if (!meta) {
           meta = window.document.createElement('meta');
@@ -105,32 +123,32 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
         meta.setAttribute('content', content);
       };
 
-      // 기본 메타데이터
+      // Basic metadata
       updateMetaTag('description', description);
-      
-      // Open Graph (Facebook, KakaoTalk 등)
+
+      // Open Graph (Facebook, KakaoTalk, etc.)
       updateMetaTag('og:title', document.title);
       updateMetaTag('og:description', description);
       updateMetaTag('og:type', 'article');
       updateMetaTag('og:url', window.location.href);
-      updateMetaTag('og:site_name', 'FREE 마크다운 에디터');
-      updateMetaTag('og:locale', 'ko_KR');
-      
+      updateMetaTag('og:site_name', siteName);
+      updateMetaTag('og:locale', getOgLocale(locale));
+
       // Twitter Cards
       updateMetaTag('twitter:card', 'summary');
       updateMetaTag('twitter:title', document.title);
       updateMetaTag('twitter:description', description);
-      
-      // 추가 메타데이터 (카카오톡 최적화)
-      updateMetaTag('og:article:author', 'FREE 마크다운 에디터');
+
+      // Additional metadata
+      updateMetaTag('og:article:author', siteName);
       updateMetaTag('og:article:published_time', document.created_at);
 
-      // 컴포넌트 언마운트 시 원래 제목으로 복원
+      // Restore original title on unmount
       return () => {
         window.document.title = originalTitle;
       };
     }
-  }, [document]);
+  }, [document, locale, t]);
 
   // 외부 클릭 시 더보기 메뉴 닫기
   useEffect(() => {
@@ -189,7 +207,7 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-300">문서를 불러오는 중...</p>
+          <p className="text-gray-600 dark:text-gray-300">{t('loading')}</p>
         </div>
       </div>
     );
@@ -201,16 +219,16 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
         <div className="text-center max-w-md mx-auto p-6">
           <div className="text-6xl mb-4">⚠️</div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-            문서를 찾을 수 없습니다
+            {t('error')}
           </h1>
           <p className="text-gray-600 dark:text-gray-300 mb-6">
-            {error}
+            {t('expiredOrNotFound')}
           </p>
           <button
-            onClick={() => router.push('/')}
+            onClick={() => router.push(`/${locale}`)}
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
           >
-            홈으로 돌아가기
+            {t('backToEditor')}
           </button>
         </div>
       </div>
@@ -244,16 +262,16 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
               </h1>
             </div>
             
-            {/* 날짜와 다크모드 토글 */}
+            {/* Date and dark mode toggle */}
             <div className="flex items-center justify-between">
               <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
-                공유된 문서 · {new Date(document.created_at).toLocaleDateString('ko-KR')}
+                {t('sharedDocument')} · {new Date(document.created_at).toLocaleDateString(locale === 'ko' ? 'ko-KR' : locale === 'ja' ? 'ja-JP' : locale === 'zh' ? 'zh-CN' : 'en-US')}
               </p>
               <button
                 onClick={toggleTheme}
                 className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
-                aria-label={theme === 'light' ? '다크 모드로 전환' : '라이트 모드로 전환'}
-                title={theme === 'light' ? '다크 모드로 전환' : '라이트 모드로 전환'}
+                aria-label={theme === 'light' ? tHeader('darkMode') : tHeader('lightMode')}
+                title={theme === 'light' ? tHeader('darkMode') : tHeader('lightMode')}
               >
                 {theme === 'light' ? (
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -272,35 +290,35 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
           <div className="flex items-center justify-between gap-2">
             {/* 주요 액션 버튼들 - 항상 표시 */}
             <div className="flex items-center gap-2 flex-1 min-w-0">
-              {/* 편집하기 - 가장 중요한 액션 */}
+              {/* Edit - most important action */}
               <button
                 onClick={handleEditDocument}
                 disabled={!document}
                 className="flex items-center justify-center gap-1.5 bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg text-sm disabled:bg-green-400 flex-shrink-0"
-                title="이 문서를 편집하기"
-                aria-label="이 문서를 마크다운 에디터에서 편집합니다"
+                title={t('openInEditor')}
+                aria-label={t('openInEditor')}
               >
                 <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
-                <span className="hidden sm:inline">이 문서 편집하기</span>
-                <span className="sm:hidden">편집</span>
+                <span className="hidden sm:inline">{t('openInEditor')}</span>
+                <span className="sm:hidden">{t('openInEditor').split(' ')[0]}</span>
               </button>
 
-              {/* 내용 복사하기 */}
+              {/* Copy content */}
               <button
                 onClick={handleCopyContent}
                 disabled={!document}
                 className="flex items-center justify-center gap-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 px-3 py-2 rounded-lg transition-colors duration-200 text-sm disabled:opacity-50 flex-shrink-0"
-                title="마크다운 내용 복사"
-                aria-label="마크다운 원본 내용을 클립보드에 복사합니다"
+                title={t('copyToClipboard')}
+                aria-label={t('copyToClipboard')}
               >
                 {isCopied ? (
                   <>
                     <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                     </svg>
-                    <span className="hidden sm:inline">복사됨</span>
+                    <span className="hidden sm:inline">{t('copied')}</span>
                     <span className="sm:hidden">✓</span>
                   </>
                 ) : (
@@ -308,35 +326,35 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
                     <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                     </svg>
-                    <span className="hidden sm:inline">내용 복사</span>
-                    <span className="sm:hidden">복사</span>
+                    <span className="hidden sm:inline">{t('copyToClipboard')}</span>
+                    <span className="sm:hidden">{t('copyToClipboard').split(' ')[0]}</span>
                   </>
                 )}
               </button>
             </div>
 
-            {/* 더보기 메뉴 및 새 문서 버튼 */}
+            {/* More menu and new document button */}
             <div className="flex items-center gap-2">
-              {/* 데스크톱: 새 문서 버튼 직접 표시 */}
+              {/* Desktop: New document button */}
               <button
                 onClick={handleNewDocument}
                 className="hidden sm:flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg text-sm"
-                title="새로운 문서 만들기"
-                aria-label="새로운 마크다운 문서를 작성합니다"
+                title={t('backToEditor')}
+                aria-label={t('backToEditor')}
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
                 </svg>
-                <span>새 문서</span>
+                <span>{t('backToEditor')}</span>
               </button>
 
-              {/* 모바일: 더보기 메뉴 */}
+              {/* Mobile: More menu */}
               <div className="relative sm:hidden" data-more-menu>
                 <button
                   onClick={() => setShowMoreMenu(!showMoreMenu)}
                   className="flex items-center justify-center w-10 h-10 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors duration-200"
-                  title="더보기 메뉴"
-                  aria-label="추가 옵션 메뉴 열기"
+                  title={t('backToEditor')}
+                  aria-label={t('backToEditor')}
                   aria-expanded={showMoreMenu}
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -344,7 +362,7 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
                   </svg>
                 </button>
 
-                {/* 드롭다운 메뉴 */}
+                {/* Dropdown menu */}
                 {showMoreMenu && (
                   <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
                     <button
@@ -357,7 +375,7 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
                       </svg>
-                      <span>새 문서 만들기</span>
+                      <span>{t('backToEditor')}</span>
                     </button>
                   </div>
                 )}
@@ -368,9 +386,9 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
       </header>
 
       <main className="flex-1 overflow-auto bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
-        <article 
-          className="prose prose-slate dark:prose-invert prose-lg max-w-4xl mx-auto p-4 md:p-8 prose-headings:scroll-mt-24 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-code:text-pink-600 dark:prose-code:text-pink-400 prose-blockquote:border-l-blue-500 prose-img:rounded-lg prose-img:shadow-lg prose-pre:bg-gray-100 dark:prose-pre:bg-gray-800 prose-table:overflow-hidden prose-td:p-2 prose-th:p-2 prose-th:bg-gray-100 dark:prose-th:bg-gray-800" 
-          aria-label="공유된 마크다운 문서 미리보기"
+        <article
+          className="prose prose-slate dark:prose-invert prose-lg max-w-4xl mx-auto p-4 md:p-8 prose-headings:scroll-mt-24 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-code:text-pink-600 dark:prose-code:text-pink-400 prose-blockquote:border-l-blue-500 prose-img:rounded-lg prose-img:shadow-lg prose-pre:bg-gray-100 dark:prose-pre:bg-gray-800 prose-table:overflow-hidden prose-td:p-2 prose-th:p-2 prose-th:bg-gray-100 dark:prose-th:bg-gray-800"
+          aria-label={t('preview')}
         >
           {renderedMarkdown}
         </article>

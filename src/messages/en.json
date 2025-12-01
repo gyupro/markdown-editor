@@ -96,7 +96,9 @@
     "linkReady": "Share link is ready!",
     "shareLink": "Share link:",
     "copied": "Copied!",
-    "anyoneWithLink": "Anyone with this link can view the document."
+    "anyoneWithLink": "Anyone with this link can view the document.",
+    "newLinkCreated": "A new share link has been created.",
+    "existingLinkReused": "Using existing share link for identical content."
   },
   "ai": {
     "title": "AI Content Generator",
@@ -190,6 +192,35 @@
   },
   "notifications": {
     "sharedDocumentLoaded": "Shared document loaded successfully"
+  },
+  "defaultContent": {
+    "welcome": "# Welcome to Markdown Editor!",
+    "intro": "This is a **free online markdown editor**. Write markdown here and preview it instantly.",
+    "features": "## Key Features",
+    "feature1": "- **Real-time Preview**: See your changes instantly",
+    "feature2": "- **PDF Export**: Save your document as PDF",
+    "feature3": "- **AI Content Generation**: Generate content with AI",
+    "feature4": "- **Document Sharing**: Share documents via link",
+    "feature5": "- **Multilingual Support**: English, Korean, Japanese, Chinese",
+    "startWriting": "## Get Started",
+    "startWritingDesc": "Clear this content and start writing!",
+    "codeExample": "```javascript\n// Code blocks are supported!\nconsole.log('Hello, Markdown!');\n```"
+  },
+  "sharedPage": {
+    "title": "Shared Document",
+    "viewingShared": "You are viewing a shared document",
+    "openInEditor": "Open in Editor",
+    "copyToClipboard": "Copy to Clipboard",
+    "copied": "Copied!",
+    "documentCopied": "Document copied to clipboard",
+    "loading": "Loading document...",
+    "error": "Could not load document",
+    "expiredOrNotFound": "Document has expired or does not exist",
+    "backToEditor": "Back to Editor",
+    "sharedDocument": "Shared Document",
+    "freeMarkdownEditor": "FREE Markdown Editor",
+    "preview": "Preview",
+    "tableOfContents": "Table of Contents"
   },
   "localStorage": {
     "title": "My Documents",

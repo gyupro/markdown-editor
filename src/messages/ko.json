@@ -96,7 +96,9 @@
     "linkReady": "공유 링크가 준비되었습니다!",
     "shareLink": "공유 링크:",
     "copied": "복사됨!",
-    "anyoneWithLink": "이 링크를 가진 누구나 문서를 볼 수 있습니다."
+    "anyoneWithLink": "이 링크를 가진 누구나 문서를 볼 수 있습니다.",
+    "newLinkCreated": "새로운 공유 링크가 생성되었습니다.",
+    "existingLinkReused": "동일한 내용의 문서가 이미 존재하여 기존 공유 링크를 사용합니다."
   },
   "ai": {
     "title": "AI 콘텐츠 생성기",
@@ -190,6 +192,35 @@
   },
   "notifications": {
     "sharedDocumentLoaded": "공유 문서가 성공적으로 로드되었습니다"
+  },
+  "defaultContent": {
+    "welcome": "# 마크다운 에디터에 오신 것을 환영합니다!",
+    "intro": "이것은 **무료 온라인 마크다운 에디터**입니다. 여기에서 마크다운을 작성하고 바로 미리볼 수 있습니다.",
+    "features": "## 주요 기능",
+    "feature1": "- **실시간 미리보기**: 작성 중인 내용을 즉시 확인",
+    "feature2": "- **PDF 출력**: 문서를 PDF로 저장",
+    "feature3": "- **AI 콘텐츠 생성**: AI로 콘텐츠 자동 생성",
+    "feature4": "- **문서 공유**: 링크로 문서 공유",
+    "feature5": "- **다국어 지원**: 한국어, 영어, 일본어, 중국어 지원",
+    "startWriting": "## 시작하기",
+    "startWritingDesc": "위의 내용을 지우고 자유롭게 작성하세요!",
+    "codeExample": "```javascript\n// 코드 블록도 지원합니다!\nconsole.log('Hello, Markdown!');\n```"
+  },
+  "sharedPage": {
+    "title": "공유 문서",
+    "viewingShared": "공유된 문서를 보고 있습니다",
+    "openInEditor": "에디터에서 열기",
+    "copyToClipboard": "클립보드에 복사",
+    "copied": "복사됨!",
+    "documentCopied": "문서가 클립보드에 복사되었습니다",
+    "loading": "문서 로딩 중...",
+    "error": "문서를 불러올 수 없습니다",
+    "expiredOrNotFound": "문서가 만료되었거나 존재하지 않습니다",
+    "backToEditor": "에디터로 돌아가기",
+    "sharedDocument": "공유 문서",
+    "freeMarkdownEditor": "무료 마크다운 에디터",
+    "preview": "미리보기",
+    "tableOfContents": "목차"
   },
   "localStorage": {
     "title": "내 문서함",
