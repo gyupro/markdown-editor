@@ -1,0 +1,12 @@
+{
+  "h2": {
+    "color": "rgb(0, 0, 0)",
+    "backgroundColor": "rgba(0, 0, 0, 0)",
+    "fontSize": "14px",
+    "fontWeight": "400",
+    "margin": "0px 8px",
+    "padding": "0px",
+    "borderLeft": "0px none rgb(0, 0, 0)",
+    "borderColor": "rgb(0, 0, 0)"
+  }
+}
