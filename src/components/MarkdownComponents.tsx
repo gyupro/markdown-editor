@@ -301,22 +301,40 @@ export const createMarkdownComponents = (translations?: Partial<MarkdownTranslat
         {children}
       </ul>
     ),
-    ol: ({ children, ...props }: React.HTMLAttributes<HTMLOListElement>) => (
-      <ol className="space-y-1.5 md:space-y-2 mb-4 md:mb-6 ml-4 md:ml-6" {...props}>
-        {children}
-      </ol>
-    ),
-    li: ({ children, ordered, index, ...props }: React.HTMLAttributes<HTMLLIElement> & { ordered?: boolean; index?: number }) => {
-      // Check if this is a checkbox list item (task list)
+    ol: ({ children, ...props }: React.HTMLAttributes<HTMLOListElement>) => {
+      let index = 0;
+      const numberedChildren = React.Children.map(children, (child) => {
+        if (React.isValidElement(child) && (child.type === 'li' || (child.props as { node?: unknown }).node)) {
+          const currentIndex = index;
+          index++;
+          return React.cloneElement(child as React.ReactElement<{ 'data-index'?: number; 'data-ordered'?: boolean }>, {
+            'data-index': currentIndex,
+            'data-ordered': true,
+          });
+        }
+        return child;
+      });
+      return (
+        <ol className="space-y-1.5 md:space-y-2 mb-4 md:mb-6 ml-4 md:ml-6" {...props}>
+          {numberedChildren}
+        </ol>
+      );
+    },
+    li: ({ children, ...props }: React.HTMLAttributes<HTMLLIElement> & { 'data-index'?: number; 'data-ordered'?: boolean }) => {
       const childArray = React.Children.toArray(children);
       const hasCheckbox = childArray.some(
         (child) => React.isValidElement(child) && (child.props as { type?: string }).type === 'checkbox'
       );
+      const isOrdered = (props as { 'data-ordered'?: boolean })['data-ordered'];
+      const index = (props as { 'data-index'?: number })['data-index'] ?? 0;
+
+      // Remove custom data attributes before passing to DOM
+      const { 'data-index': _di, 'data-ordered': _do, ...domProps } = props as Record<string, unknown>;
 
       return (
-        <li className="text-gray-700 dark:text-gray-300 leading-relaxed flex items-start text-sm md:text-base" {...props}>
-          {hasCheckbox ? null : ordered ? (
-            <span className="text-blue-600 dark:text-blue-400 mr-2 mt-0.5 text-xs md:text-sm font-semibold min-w-[1.5em] text-right">{(index ?? 0) + 1}.</span>
+        <li className="text-gray-700 dark:text-gray-300 leading-relaxed flex items-start text-sm md:text-base" {...domProps}>
+          {hasCheckbox ? null : isOrdered ? (
+            <span className="text-blue-600 dark:text-blue-400 mr-2 mt-0.5 text-xs md:text-sm font-semibold min-w-[1.5em] text-right">{index + 1}.</span>
           ) : (
             <span className="text-blue-500 mr-2 mt-1 text-xs md:text-sm">•</span>
           )}
