@@ -3,6 +3,7 @@
 import React, { useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import { useTranslations } from 'next-intl';
 import { createMarkdownComponents } from './MarkdownComponents';
 
@@ -38,6 +39,7 @@ const PreviewSectionComponent: React.FC<PreviewSectionProps> = ({
   const renderedMarkdown = useMemo(() => (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
+      rehypePlugins={[rehypeRaw]}
       components={markdownComponents}
     >
       {markdown}

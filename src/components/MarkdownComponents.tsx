@@ -298,9 +298,13 @@ export const createMarkdownComponents = (translations?: Partial<MarkdownTranslat
         {children}
       </ol>
     ),
-    li: ({ children, ...props }: React.HTMLAttributes<HTMLLIElement>) => (
+    li: ({ children, ordered, index, ...props }: React.HTMLAttributes<HTMLLIElement> & { ordered?: boolean; index?: number }) => (
       <li className="text-gray-700 dark:text-gray-300 leading-relaxed flex items-start text-sm md:text-base" {...props}>
-        <span className="text-blue-500 mr-2 mt-1 text-xs md:text-sm">•</span>
+        {ordered ? (
+          <span className="text-blue-600 dark:text-blue-400 mr-2 mt-0.5 text-xs md:text-sm font-semibold min-w-[1.5em] text-right">{(index ?? 0) + 1}.</span>
+        ) : (
+          <span className="text-blue-500 mr-2 mt-1 text-xs md:text-sm">•</span>
+        )}
         <span>{children}</span>
       </li>
     ),
