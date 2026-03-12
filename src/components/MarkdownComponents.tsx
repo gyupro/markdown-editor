@@ -227,11 +227,19 @@ const CodeBlock: React.FC<{ children: React.ReactNode; translations: MarkdownTra
 
       <button
         onClick={handleCopy}
-        className="absolute top-3 right-3 bg-gray-700/90 hover:bg-gray-600 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs transition-all duration-200 opacity-0 group-hover:opacity-100 focus:opacity-100 shadow-lg z-10"
+        className="absolute top-3 right-3 bg-gray-700/90 hover:bg-gray-600 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs transition-all duration-200 opacity-100 md:opacity-0 md:group-hover:opacity-100 focus:opacity-100 shadow-lg z-10"
         title={isCopied ? translations.codeCopied : translations.copyCode}
         aria-label={isCopied ? translations.codeCopiedAriaLabel : translations.copyCodeAriaLabel}
       >
-        {isCopied ? '✅' : '📋'}
+        {isCopied ? (
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/>
+          </svg>
+        ) : (
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+        )}
       </button>
     </div>
   );
@@ -298,16 +306,24 @@ export const createMarkdownComponents = (translations?: Partial<MarkdownTranslat
         {children}
       </ol>
     ),
-    li: ({ children, ordered, index, ...props }: React.HTMLAttributes<HTMLLIElement> & { ordered?: boolean; index?: number }) => (
-      <li className="text-gray-700 dark:text-gray-300 leading-relaxed flex items-start text-sm md:text-base" {...props}>
-        {ordered ? (
-          <span className="text-blue-600 dark:text-blue-400 mr-2 mt-0.5 text-xs md:text-sm font-semibold min-w-[1.5em] text-right">{(index ?? 0) + 1}.</span>
-        ) : (
-          <span className="text-blue-500 mr-2 mt-1 text-xs md:text-sm">•</span>
-        )}
-        <span>{children}</span>
-      </li>
-    ),
+    li: ({ children, ordered, index, ...props }: React.HTMLAttributes<HTMLLIElement> & { ordered?: boolean; index?: number }) => {
+      // Check if this is a checkbox list item (task list)
+      const childArray = React.Children.toArray(children);
+      const hasCheckbox = childArray.some(
+        (child) => React.isValidElement(child) && (child.props as { type?: string }).type === 'checkbox'
+      );
+
+      return (
+        <li className="text-gray-700 dark:text-gray-300 leading-relaxed flex items-start text-sm md:text-base" {...props}>
+          {hasCheckbox ? null : ordered ? (
+            <span className="text-blue-600 dark:text-blue-400 mr-2 mt-0.5 text-xs md:text-sm font-semibold min-w-[1.5em] text-right">{(index ?? 0) + 1}.</span>
+          ) : (
+            <span className="text-blue-500 mr-2 mt-1 text-xs md:text-sm">•</span>
+          )}
+          <span>{children}</span>
+        </li>
+      );
+    },
     hr: ({ ...props }: React.HTMLAttributes<HTMLHRElement>) => (
       <hr className="my-6 md:my-8 border-0 h-1 bg-gradient-to-r from-blue-300 via-purple-300 to-pink-300 rounded-full opacity-60" {...props} />
     ),
@@ -341,20 +357,34 @@ export const createMarkdownComponents = (translations?: Partial<MarkdownTranslat
       </td>
     ),
     tr: ({ children, ...props }: React.HTMLAttributes<HTMLTableRowElement>) => (
-      <tr className="bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-150 border-b border-gray-100 dark:border-gray-700" {...props}>
+      <tr className="even:bg-gray-50 dark:even:bg-gray-800/50 odd:bg-white dark:odd:bg-gray-800 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-150 border-b border-gray-100 dark:border-gray-700" {...props}>
         {children}
       </tr>
     ),
     strong: ({ children, ...props }: React.HTMLAttributes<HTMLElement>) => (
-      <strong className="font-bold text-blue-600 dark:text-blue-400" {...props}>
+      <strong className="font-bold text-gray-900 dark:text-white" {...props}>
         {children}
       </strong>
     ),
     em: ({ children, ...props }: React.HTMLAttributes<HTMLElement>) => (
-      <em className="italic text-purple-600 dark:text-purple-400" {...props}>
+      <em className="italic text-gray-700 dark:text-gray-300" {...props}>
         {children}
       </em>
     ),
+    input: ({ type, checked, ...props }: React.InputHTMLAttributes<HTMLInputElement>) => {
+      if (type === 'checkbox') {
+        return (
+          <input
+            type="checkbox"
+            checked={checked}
+            disabled
+            className="mr-2 mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 accent-blue-600 cursor-default"
+            {...props}
+          />
+        );
+      }
+      return <input type={type} checked={checked} {...props} />;
+    },
   };
 };
 

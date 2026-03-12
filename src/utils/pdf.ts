@@ -1,6 +1,6 @@
 import { PDFOptions } from '@/types/markdown';
 
-// PDF 옵션 상수화 및 타입 강화
+// PDF 옵션 상수화 및 타입 강화 (레거시 호환용)
 export const PDF_DEFAULT_OPTIONS: PDFOptions = {
   margin: [10, 10, 10, 10],
   filename: 'markdown-document.pdf',
@@ -28,45 +28,6 @@ export const PDF_DEFAULT_OPTIONS: PDFOptions = {
   enableLinks: true,
 } as const;
 
-// OKLCH to Hex 변환 함수
-// 브라우저의 CSS 색상 파싱을 사용하여 OKLCH를 RGB로 변환
-const oklchToHex = (oklchString: string): string | null => {
-  try {
-    // 임시 요소를 사용해 브라우저가 색상을 파싱하도록 함
-    const temp = document.createElement('div');
-    temp.style.color = oklchString;
-    document.body.appendChild(temp);
-    const computedColor = getComputedStyle(temp).color;
-    document.body.removeChild(temp);
-
-    // rgb(r, g, b) 형식을 hex로 변환
-    const match = computedColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
-    if (match) {
-      const r = parseInt(match[1]).toString(16).padStart(2, '0');
-      const g = parseInt(match[2]).toString(16).padStart(2, '0');
-      const b = parseInt(match[3]).toString(16).padStart(2, '0');
-      return `#${r}${g}${b}`;
-    }
-    return null;
-  } catch {
-    return null;
-  }
-};
-
-// CSS 내의 모든 OKLCH 색상을 hex로 변환
-const convertOklchInCss = (css: string): string => {
-  // oklch(...) 패턴 찾기 및 변환
-  return css.replace(/oklch\([^)]+\)/gi, (match) => {
-    const hex = oklchToHex(match);
-    return hex || 'transparent';
-  }).replace(/oklab\([^)]+\)/gi, (match) => {
-    const hex = oklchToHex(match);
-    return hex || 'transparent';
-  }).replace(/color-mix\([^)]+\)/gi, 'transparent')
-    .replace(/lch\([^)]+\)/gi, 'transparent')
-    .replace(/lab\([^)]+\)/gi, 'transparent');
-};
-
 // 스타일 적용 유틸리티 함수
 export const applyStylesToElement = (element: HTMLElement, styles: string): void => {
   const styleElement = document.createElement('style');
@@ -74,105 +35,40 @@ export const applyStylesToElement = (element: HTMLElement, styles: string): void
   element.insertBefore(styleElement, element.firstChild);
 };
 
-// PDF 내보내기 함수
+// PDF 내보내기 함수 - 브라우저 네이티브 print 사용
+// window.print()는 브라우저의 동일한 CSS 렌더링 엔진을 사용하므로
+// 미리보기와 100% 동일한 출력을 생성합니다.
 export const exportToPDF = async (
   previewRef: React.RefObject<HTMLDivElement | null>,
-  customOptions?: Partial<PDFOptions>,
+  _customOptions?: Partial<PDFOptions>,
 ): Promise<void> => {
   if (!previewRef.current) {
     throw new Error('Preview element not found');
   }
 
   try {
-    // 현재 테마 감지
-    const isDarkMode = document.documentElement.classList.contains('dark');
+    // pdf-printing 클래스를 body에 추가하여 print CSS 활성화
+    document.body.classList.add('pdf-printing');
 
-    // html2pdf 동적 임포트
-    const html2pdf = (await import('html2pdf.js')).default;
-
-    // 프리뷰 내용을 복제
-    const element = previewRef.current.cloneNode(true) as HTMLElement;
-
-    // 임시 컨테이너 생성
-    const tempContainer = document.createElement('div');
-    tempContainer.style.position = 'absolute';
-    tempContainer.style.left = '-9999px';
-    tempContainer.style.top = '0';
-    tempContainer.style.width = '190mm';
-    document.body.appendChild(tempContainer);
-    tempContainer.appendChild(element);
-
-    // html2canvas onclone 콜백에서 OKLCH 색상 변환
-    const html2canvasOptions = {
-      ...PDF_DEFAULT_OPTIONS.html2canvas,
-      onclone: (clonedDoc: Document) => {
-        // 모든 스타일시트의 OKLCH 색상을 hex로 변환
-        clonedDoc.querySelectorAll('style').forEach((style) => {
-          if (style.textContent) {
-            style.textContent = convertOklchInCss(style.textContent);
-          }
-        });
-
-        // 인라인 스타일의 OKLCH 색상 변환
-        clonedDoc.querySelectorAll('*').forEach((elem) => {
-          const el = elem as HTMLElement;
-          const inlineStyle = el.getAttribute('style');
-          if (inlineStyle && (inlineStyle.includes('oklch') || inlineStyle.includes('oklab'))) {
-            el.setAttribute('style', convertOklchInCss(inlineStyle));
-          }
-        });
-
-        // PDF 전용 스타일 추가
-        const pdfStyle = clonedDoc.createElement('style');
-        pdfStyle.textContent = `
-          * {
-            -webkit-print-color-adjust: exact !important;
-            color-adjust: exact !important;
-            print-color-adjust: exact !important;
-          }
-
-          @page {
-            margin: 0.5in;
-            size: a4;
-          }
-
-          /* 페이지 나눔 방지 */
-          h1, h2, h3, h4, h5, h6 {
-            page-break-after: avoid;
-            break-after: avoid;
-          }
-
-          pre, blockquote, table, ul, ol, figure {
-            page-break-inside: avoid;
-            break-inside: avoid;
-          }
-
-          /* 앵커 링크 숨기기 */
-          h1 > a, h2 > a, h3 > a {
-            display: none !important;
-          }
-        `;
-        clonedDoc.head.appendChild(pdfStyle);
-      }
+    // beforeprint/afterprint 이벤트로 클래스 정리 보장
+    const cleanup = () => {
+      document.body.classList.remove('pdf-printing');
+      window.removeEventListener('afterprint', cleanup);
     };
+    window.addEventListener('afterprint', cleanup);
 
-    const options = {
-      ...(customOptions ? { ...PDF_DEFAULT_OPTIONS, ...customOptions } : PDF_DEFAULT_OPTIONS),
-      html2canvas: html2canvasOptions
-    };
+    // 브라우저의 기본 인쇄 기능을 사용하여 PDF 생성
+    // @media print + body.pdf-printing CSS가 globals.css에 정의되어 있어
+    // 미리보기 영역만 출력되고 에디터/헤더는 숨겨집니다.
+    window.print();
 
-    // 현재 스크롤 위치 저장
-    const currentScrollY = window.scrollY;
-    window.scrollTo(0, 0);
-
-    // PDF 생성
-    await html2pdf().set(options).from(element).save();
-
-    // 스크롤 위치 복원 및 정리
-    window.scrollTo(0, currentScrollY);
-    document.body.removeChild(tempContainer);
-
+    // 사용자가 인쇄 대화상자를 취소한 경우를 위한 폴백 정리
+    // afterprint 이벤트가 발생하지 않는 브라우저를 위해
+    setTimeout(() => {
+      document.body.classList.remove('pdf-printing');
+    }, 1000);
   } catch (error) {
+    document.body.classList.remove('pdf-printing');
     console.error('PDF 생성 중 오류:', error);
     throw error;
   }
