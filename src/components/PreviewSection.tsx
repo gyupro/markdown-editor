@@ -51,9 +51,21 @@ const PreviewSectionComponent: React.FC<PreviewSectionProps> = ({
       className={`${isVisible ? 'flex' : 'hidden'} md:flex w-full md:w-1/2 flex-col`}
       aria-label={t('title')}
     >
-      <header className="hidden md:block bg-gray-100 dark:bg-gray-800 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
-        <h2 className="text-sm font-medium text-gray-600 dark:text-gray-300 flex items-center gap-2">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <header
+        className="hidden md:flex items-center gap-2 px-5 py-2.5"
+        style={{
+          background: 'var(--surface)',
+          borderBottom: '1px solid var(--border)',
+        }}
+      >
+        <h2
+          className="text-[10px] font-semibold tracking-[0.25em] uppercase flex items-center gap-2"
+          style={{
+            fontFamily: 'var(--font-jetbrains), monospace',
+            color: 'var(--text-muted)',
+          }}
+        >
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ opacity: 0.6 }}>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
           </svg>
@@ -62,18 +74,19 @@ const PreviewSectionComponent: React.FC<PreviewSectionProps> = ({
       </header>
       <div
         ref={previewRef}
-        className="flex-1 overflow-auto bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800"
+        className="flex-1 overflow-auto"
+        style={{ background: 'var(--background)' }}
         onScroll={onScroll}
       >
         {isClient ? (
           <article
-            className="max-w-4xl mx-auto p-4 md:p-8"
+            className="max-w-3xl mx-auto px-6 py-8 md:px-12 md:py-12"
             aria-label={t('livePreview')}
           >
             {renderedMarkdown}
           </article>
         ) : (
-          <div className="text-gray-500 dark:text-gray-400" role="status" aria-live="polite">
+          <div style={{ color: 'var(--text-muted)' }} role="status" aria-live="polite">
             {t('noContent')}
           </div>
         )}

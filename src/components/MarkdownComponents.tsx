@@ -2,7 +2,7 @@ import React from 'react';
 import { MarkdownComponents } from '@/types/markdown';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
 // Translation interface for markdown components
 export interface MarkdownTranslations {
@@ -33,7 +33,7 @@ const createSlug = (text: string): string => {
     .replace(/\s+/g, '-') // 공백을 하이픈으로 변경
     .replace(/-+/g, '-') // 연속된 하이픈을 하나로 변경
     .replace(/^-+|-+$/g, ''); // 시작과 끝의 하이픈 제거
-  
+
   // 모든 헤딩 ID가 하이픈으로 시작하도록 함
   return '-' + slug;
 };
@@ -69,57 +69,78 @@ const HeadingWithAnchor: React.FC<{
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      // URL 해시 업데이트
       window.history.pushState(null, '', `#${id}`);
     }
   };
 
-  const baseStyles = "group relative scroll-mt-20"; // scroll-mt-20은 고정 헤더를 위한 오프셋
-  
+  const anchorLink = (size: string) => (
+    <a
+      href={`#${id}`}
+      onClick={handleAnchorClick}
+      className={`ml-3 opacity-0 group-hover:opacity-40 hover:!opacity-100 transition-opacity duration-300 ${size}`}
+      style={{ color: 'var(--accent)' }}
+      aria-label={goToSectionLabel}
+      title={translations.copyLink}
+    >
+      &para;
+    </a>
+  );
+
   if (level === 1) {
     return (
-      <h1 id={id} className={`text-2xl md:text-4xl font-bold mb-4 md:mb-6 text-gray-900 dark:text-white pb-2 md:pb-3 leading-tight ${baseStyles}`} {...props}>
+      <h1
+        id={id}
+        className="group relative scroll-mt-20 mb-6 md:mb-8 pb-3 md:pb-4 leading-[1.15] tracking-tight"
+        style={{
+          fontFamily: 'var(--font-playfair), Georgia, serif',
+          fontSize: 'clamp(1.75rem, 4vw, 2.75rem)',
+          fontWeight: 800,
+          color: 'var(--text-primary)',
+          borderBottom: '2px solid var(--accent)',
+        }}
+        {...props}
+      >
         {children}
-        <a
-          href={`#${id}`}
-          onClick={handleAnchorClick}
-          className="ml-2 opacity-0 group-hover:opacity-50 hover:!opacity-100 text-blue-500 hover:text-blue-600 transition-opacity duration-200 text-xl"
-          aria-label={goToSectionLabel}
-          title={translations.copyLink}
-        >
-          #
-        </a>
+        {anchorLink('text-xl')}
       </h1>
     );
   } else if (level === 2) {
     return (
-      <h2 id={id} className={`text-xl md:text-3xl font-semibold mb-3 md:mb-4 mt-6 md:mt-8 text-gray-800 dark:text-gray-100 flex items-center leading-tight ${baseStyles}`} {...props}>
-        <span className="w-1 h-6 md:h-8 bg-gradient-to-b from-blue-500 to-purple-500 mr-2 md:mr-3 rounded-full"></span>
+      <h2
+        id={id}
+        className="group relative scroll-mt-20 mt-10 md:mt-12 mb-4 md:mb-5 leading-[1.2] tracking-tight"
+        style={{
+          fontFamily: 'var(--font-playfair), Georgia, serif',
+          fontSize: 'clamp(1.375rem, 3vw, 2rem)',
+          fontWeight: 700,
+          color: 'var(--text-primary)',
+        }}
+        {...props}
+      >
+        <span
+          className="inline-block w-8 h-[3px] mr-3 rounded-full align-middle"
+          style={{ background: 'var(--accent)' }}
+        />
         {children}
-        <a
-          href={`#${id}`}
-          onClick={handleAnchorClick}
-          className="ml-2 opacity-0 group-hover:opacity-50 hover:!opacity-100 text-blue-500 hover:text-blue-600 transition-opacity duration-200 text-lg"
-          aria-label={goToSectionLabel}
-          title={translations.copyLink}
-        >
-          #
-        </a>
+        {anchorLink('text-lg')}
       </h2>
     );
   } else {
     return (
-      <h3 id={id} className={`text-lg md:text-2xl font-semibold mb-2 md:mb-3 mt-4 md:mt-6 text-gray-800 dark:text-gray-100 leading-tight ${baseStyles}`} {...props}>
+      <h3
+        id={id}
+        className="group relative scroll-mt-20 mt-8 md:mt-10 mb-3 md:mb-4 leading-[1.25] tracking-tight"
+        style={{
+          fontFamily: 'var(--font-playfair), Georgia, serif',
+          fontSize: 'clamp(1.125rem, 2.5vw, 1.5rem)',
+          fontWeight: 600,
+          fontStyle: 'italic',
+          color: 'var(--text-primary)',
+        }}
+        {...props}
+      >
         {children}
-        <a
-          href={`#${id}`}
-          onClick={handleAnchorClick}
-          className="ml-2 opacity-0 group-hover:opacity-50 hover:!opacity-100 text-blue-500 hover:text-blue-600 transition-opacity duration-200 text-base"
-          aria-label={goToSectionLabel}
-          title={translations.copyLink}
-        >
-          #
-        </a>
+        {anchorLink('text-base')}
       </h3>
     );
   }
@@ -139,42 +160,31 @@ const CodeBlock: React.FC<{ children: React.ReactNode; translations: MarkdownTra
   let actualCodeText = '';
   let language = '';
 
-  // Case 1: The node itself is a string (e.g., text directly inside <pre>)
   if (typeof codeElementAsNode === 'string') {
     actualCodeText = codeElementAsNode;
-  }
-  // Case 2: The node is a React element (e.g., <pre><code>text</code></pre>, codeElementAsNode is the <code>)
-  else if (React.isValidElement(codeElementAsNode)) {
-    // Extract language from className
+  } else if (React.isValidElement(codeElementAsNode)) {
     language = extractLanguage(codeElementAsNode);
-
-    // codeElementAsNode.props가 존재하고 객체인지 확인 (children에 접근하기 전)
     const elementProps = codeElementAsNode.props as { children?: React.ReactNode };
 
     if (typeof elementProps.children === 'string') {
-      // children of <code> is a string: <code>"text"</code>
       actualCodeText = elementProps.children;
     } else if (Array.isArray(elementProps.children)) {
-      // children of <code> is an array: <code>{["text", <span/>, "more text"]}</code>
       actualCodeText = elementProps.children
-        .map((childNode: React.ReactNode): string => { // Explicitly type childNode and return type
+        .map((childNode: React.ReactNode): string => {
           if (typeof childNode === 'string') {
             return childNode;
           }
           if (React.isValidElement(childNode)) {
-            // childNode.props가 존재하고 객체인지 확인
             const childElementProps = childNode.props as { children?: React.ReactNode };
             if (typeof childElementProps.children === 'string') {
-              return childElementProps.children; // Text inside a child element like <span>text</span>
+              return childElementProps.children;
             }
           }
-          return ''; // Non-string or non-extractable children become empty strings
+          return '';
         })
         .join('');
     } else if (React.isValidElement(elementProps.children)) {
-      // children of <code> is another single React element: <code><span>text</span></code>
       const innerElement = elementProps.children;
-      // innerElement.props가 존재하고 객체인지 확인
       const innerElementProps = innerElement.props as { children?: React.ReactNode };
       if (typeof innerElementProps.children === 'string') {
         actualCodeText = innerElementProps.children;
@@ -188,55 +198,82 @@ const CodeBlock: React.FC<{ children: React.ReactNode; translations: MarkdownTra
     await copyToClipboard(actualCodeText);
   };
 
-  // Remove trailing newline for cleaner display
   const cleanedCode = actualCodeText.replace(/\n$/, '');
 
   return (
-    <div className="relative group my-4 md:my-6">
-      {/* Language badge */}
+    <div className="relative group my-6 md:my-8">
+      {/* Language badge - editorial style */}
       {language && (
-        <div className="absolute top-0 left-4 px-2 py-1 bg-gray-700/90 text-gray-300 text-xs rounded-b-md font-mono uppercase z-10">
+        <div
+          className="absolute -top-3 left-5 px-3 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] rounded-sm z-10"
+          style={{
+            fontFamily: 'var(--font-jetbrains), monospace',
+            background: 'var(--accent)',
+            color: '#fff',
+            letterSpacing: '0.2em',
+          }}
+        >
           {language}
         </div>
       )}
 
-      <SyntaxHighlighter
-        language={language || 'text'}
-        style={vscDarkPlus}
-        customStyle={{
-          margin: 0,
-          padding: '1.5rem',
-          paddingTop: language ? '2.5rem' : '1.5rem',
-          borderRadius: '0.75rem',
-          fontSize: '0.875rem',
-          lineHeight: '1.5',
-          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+      <div
+        className="rounded-lg overflow-hidden"
+        style={{
+          boxShadow: '0 8px 30px var(--shadow-color), 0 2px 8px var(--shadow-color)',
+          border: '1px solid var(--border)',
         }}
-        showLineNumbers={cleanedCode.split('\n').length > 3}
-        lineNumberStyle={{
-          minWidth: '2.5em',
-          paddingRight: '1em',
-          color: '#6b7280',
-          userSelect: 'none',
-        }}
-        wrapLines={true}
-        wrapLongLines={true}
       >
-        {cleanedCode}
-      </SyntaxHighlighter>
+        <SyntaxHighlighter
+          language={language || 'text'}
+          style={oneDark}
+          customStyle={{
+            margin: 0,
+            padding: '1.75rem',
+            paddingTop: language ? '2.5rem' : '1.75rem',
+            borderRadius: 0,
+            fontSize: '0.85rem',
+            lineHeight: '1.7',
+            background: 'var(--code-bg)',
+            fontFamily: 'var(--font-jetbrains), monospace',
+          }}
+          showLineNumbers={cleanedCode.split('\n').length > 3}
+          lineNumberStyle={{
+            minWidth: '2.5em',
+            paddingRight: '1.5em',
+            color: '#4a4458',
+            userSelect: 'none',
+            fontFamily: 'var(--font-jetbrains), monospace',
+            fontSize: '0.75rem',
+          }}
+          wrapLines={true}
+          wrapLongLines={true}
+        >
+          {cleanedCode}
+        </SyntaxHighlighter>
+      </div>
 
       <button
         onClick={handleCopy}
-        className="absolute top-3 right-3 bg-gray-700/90 hover:bg-gray-600 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs transition-all duration-200 opacity-100 md:opacity-0 md:group-hover:opacity-100 focus:opacity-100 shadow-lg z-10"
+        className="absolute top-2 right-3 px-3 py-1.5 rounded-md text-xs transition-all duration-200 opacity-100 md:opacity-0 md:group-hover:opacity-100 focus:opacity-100 z-10"
+        style={{
+          fontFamily: 'var(--font-jetbrains), monospace',
+          background: 'rgba(255,255,255,0.08)',
+          color: 'rgba(255,255,255,0.7)',
+          backdropFilter: 'blur(8px)',
+          border: '1px solid rgba(255,255,255,0.1)',
+        }}
         title={isCopied ? translations.codeCopied : translations.copyCode}
         aria-label={isCopied ? translations.codeCopiedAriaLabel : translations.copyCodeAriaLabel}
       >
         {isCopied ? (
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/>
-          </svg>
+          <span className="flex items-center gap-1.5">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/>
+            </svg>
+          </span>
         ) : (
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
           </svg>
         )}
@@ -266,19 +303,65 @@ export const createMarkdownComponents = (translations?: Partial<MarkdownTranslat
       </HeadingWithAnchor>
     ),
     p: ({ children, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => (
-      <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3 md:mb-4 text-base md:text-lg" {...props}>
+      <p
+        className="mb-4 md:mb-5"
+        style={{
+          fontFamily: 'var(--font-crimson), Georgia, serif',
+          fontSize: 'clamp(1.05rem, 1.8vw, 1.2rem)',
+          lineHeight: '1.85',
+          color: 'var(--text-secondary)',
+          letterSpacing: '0.01em',
+        }}
+        {...props}
+      >
         {children}
       </p>
     ),
     blockquote: ({ children, ...props }: React.HTMLAttributes<HTMLQuoteElement>) => (
-      <blockquote className="border-l-4 border-blue-500 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 pl-4 md:pl-6 py-3 md:py-4 my-4 md:my-6 rounded-r-lg shadow-sm" {...props}>
-        <div className="text-gray-700 dark:text-gray-300 italic text-sm md:text-base">
+      <blockquote
+        className="my-6 md:my-8 pl-5 md:pl-7 py-4 md:py-5 rounded-r-md relative overflow-hidden"
+        style={{
+          borderLeft: '3px solid var(--blockquote-border)',
+          background: 'var(--blockquote-bg)',
+        }}
+        {...props}
+      >
+        <div
+          className="absolute top-3 left-3 text-4xl leading-none opacity-10 select-none"
+          style={{
+            fontFamily: 'var(--font-playfair), Georgia, serif',
+            color: 'var(--accent)',
+          }}
+          aria-hidden="true"
+        >
+          &ldquo;
+        </div>
+        <div
+          style={{
+            fontFamily: 'var(--font-crimson), Georgia, serif',
+            fontStyle: 'italic',
+            fontSize: 'clamp(0.95rem, 1.6vw, 1.1rem)',
+            lineHeight: '1.8',
+            color: 'var(--text-secondary)',
+          }}
+        >
           {children}
         </div>
       </blockquote>
     ),
     code: ({ children, ...props }: React.HTMLAttributes<HTMLElement>) => (
-      <code className="bg-gradient-to-r from-pink-100 to-purple-100 dark:from-pink-900/30 dark:to-purple-900/30 text-pink-700 dark:text-pink-300 px-1.5 md:px-2 py-0.5 md:py-1 rounded-md font-mono text-xs md:text-sm border border-pink-200 dark:border-pink-700" {...props}>
+      <code
+        className="px-1.5 md:px-2 py-0.5 md:py-1 rounded-[4px]"
+        style={{
+          fontFamily: 'var(--font-jetbrains), monospace',
+          fontSize: '0.85em',
+          fontWeight: 500,
+          background: 'var(--inline-code-bg)',
+          color: 'var(--inline-code-text)',
+          border: '1px solid var(--inline-code-border)',
+        }}
+        {...props}
+      >
         {children}
       </code>
     ),
@@ -290,14 +373,26 @@ export const createMarkdownComponents = (translations?: Partial<MarkdownTranslat
     a: ({ children, href, ...props }: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
       <a
         href={href}
-        className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline decoration-2 underline-offset-2 hover:decoration-blue-500 transition-all duration-200 font-medium touch-manipulation"
+        className="underline decoration-1 underline-offset-3 transition-all duration-200 font-medium"
+        style={{
+          color: 'var(--link-color)',
+          textDecorationColor: 'var(--accent-light)',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.color = 'var(--link-hover)';
+          e.currentTarget.style.textDecorationThickness = '2px';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.color = 'var(--link-color)';
+          e.currentTarget.style.textDecorationThickness = '1px';
+        }}
         {...props}
       >
         {children}
       </a>
     ),
     ul: ({ children, ...props }: React.HTMLAttributes<HTMLUListElement>) => (
-      <ul className="space-y-1.5 md:space-y-2 mb-4 md:mb-6 ml-4 md:ml-6" {...props}>
+      <ul className="space-y-2 md:space-y-2.5 mb-5 md:mb-6 ml-1" {...props}>
         {children}
       </ul>
     ),
@@ -315,7 +410,7 @@ export const createMarkdownComponents = (translations?: Partial<MarkdownTranslat
         return child;
       });
       return (
-        <ol className="space-y-1.5 md:space-y-2 mb-4 md:mb-6 ml-4 md:ml-6" {...props}>
+        <ol className="space-y-2 md:space-y-2.5 mb-5 md:mb-6 ml-1" {...props}>
           {numberedChildren}
         </ol>
       );
@@ -328,64 +423,144 @@ export const createMarkdownComponents = (translations?: Partial<MarkdownTranslat
       const isOrdered = (props as { 'data-ordered'?: boolean })['data-ordered'];
       const index = (props as { 'data-index'?: number })['data-index'] ?? 0;
 
-      // Remove custom data attributes before passing to DOM
       const { 'data-index': _di, 'data-ordered': _do, ...domProps } = props as Record<string, unknown>;
 
       return (
-        <li className="text-gray-700 dark:text-gray-300 leading-relaxed flex items-start text-sm md:text-base" {...domProps}>
+        <li
+          className="flex items-start"
+          style={{
+            fontFamily: 'var(--font-crimson), Georgia, serif',
+            fontSize: 'clamp(1rem, 1.7vw, 1.15rem)',
+            lineHeight: '1.8',
+            color: 'var(--text-secondary)',
+          }}
+          {...domProps}
+        >
           {hasCheckbox ? null : isOrdered ? (
-            <span className="text-blue-600 dark:text-blue-400 mr-2 mt-0.5 text-xs md:text-sm font-semibold min-w-[1.5em] text-right">{index + 1}.</span>
+            <span
+              className="mr-3 mt-0.5 min-w-[1.5em] text-right font-semibold"
+              style={{
+                fontFamily: 'var(--font-playfair), Georgia, serif',
+                color: 'var(--accent)',
+                fontSize: '0.9em',
+              }}
+            >
+              {index + 1}.
+            </span>
           ) : (
-            <span className="text-blue-500 mr-2 mt-1 text-xs md:text-sm">•</span>
+            <span
+              className="mr-3 mt-2.5 flex-shrink-0 w-1.5 h-1.5 rounded-full"
+              style={{ background: 'var(--accent)' }}
+            />
           )}
           <span>{children}</span>
         </li>
       );
     },
     hr: ({ ...props }: React.HTMLAttributes<HTMLHRElement>) => (
-      <hr className="my-6 md:my-8 border-0 h-1 bg-gradient-to-r from-blue-300 via-purple-300 to-pink-300 rounded-full opacity-60" {...props} />
+      <div className="my-10 md:my-12 flex items-center justify-center gap-4" {...props}>
+        <div className="flex-1 h-px" style={{ background: 'var(--border)' }} />
+        <div className="flex gap-1.5">
+          <span className="w-1 h-1 rounded-full" style={{ background: 'var(--accent)', opacity: 0.4 }} />
+          <span className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--accent)', opacity: 0.7 }} />
+          <span className="w-1 h-1 rounded-full" style={{ background: 'var(--accent)', opacity: 0.4 }} />
+        </div>
+        <div className="flex-1 h-px" style={{ background: 'var(--border)' }} />
+      </div>
     ),
     table: ({ children, ...props }: React.HTMLAttributes<HTMLTableElement>) => (
-      <div className="overflow-x-auto my-4 md:my-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 -mx-0 md:mx-0">
-        <table className="w-full text-sm md:text-base" {...props}>
+      <div
+        className="overflow-x-auto my-6 md:my-8 rounded-lg"
+        style={{
+          border: '1px solid var(--border)',
+          boxShadow: '0 4px 20px var(--shadow-color)',
+        }}
+      >
+        <table
+          className="w-full"
+          style={{
+            fontFamily: 'var(--font-crimson), Georgia, serif',
+            fontSize: '0.95rem',
+          }}
+          {...props}
+        >
           {children}
         </table>
       </div>
     ),
     thead: ({ children, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) => (
-      <thead className="bg-gray-800 dark:bg-gray-900" {...props}>
+      <thead style={{ background: 'var(--table-header)' }} {...props}>
         {children}
       </thead>
     ),
     tbody: ({ children, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) => (
-      <tbody className="divide-y divide-gray-200 dark:divide-gray-600 bg-white dark:bg-gray-800" {...props}>
+      <tbody {...props}>
         {children}
       </tbody>
     ),
     th: ({ children, ...props }: React.HTMLAttributes<HTMLTableCellElement>) => (
-      <th className="px-2 md:px-4 py-2 md:py-3 text-left text-xs md:text-sm font-bold text-white bg-gray-800 dark:bg-gray-900 tracking-wider border-r border-gray-600 last:border-r-0 min-w-0 whitespace-nowrap" {...props}>
+      <th
+        className="px-4 md:px-5 py-3 md:py-3.5 text-left text-xs font-bold tracking-[0.15em] uppercase"
+        style={{
+          fontFamily: 'var(--font-jetbrains), monospace',
+          color: '#fff',
+          background: 'var(--table-header)',
+          borderBottom: '2px solid var(--accent)',
+        }}
+        {...props}
+      >
         {children}
       </th>
     ),
     td: ({ children, ...props }: React.HTMLAttributes<HTMLTableCellElement>) => (
-      <td className="px-2 md:px-4 py-2 md:py-3 text-sm md:text-base font-medium text-gray-800 dark:text-gray-200 min-w-0" {...props}>
+      <td
+        className="px-4 md:px-5 py-3 md:py-3.5"
+        style={{
+          color: 'var(--text-secondary)',
+          borderBottom: '1px solid var(--border)',
+        }}
+        {...props}
+      >
         <div className="leading-relaxed">
           {children}
         </div>
       </td>
     ),
     tr: ({ children, ...props }: React.HTMLAttributes<HTMLTableRowElement>) => (
-      <tr className="even:bg-gray-50 dark:even:bg-gray-800/50 odd:bg-white dark:odd:bg-gray-800 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-150 border-b border-gray-100 dark:border-gray-700" {...props}>
+      <tr
+        className="transition-colors duration-150"
+        style={{
+          background: 'transparent',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = 'var(--accent-subtle)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = 'transparent';
+        }}
+        {...props}
+      >
         {children}
       </tr>
     ),
     strong: ({ children, ...props }: React.HTMLAttributes<HTMLElement>) => (
-      <strong className="font-bold text-gray-900 dark:text-white" {...props}>
+      <strong
+        className="font-bold"
+        style={{ color: 'var(--text-primary)' }}
+        {...props}
+      >
         {children}
       </strong>
     ),
     em: ({ children, ...props }: React.HTMLAttributes<HTMLElement>) => (
-      <em className="italic text-gray-700 dark:text-gray-300" {...props}>
+      <em
+        style={{
+          fontStyle: 'italic',
+          color: 'var(--text-secondary)',
+          fontFamily: 'var(--font-crimson), Georgia, serif',
+        }}
+        {...props}
+      >
         {children}
       </em>
     ),
@@ -396,7 +571,11 @@ export const createMarkdownComponents = (translations?: Partial<MarkdownTranslat
             type="checkbox"
             checked={checked}
             disabled
-            className="mr-2 mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 accent-blue-600 cursor-default"
+            className="mr-2 mt-1 h-4 w-4 rounded cursor-default"
+            style={{
+              accentColor: 'var(--accent)',
+              borderColor: 'var(--border)',
+            }}
             {...props}
           />
         );
@@ -407,4 +586,4 @@ export const createMarkdownComponents = (translations?: Partial<MarkdownTranslat
 };
 
 // Default export for backward compatibility (uses English translations)
-export const markdownComponents: MarkdownComponents = createMarkdownComponents(); 
+export const markdownComponents: MarkdownComponents = createMarkdownComponents();

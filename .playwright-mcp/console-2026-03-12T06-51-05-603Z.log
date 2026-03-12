@@ -75,3 +75,6 @@
 [  427284ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/_next/static/webpack/001413d6b6c2f7e3.webpack.hot-update.json:0
 [  432731ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/_next/static/webpack/dd56de4101107d00.webpack.hot-update.json:0
 [  445549ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/_next/static/webpack/36f0327603c367c5.webpack.hot-update.json:0
+[  626449ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/_next/static/webpack/176f90b200435cc6.webpack.hot-update.json:0
+[  654281ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/_next/static/webpack/ada5d209c349ac1b.webpack.hot-update.json:0
+[  664678ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/_next/static/webpack/f386e0abce446c56.webpack.hot-update.json:0
