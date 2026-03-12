@@ -33,11 +33,11 @@ body {
 
 /* ===== PDF Print Styles ===== */
 /* body.pdf-printing: added by exportToPDF() before window.print() */
-/* Mimics the fullscreen preview layout for a clean document feel */
+/* Mimics the fullscreen preview - background fills edge to edge */
 
 @media print {
   @page {
-    margin: 10mm;
+    margin: 0;
     size: A4;
   }
 
@@ -48,11 +48,16 @@ body {
   }
 }
 
-/* ---- Hide UI chrome, keep only preview content ---- */
+/* ---- Hide UI chrome ---- */
 body.pdf-printing [role="banner"],
 body.pdf-printing [aria-label="편집 도구"],
 body.pdf-printing [aria-label="Editing tools"],
 body.pdf-printing [aria-label="編集ツール"] {
+  display: none !important;
+}
+
+/* Hide mobile tabs ("에디터"/"미리보기") */
+body.pdf-printing .md\:hidden {
   display: none !important;
 }
 
@@ -104,7 +109,7 @@ body.pdf-printing section[aria-label="预览"] > header {
   display: none !important;
 }
 
-/* ---- Document-like layout (matches fullscreen preview) ---- */
+/* ---- Document layout ---- */
 
 /* Preview scroll container */
 body.pdf-printing section[aria-label] > .overflow-auto {
@@ -112,11 +117,11 @@ body.pdf-printing section[aria-label] > .overflow-auto {
   height: auto !important;
 }
 
-/* Article: centered, constrained width, proper padding - like fullscreen modal */
+/* Article: centered with padding (page margin is 0, padding creates spacing) */
 body.pdf-printing section[aria-label] article {
-  max-width: 56rem !important; /* max-w-4xl = 56rem */
+  max-width: 56rem !important;
   margin: 0 auto !important;
-  padding: 2rem !important;
+  padding: 2rem 2.5rem !important;
 }
 
 /* ---- Hide interactive elements ---- */
