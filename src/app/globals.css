@@ -79,55 +79,6 @@ body {
   border: 0;
 }
 
-/* ===== Header Button Styles ===== */
-.header-icon-btn {
-  position: relative;
-  cursor: pointer;
-}
-.header-icon-btn:hover {
-  color: var(--accent) !important;
-  background: var(--accent-subtle);
-  transform: scale(1.08);
-}
-.header-icon-btn:active {
-  transform: scale(0.95);
-}
-
-.header-btn {
-  position: relative;
-  cursor: pointer;
-  font-weight: 500;
-}
-.header-btn:active {
-  transform: scale(0.97);
-}
-
-.header-btn-primary {
-  background: var(--accent);
-  color: #fff !important;
-  border: 1px solid var(--accent);
-  box-shadow: 0 1px 3px var(--shadow-color);
-}
-.header-btn-primary:hover {
-  background: var(--accent-light);
-  border-color: var(--accent-light);
-  box-shadow: 0 2px 8px var(--shadow-color);
-  transform: translateY(-1px);
-}
-
-.header-btn-secondary {
-  color: var(--text-secondary) !important;
-  border: 1px solid var(--border);
-  background: transparent;
-}
-.header-btn-secondary:hover {
-  border-color: var(--accent);
-  color: var(--accent) !important;
-  background: var(--accent-subtle);
-  transform: translateY(-1px);
-  box-shadow: 0 2px 6px var(--shadow-color);
-}
-
 /* ===== PDF Print Styles ===== */
 /* body.pdf-printing: added by exportToPDF() before window.print() */
 /* Mimics the fullscreen preview - background fills edge to edge */

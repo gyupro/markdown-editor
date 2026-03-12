@@ -34,32 +34,6 @@ const MoonIcon = () => (
   </svg>
 );
 
-const ShareIcon = () => (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-  </svg>
-);
-
-const PdfIcon = () => (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 13h2m-2 3h4" />
-  </svg>
-);
-
-const FullscreenIcon = () => (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-  </svg>
-);
-
-const SpinnerIcon = () => (
-  <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-  </svg>
-);
-
 export const Header: React.FC<HeaderProps> = ({ isExporting, onExportPDF, onFullscreen, onShare, theme, onThemeToggle, isThemeLoaded = false }) => {
   const t = useTranslations('header');
 
@@ -95,17 +69,16 @@ export const Header: React.FC<HeaderProps> = ({ isExporting, onExportPDF, onFull
             <span className="hidden sm:inline">{t('openSource')}</span>
           </a>
         </div>
-        <nav className="flex items-center gap-1.5 md:gap-2" aria-label="Main actions">
+        <nav className="flex items-center gap-2" aria-label="Main actions">
           {/* Language Switcher */}
           <LanguageSwitcher />
 
-          {/* Divider */}
-          <div className="hidden md:block w-px h-5 mx-1" style={{ background: 'var(--border)' }} />
-
           <button
             onClick={onThemeToggle}
-            className="header-icon-btn p-2 rounded-lg transition-all duration-200"
-            style={{ color: 'var(--text-muted)' }}
+            className="p-2 rounded-lg transition-colors duration-200"
+            style={{ color: 'var(--text-secondary)' }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--accent-subtle)'; e.currentTarget.style.color = 'var(--accent)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
             aria-label={theme === 'light' ? t('darkMode') : t('lightMode')}
             title={theme === 'light' ? t('darkMode') : t('lightMode')}
             suppressHydrationWarning
@@ -118,43 +91,49 @@ export const Header: React.FC<HeaderProps> = ({ isExporting, onExportPDF, onFull
               <SunIcon />
             )}
           </button>
-
-          {/* Share - primary action, visually emphasized */}
           <button
             onClick={onShare}
-            className="header-btn header-btn-primary px-3 md:px-4 py-1.5 rounded-lg transition-all duration-200 flex items-center gap-1.5 md:gap-2 text-sm font-medium flex-shrink-0"
+            className="px-3 md:px-4 py-1.5 rounded-md transition-all duration-150 flex items-center gap-1 md:gap-2 text-sm flex-shrink-0"
+            style={{ color: 'var(--text-secondary)', border: '1px solid var(--border)' }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--text-secondary)'; e.currentTarget.style.background = 'var(--surface)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'transparent'; }}
             aria-label={t('shareDocument')}
           >
-            <ShareIcon />
+            <span className="text-sm" aria-hidden="true">🌐</span>
             <span className="hidden sm:inline">{t('shareDocument')}</span>
             <span className="sm:hidden">{t('share')}</span>
           </button>
-
-          <div className="hidden md:flex items-center gap-1.5">
+          <div className="hidden md:flex gap-2">
             <button
               onClick={onExportPDF}
               disabled={isExporting}
-              className="header-btn header-btn-secondary px-3.5 py-1.5 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center gap-1.5 text-sm"
+              className="px-4 py-1.5 rounded-md disabled:opacity-50 transition-all duration-150 flex items-center gap-2 text-sm"
+              style={{ color: 'var(--text-secondary)', border: '1px solid var(--border)' }}
+              onMouseEnter={(e) => { if (!e.currentTarget.disabled) { e.currentTarget.style.borderColor = 'var(--text-secondary)'; e.currentTarget.style.background = 'var(--surface)'; } }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'transparent'; }}
               aria-label={isExporting ? t('exportingPDF') : t('exportPDF')}
             >
               {isExporting ? (
                 <>
-                  <SpinnerIcon />
+                  <span className="animate-spin text-sm" aria-hidden="true">⏳</span>
                   <span>{t('exportingPDF')}</span>
                 </>
               ) : (
                 <>
-                  <PdfIcon />
+                  <span className="text-sm" aria-hidden="true">📄</span>
                   <span>{t('exportPDF')}</span>
                 </>
               )}
             </button>
             <button
               onClick={onFullscreen}
-              className="header-btn header-btn-secondary px-3.5 py-1.5 rounded-lg transition-all duration-200 text-sm flex items-center gap-1.5"
+              className="px-4 py-1.5 rounded-md transition-all duration-150 text-sm flex items-center gap-2"
+              style={{ color: 'var(--text-secondary)', border: '1px solid var(--border)' }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--text-secondary)'; e.currentTarget.style.background = 'var(--surface)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'transparent'; }}
               aria-label={t('fullscreenPreview')}
             >
-              <FullscreenIcon />
+              <span className="text-sm" aria-hidden="true">🖥️</span>
               <span>{t('fullscreenPreview')}</span>
             </button>
           </div>
