@@ -188,10 +188,10 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--background)' }}>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-300">문서를 불러오는 중...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4" style={{ borderColor: 'var(--accent)' }}></div>
+          <p style={{ color: 'var(--text-muted)' }}>문서를 불러오는 중...</p>
         </div>
       </div>
     );
@@ -199,18 +199,19 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--background)' }}>
         <div className="text-center max-w-md mx-auto p-6">
           <div className="text-6xl mb-4">⚠️</div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+          <h1 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
             문서를 찾을 수 없습니다
           </h1>
-          <p className="text-gray-600 dark:text-gray-300 mb-6">
+          <p className="mb-6" style={{ color: 'var(--text-secondary)' }}>
             {error}
           </p>
           <button
             onClick={() => router.push('/')}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+            className="text-white px-6 py-2 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+            style={{ background: 'var(--accent)' }}
           >
             홈으로 돌아가기
           </button>
@@ -224,8 +225,8 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 py-3 md:py-4" role="banner">
+    <div className="min-h-screen" style={{ background: 'var(--background)' }}>
+      <header className="shadow-sm px-4 md:px-6 py-3 md:py-4" style={{ background: 'var(--surface-elevated)', borderBottom: '1px solid var(--border)' }} role="banner">
         <div className="max-w-4xl mx-auto">
           {/* 헤더 영역 - 모바일 최적화 */}
           <div className="space-y-3">
@@ -241,19 +242,22 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
                   e.currentTarget.style.display = 'none';
                 }}
               />
-              <h1 className="text-base md:text-xl font-semibold text-gray-800 dark:text-white break-words flex-1">
+              <h1 className="text-base md:text-xl font-semibold break-words flex-1" style={{ color: 'var(--text-primary)' }}>
                 {extractTitleFromMarkdown(document.content)}
               </h1>
             </div>
             
             {/* 날짜와 다크모드 토글 */}
             <div className="flex items-center justify-between">
-              <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-xs md:text-sm" style={{ color: 'var(--text-muted)' }}>
                 공유된 문서 · {new Date(document.created_at).toLocaleDateString('ko-KR')}
               </p>
               <button
                 onClick={toggleTheme}
-                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+                className="p-2 rounded-lg transition-colors duration-200"
+                style={{ color: 'var(--text-secondary)' }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--accent-subtle)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                 aria-label={theme === 'light' ? '다크 모드로 전환' : '라이트 모드로 전환'}
                 title={theme === 'light' ? '다크 모드로 전환' : '라이트 모드로 전환'}
               >
@@ -278,7 +282,8 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
               <button
                 onClick={handleEditDocument}
                 disabled={!document}
-                className="flex items-center justify-center gap-1.5 bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg text-sm disabled:bg-green-400 flex-shrink-0"
+                className="flex items-center justify-center gap-1.5 text-white px-3 py-2 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg text-sm disabled:opacity-50 flex-shrink-0"
+                style={{ background: 'var(--accent)' }}
                 title="이 문서를 편집하기"
                 aria-label="이 문서를 마크다운 에디터에서 편집합니다"
               >
@@ -293,7 +298,13 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
               <button
                 onClick={handleCopyContent}
                 disabled={!document}
-                className="flex items-center justify-center gap-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 px-3 py-2 rounded-lg transition-colors duration-200 text-sm disabled:opacity-50 flex-shrink-0"
+                className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg transition-colors duration-200 text-sm disabled:opacity-50 flex-shrink-0"
+                style={{
+                  background: 'var(--accent-subtle)',
+                  color: 'var(--text-secondary)',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.8'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
                 title="마크다운 내용 복사"
                 aria-label="마크다운 원본 내용을 클립보드에 복사합니다"
               >
@@ -322,7 +333,8 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
               {/* 데스크톱: 새 문서 버튼 직접 표시 */}
               <button
                 onClick={handleNewDocument}
-                className="hidden sm:flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg text-sm"
+                className="hidden sm:flex items-center gap-2 text-white px-3 py-2 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg text-sm"
+                style={{ background: 'var(--text-secondary)' }}
                 title="새로운 문서 만들기"
                 aria-label="새로운 마크다운 문서를 작성합니다"
               >
@@ -336,7 +348,13 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
               <div className="relative sm:hidden" data-more-menu>
                 <button
                   onClick={() => setShowMoreMenu(!showMoreMenu)}
-                  className="flex items-center justify-center w-10 h-10 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors duration-200"
+                  className="flex items-center justify-center w-10 h-10 rounded-lg transition-colors duration-200"
+                  style={{
+                    background: 'var(--accent-subtle)',
+                    color: 'var(--text-secondary)',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.8'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
                   title="더보기 메뉴"
                   aria-label="추가 옵션 메뉴 열기"
                   aria-expanded={showMoreMenu}
@@ -348,13 +366,16 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
 
                 {/* 드롭다운 메뉴 */}
                 {showMoreMenu && (
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
+                  <div className="absolute right-0 top-full mt-2 w-48 rounded-lg shadow-lg py-2 z-50" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
                     <button
                       onClick={() => {
                         handleNewDocument();
                         setShowMoreMenu(false);
                       }}
-                      className="w-full px-4 py-3 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3"
+                      className="w-full px-4 py-3 text-left text-sm flex items-center gap-3 transition-colors duration-200"
+                      style={{ color: 'var(--text-secondary)' }}
+                      onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--accent-subtle)'; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
@@ -369,9 +390,9 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
         </div>
       </header>
 
-      <main className="flex-1 overflow-auto bg-gradient-to-br from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
-        <article 
-          className="prose prose-slate dark:prose-invert prose-lg max-w-4xl mx-auto p-4 md:p-8 prose-headings:scroll-mt-24 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-code:text-pink-600 dark:prose-code:text-pink-400 prose-blockquote:border-l-blue-500 prose-img:rounded-lg prose-img:shadow-lg prose-pre:bg-gray-100 dark:prose-pre:bg-gray-800 prose-table:overflow-hidden prose-td:p-2 prose-th:p-2 prose-th:bg-gray-100 dark:prose-th:bg-gray-800" 
+      <main className="flex-1 overflow-auto" style={{ background: 'var(--background)' }}>
+        <article
+          className="max-w-4xl mx-auto p-4 md:p-8"
           aria-label="공유된 마크다운 문서 미리보기"
         >
           {renderedMarkdown}
