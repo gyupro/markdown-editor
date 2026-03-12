@@ -32,29 +32,23 @@ body {
 }
 
 /* ===== PDF Print Styles ===== */
-/* Uses body.pdf-printing class (added by exportToPDF) + @media print */
-/* The browser's native print engine renders CSS identically to the screen */
+/* body.pdf-printing: added by exportToPDF() before window.print() */
+/* Mimics the fullscreen preview layout for a clean document feel */
 
 @media print {
   @page {
-    margin: 15mm;
+    margin: 10mm;
     size: A4;
   }
 
-  /* Force color printing */
   * {
     -webkit-print-color-adjust: exact !important;
     color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
-
-  body {
-    background: white !important;
-    color: #171717 !important;
-  }
 }
 
-/* When pdf-printing class is on body (works both in print and screen for testing) */
+/* ---- Hide UI chrome, keep only preview content ---- */
 body.pdf-printing [role="banner"],
 body.pdf-printing [aria-label="편집 도구"],
 body.pdf-printing [aria-label="Editing tools"],
@@ -62,25 +56,18 @@ body.pdf-printing [aria-label="編集ツール"] {
   display: none !important;
 }
 
-body.pdf-printing {
-  background: white !important;
-  color: #171717 !important;
-}
-
-/* Remove height constraint */
 body.pdf-printing .h-screen,
 body.pdf-printing [class*="h-screen"] {
   height: auto !important;
   overflow: visible !important;
 }
 
-/* Main container - block layout */
 body.pdf-printing [role="main"] {
   display: block !important;
   overflow: visible !important;
 }
 
-/* Hide editor section - use section element with region role */
+/* Hide editor section */
 body.pdf-printing section[aria-label="마크다운 편집기"],
 body.pdf-printing section[aria-label="Markdown Editor"],
 body.pdf-printing section[aria-label="マークダウンエディター"],
@@ -106,7 +93,7 @@ body.pdf-printing section[aria-label="预览"] {
   overflow: visible !important;
 }
 
-/* Hide preview section header ("미리보기" label) */
+/* Hide preview section header label */
 body.pdf-printing section[aria-label="미리보기"] > header,
 body.pdf-printing section[aria-label="Preview"] > header,
 body.pdf-printing section[aria-label="プレビュー"] > header,
@@ -117,102 +104,40 @@ body.pdf-printing section[aria-label="预览"] > header {
   display: none !important;
 }
 
-/* Preview scroll container - no scroll, show all, white bg */
+/* ---- Document-like layout (matches fullscreen preview) ---- */
+
+/* Preview scroll container */
 body.pdf-printing section[aria-label] > .overflow-auto {
   overflow: visible !important;
   height: auto !important;
-  background: white !important;
 }
 
-/* Preview article - full width */
+/* Article: centered, constrained width, proper padding - like fullscreen modal */
 body.pdf-printing section[aria-label] article {
-  max-width: 100% !important;
-  padding: 0 !important;
-  margin: 0 !important;
+  max-width: 56rem !important; /* max-w-4xl = 56rem */
+  margin: 0 auto !important;
+  padding: 2rem !important;
 }
 
-/* Headings - force light mode colors */
-body.pdf-printing h1 { color: #111827 !important; }
-body.pdf-printing h2 { color: #1f2937 !important; }
-body.pdf-printing h3 { color: #1f2937 !important; }
-
-/* Text colors - force light mode */
-body.pdf-printing p,
-body.pdf-printing li,
-body.pdf-printing td { color: #374151 !important; }
-
-/* Accent colors */
-body.pdf-printing strong { color: #2563eb !important; }
-body.pdf-printing em { color: #9333ea !important; }
-body.pdf-printing a { color: #2563eb !important; }
-
-/* Hide anchor # links in headings */
+/* ---- Hide interactive elements ---- */
 body.pdf-printing h1 > a,
 body.pdf-printing h2 > a,
 body.pdf-printing h3 > a {
   display: none !important;
 }
 
-/* Hide copy buttons in code blocks */
 body.pdf-printing .group > button {
   display: none !important;
 }
 
-/* Code blocks - preserve dark background */
-body.pdf-printing pre {
-  background-color: #1e1e1e !important;
-  border-radius: 0.75rem !important;
-  page-break-inside: avoid !important;
-  break-inside: avoid !important;
-}
-
-/* Inline code */
-body.pdf-printing code:not(pre code) {
-  background: linear-gradient(to right, #fce7f3, #f3e8ff) !important;
-  color: #be185d !important;
-  border: 1px solid #fbcfe8 !important;
-  border-radius: 0.375rem !important;
-  padding: 0.125rem 0.5rem !important;
-}
-
-/* Tables */
-body.pdf-printing thead {
-  background-color: #1f2937 !important;
-}
-body.pdf-printing th {
-  background-color: #1f2937 !important;
-  color: white !important;
-}
-body.pdf-printing td {
-  background-color: white !important;
-}
+/* ---- Page break control ---- */
+body.pdf-printing pre,
+body.pdf-printing blockquote,
 body.pdf-printing table {
   page-break-inside: avoid !important;
   break-inside: avoid !important;
 }
-body.pdf-printing .overflow-x-auto {
-  box-shadow: none !important;
-  overflow: visible !important;
-}
 
-/* Blockquotes */
-body.pdf-printing blockquote {
-  background: linear-gradient(to right, #eff6ff, #faf5ff) !important;
-  border-left: 4px solid #3b82f6 !important;
-  page-break-inside: avoid !important;
-  break-inside: avoid !important;
-}
-
-/* Horizontal rule */
-body.pdf-printing hr {
-  background: linear-gradient(to right, #93c5fd, #c4b5fd, #f9a8d4) !important;
-  height: 4px !important;
-  border: none !important;
-  border-radius: 9999px !important;
-  opacity: 0.6 !important;
-}
-
-/* Page break control */
 body.pdf-printing h1,
 body.pdf-printing h2,
 body.pdf-printing h3,
@@ -229,4 +154,9 @@ body.pdf-printing figure,
 body.pdf-printing img {
   page-break-inside: avoid !important;
   break-inside: avoid !important;
+}
+
+body.pdf-printing .overflow-x-auto {
+  box-shadow: none !important;
+  overflow: visible !important;
 }
