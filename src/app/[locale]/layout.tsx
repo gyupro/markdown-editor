@@ -369,7 +369,7 @@ export default async function LocaleLayout({
         <meta name="geo.country" content={seo.geoCountry} />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${playfairDisplay.variable} ${crimsonPro.variable} ${jetbrainsMono.variable} antialiased`}
       >
         {/* Google Analytics */}
         <Script
