@@ -108,19 +108,16 @@ const HeadingWithAnchor: React.FC<{
     return (
       <h2
         id={id}
-        className="group relative scroll-mt-20 mt-10 md:mt-12 mb-4 md:mb-5 leading-[1.2] tracking-tight"
+        className="group relative scroll-mt-20 mt-10 md:mt-12 mb-4 md:mb-5 pb-2 leading-[1.2] tracking-tight"
         style={{
           fontFamily: "'Pretendard Variable', Pretendard, sans-serif",
           fontSize: 'clamp(1.375rem, 3vw, 2rem)',
           fontWeight: 700,
           color: 'var(--text-primary)',
+          borderBottom: '1px solid var(--border)',
         }}
         {...props}
       >
-        <span
-          className="inline-block w-8 h-[3px] mr-3 rounded-full align-middle"
-          style={{ background: 'var(--accent)' }}
-        />
         {children}
         {anchorLink('text-lg')}
       </h2>
@@ -208,8 +205,8 @@ const CodeBlock: React.FC<{ children: React.ReactNode; translations: MarkdownTra
           className="absolute -top-3 left-5 px-3 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] rounded-sm z-10"
           style={{
             fontFamily: 'var(--font-jetbrains), monospace',
-            background: 'var(--accent)',
-            color: '#fff',
+            background: '#1e1b22',
+            color: '#e8c36a',
             letterSpacing: '0.2em',
           }}
         >

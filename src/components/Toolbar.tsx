@@ -38,7 +38,10 @@ const ToolbarButton: React.FC<ToolbarButtonProps> = ({ onClick, title, children,
     onClick={onClick}
     title={title}
     disabled={disabled}
-    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 flex items-center justify-center min-w-[32px] h-8 disabled:opacity-50 disabled:cursor-not-allowed"
+    className="p-2 rounded-md transition-all duration-150 flex items-center justify-center min-w-[32px] h-8 disabled:opacity-40 disabled:cursor-not-allowed"
+    style={{ color: 'var(--text-secondary)' }}
+    onMouseEnter={(e) => { if (!e.currentTarget.disabled) { e.currentTarget.style.background = 'var(--accent-subtle)'; e.currentTarget.style.color = 'var(--accent)'; } }}
+    onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
     aria-label={title}
     type="button"
   >
@@ -47,7 +50,7 @@ const ToolbarButton: React.FC<ToolbarButtonProps> = ({ onClick, title, children,
 );
 
 const Divider: React.FC = () => (
-  <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1" aria-hidden="true"></div>
+  <div className="w-px h-5 mx-1.5" style={{ background: 'var(--border)' }} aria-hidden="true"></div>
 );
 
 // Folder icon component
@@ -105,7 +108,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({
   const t = useTranslations('editor');
   return (
     <nav
-      className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 p-2 flex items-center gap-1 flex-wrap"
+      className="p-2 flex items-center gap-0.5 flex-wrap"
+      style={{ background: 'var(--surface-elevated)', borderBottom: '1px solid var(--border)' }}
       aria-label={t('toolbar.ariaLabel')}
     >
       {/* Undo/Redo buttons */}
@@ -231,14 +235,14 @@ export const Toolbar: React.FC<ToolbarProps> = ({
             onClick={onSave}
             title={currentDocumentId ? t('toolbar.save') : t('toolbar.saveNew')}
           >
-            <div className={`flex items-center gap-1 ${currentDocumentId ? 'text-blue-500' : 'text-gray-500'}`}>
+            <div className="flex items-center gap-1" style={{ color: currentDocumentId ? 'var(--accent)' : 'var(--text-muted)' }}>
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
               </svg>
             </div>
           </ToolbarButton>
           {currentDocumentId && lastAutoSaved && (
-            <span className="text-xs text-gray-400 hidden sm:inline">
+            <span className="text-xs hidden sm:inline" style={{ color: 'var(--text-muted)' }}>
               {formatTimeAgo(lastAutoSaved, t)}
             </span>
           )}
@@ -249,7 +253,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({
       {onOpenDocuments && (
         <>
           <ToolbarButton onClick={onOpenDocuments} title={t('toolbar.myDocuments')}>
-            <div className="flex items-center gap-1 text-green-500">
+            <div className="flex items-center gap-1" style={{ color: 'var(--accent)' }}>
               <FolderIcon />
             </div>
           </ToolbarButton>

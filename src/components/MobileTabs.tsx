@@ -13,14 +13,15 @@ export const MobileTabs: React.FC<MobileTabsProps> = ({ activeTab, onTabChange }
   const t = useTranslations('tabs');
 
   return (
-    <div className="md:hidden flex bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+    <div className="md:hidden flex" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
       <button
         onClick={() => onTabChange('editor')}
-        className={`flex-1 px-4 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
-          activeTab === 'editor'
-            ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
-            : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'
-        }`}
+        className="flex-1 px-4 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2"
+        style={{
+          background: activeTab === 'editor' ? 'var(--surface-elevated)' : 'transparent',
+          color: activeTab === 'editor' ? 'var(--accent)' : 'var(--text-muted)',
+          borderBottom: activeTab === 'editor' ? '2px solid var(--accent)' : '2px solid transparent',
+        }}
         aria-pressed={activeTab === 'editor'}
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -30,11 +31,12 @@ export const MobileTabs: React.FC<MobileTabsProps> = ({ activeTab, onTabChange }
       </button>
       <button
         onClick={() => onTabChange('preview')}
-        className={`flex-1 px-4 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
-          activeTab === 'preview'
-            ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400'
-            : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'
-        }`}
+        className="flex-1 px-4 py-3 text-sm font-medium transition-colors flex items-center justify-center gap-2"
+        style={{
+          background: activeTab === 'preview' ? 'var(--surface-elevated)' : 'transparent',
+          color: activeTab === 'preview' ? 'var(--accent)' : 'var(--text-muted)',
+          borderBottom: activeTab === 'preview' ? '2px solid var(--accent)' : '2px solid transparent',
+        }}
         aria-pressed={activeTab === 'preview'}
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

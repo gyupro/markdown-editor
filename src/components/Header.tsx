@@ -38,7 +38,7 @@ export const Header: React.FC<HeaderProps> = ({ isExporting, onExportPDF, onFull
   const t = useTranslations('header');
 
   return (
-    <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 py-3 md:py-4" role="banner">
+    <header className="px-4 md:px-6 py-3 md:py-4" style={{ background: 'var(--surface-elevated)', borderBottom: '1px solid var(--border)' }} role="banner">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 md:gap-4 min-w-0 flex-1">
           <div className="flex items-center gap-2">
@@ -52,7 +52,7 @@ export const Header: React.FC<HeaderProps> = ({ isExporting, onExportPDF, onFull
                 e.currentTarget.style.display = 'none';
               }}
             />
-            <h1 className="text-base md:text-xl font-semibold text-gray-800 dark:text-white truncate">
+            <h1 className="text-base md:text-xl font-semibold truncate" style={{ color: 'var(--text-primary)' }}>
               Markdown Editor
             </h1>
           </div>
@@ -60,7 +60,8 @@ export const Header: React.FC<HeaderProps> = ({ isExporting, onExportPDF, onFull
             href="https://github.com/gyupro/markdown-editor"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 text-sm items-center gap-1 flex-shrink-0"
+            className="flex transition-colors duration-200 text-sm items-center gap-1 flex-shrink-0"
+            style={{ color: 'var(--text-muted)' }}
             title="GitHub Repository"
             aria-label={t('viewOnGitHub')}
           >
@@ -74,7 +75,10 @@ export const Header: React.FC<HeaderProps> = ({ isExporting, onExportPDF, onFull
 
           <button
             onClick={onThemeToggle}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+            className="p-2 rounded-lg transition-colors duration-200"
+            style={{ color: 'var(--text-secondary)' }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--accent-subtle)'; e.currentTarget.style.color = 'var(--accent)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
             aria-label={theme === 'light' ? t('darkMode') : t('lightMode')}
             title={theme === 'light' ? t('darkMode') : t('lightMode')}
             suppressHydrationWarning
@@ -90,38 +94,47 @@ export const Header: React.FC<HeaderProps> = ({ isExporting, onExportPDF, onFull
           </button>
           <button
             onClick={onShare}
-            className="px-3 md:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-1 md:gap-2 text-sm flex-shrink-0"
+            className="px-3 md:px-4 py-1.5 rounded-md transition-all duration-150 flex items-center gap-1 md:gap-2 text-sm flex-shrink-0"
+            style={{ color: 'var(--text-secondary)', border: '1px solid var(--border)' }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--text-secondary)'; e.currentTarget.style.background = 'var(--surface)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'transparent'; }}
             aria-label={t('shareDocument')}
           >
-            <span className="text-sm md:text-base" aria-hidden="true">🌐</span>
+            <span className="text-sm" aria-hidden="true">🌐</span>
             <span className="hidden sm:inline">{t('shareDocument')}</span>
             <span className="sm:hidden">{t('share')}</span>
           </button>
-          <div className="hidden md:flex gap-3">
+          <div className="hidden md:flex gap-2">
             <button
               onClick={onExportPDF}
               disabled={isExporting}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-green-400 transition-all duration-200 shadow-md hover:shadow-lg flex items-center gap-2 text-sm"
+              className="px-4 py-1.5 rounded-md disabled:opacity-50 transition-all duration-150 flex items-center gap-2 text-sm"
+              style={{ color: 'var(--text-secondary)', border: '1px solid var(--border)' }}
+              onMouseEnter={(e) => { if (!e.currentTarget.disabled) { e.currentTarget.style.borderColor = 'var(--text-secondary)'; e.currentTarget.style.background = 'var(--surface)'; } }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'transparent'; }}
               aria-label={isExporting ? t('exportingPDF') : t('exportPDF')}
             >
               {isExporting ? (
                 <>
-                  <span className="animate-spin text-base" aria-hidden="true">⏳</span>
+                  <span className="animate-spin text-sm" aria-hidden="true">⏳</span>
                   <span>{t('exportingPDF')}</span>
                 </>
               ) : (
                 <>
-                  <span className="text-base" aria-hidden="true">📄</span>
+                  <span className="text-sm" aria-hidden="true">📄</span>
                   <span>{t('exportPDF')}</span>
                 </>
               )}
             </button>
             <button
               onClick={onFullscreen}
-              className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-md hover:shadow-lg text-sm"
+              className="px-4 py-1.5 rounded-md transition-all duration-150 text-sm flex items-center gap-2"
+              style={{ color: 'var(--text-secondary)', border: '1px solid var(--border)' }}
+              onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--text-secondary)'; e.currentTarget.style.background = 'var(--surface)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'transparent'; }}
               aria-label={t('fullscreenPreview')}
             >
-              <span className="text-base" aria-hidden="true">🖥️</span>
+              <span className="text-sm" aria-hidden="true">🖥️</span>
               <span>{t('fullscreenPreview')}</span>
             </button>
           </div>

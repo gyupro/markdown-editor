@@ -115,11 +115,12 @@ const EditorSectionComponent: React.FC<EditorSectionProps> = ({
 
   return (
     <section
-      className={`${isVisible ? 'flex' : 'hidden'} md:flex md:w-1/2 flex-col border-r border-gray-200 dark:border-gray-700`}
+      className={`${isVisible ? 'flex' : 'hidden'} md:flex md:w-1/2 flex-col`}
+      style={{ borderRight: '1px solid var(--border)' }}
       aria-label={t('ariaLabel')}
     >
-      <header className="hidden md:block bg-gray-100 dark:bg-gray-800 px-4 py-2 border-b border-gray-200 dark:border-gray-700">
-        <h2 className="text-sm font-medium text-gray-600 dark:text-gray-300 flex items-center gap-2">
+      <header className="hidden md:flex items-center gap-2 px-5 py-2.5" style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)' }}>
+        <h2 className="text-[10px] font-semibold tracking-[0.25em] uppercase flex items-center gap-2" style={{ fontFamily: "var(--font-jetbrains), monospace", color: 'var(--text-muted)' }}>
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
           </svg>
