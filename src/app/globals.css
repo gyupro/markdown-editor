@@ -12,13 +12,13 @@
   --surface-elevated: #ffffff;
   --border: #e0d8cc;
   --text-primary: #2d2926;
-  --text-secondary: #5c5650;
+  --text-secondary: #403a35;
   --text-muted: #8a837b;
-  --code-bg: #1e1e2e;
+  --code-bg: #1c1b22;
   --code-accent: #cba6f7;
   --blockquote-border: #b8860b;
   --blockquote-bg: #faf6ee;
-  --table-header: #2d2926;
+  --table-header: #3d3530;
   --table-stripe: #f7f4ef;
   --link-color: #8b5e3c;
   --link-hover: #5c3d27;
@@ -63,7 +63,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-crimson), Georgia, 'Times New Roman', serif;
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
 }
 
 /* Screen reader only content */

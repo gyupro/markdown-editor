@@ -92,7 +92,7 @@ const HeadingWithAnchor: React.FC<{
         id={id}
         className="group relative scroll-mt-20 mb-6 md:mb-8 pb-3 md:pb-4 leading-[1.15] tracking-tight"
         style={{
-          fontFamily: 'var(--font-playfair), Georgia, serif',
+          fontFamily: "'Pretendard Variable', Pretendard, sans-serif",
           fontSize: 'clamp(1.75rem, 4vw, 2.75rem)',
           fontWeight: 800,
           color: 'var(--text-primary)',
@@ -110,7 +110,7 @@ const HeadingWithAnchor: React.FC<{
         id={id}
         className="group relative scroll-mt-20 mt-10 md:mt-12 mb-4 md:mb-5 leading-[1.2] tracking-tight"
         style={{
-          fontFamily: 'var(--font-playfair), Georgia, serif',
+          fontFamily: "'Pretendard Variable', Pretendard, sans-serif",
           fontSize: 'clamp(1.375rem, 3vw, 2rem)',
           fontWeight: 700,
           color: 'var(--text-primary)',
@@ -131,7 +131,7 @@ const HeadingWithAnchor: React.FC<{
         id={id}
         className="group relative scroll-mt-20 mt-8 md:mt-10 mb-3 md:mb-4 leading-[1.25] tracking-tight"
         style={{
-          fontFamily: 'var(--font-playfair), Georgia, serif',
+          fontFamily: "'Pretendard Variable', Pretendard, sans-serif",
           fontSize: 'clamp(1.125rem, 2.5vw, 1.5rem)',
           fontWeight: 600,
           fontStyle: 'italic',
@@ -306,7 +306,7 @@ export const createMarkdownComponents = (translations?: Partial<MarkdownTranslat
       <p
         className="mb-4 md:mb-5"
         style={{
-          fontFamily: 'var(--font-crimson), Georgia, serif',
+          fontFamily: "'Pretendard Variable', Pretendard, sans-serif",
           fontSize: 'clamp(1.05rem, 1.8vw, 1.2rem)',
           lineHeight: '1.85',
           color: 'var(--text-secondary)',
@@ -329,7 +329,7 @@ export const createMarkdownComponents = (translations?: Partial<MarkdownTranslat
         <div
           className="absolute top-3 left-3 text-4xl leading-none opacity-10 select-none"
           style={{
-            fontFamily: 'var(--font-playfair), Georgia, serif',
+            fontFamily: "'Pretendard Variable', Pretendard, sans-serif",
             color: 'var(--accent)',
           }}
           aria-hidden="true"
@@ -338,7 +338,7 @@ export const createMarkdownComponents = (translations?: Partial<MarkdownTranslat
         </div>
         <div
           style={{
-            fontFamily: 'var(--font-crimson), Georgia, serif',
+            fontFamily: "'Pretendard Variable', Pretendard, sans-serif",
             fontStyle: 'italic',
             fontSize: 'clamp(0.95rem, 1.6vw, 1.1rem)',
             lineHeight: '1.8',
@@ -429,7 +429,7 @@ export const createMarkdownComponents = (translations?: Partial<MarkdownTranslat
         <li
           className="flex items-start"
           style={{
-            fontFamily: 'var(--font-crimson), Georgia, serif',
+            fontFamily: "'Pretendard Variable', Pretendard, sans-serif",
             fontSize: 'clamp(1rem, 1.7vw, 1.15rem)',
             lineHeight: '1.8',
             color: 'var(--text-secondary)',
@@ -440,7 +440,7 @@ export const createMarkdownComponents = (translations?: Partial<MarkdownTranslat
             <span
               className="mr-3 mt-0.5 min-w-[1.5em] text-right font-semibold"
               style={{
-                fontFamily: 'var(--font-playfair), Georgia, serif',
+                fontFamily: "'Pretendard Variable', Pretendard, sans-serif",
                 color: 'var(--accent)',
                 fontSize: '0.9em',
               }}
@@ -479,7 +479,7 @@ export const createMarkdownComponents = (translations?: Partial<MarkdownTranslat
         <table
           className="w-full"
           style={{
-            fontFamily: 'var(--font-crimson), Georgia, serif',
+            fontFamily: "'Pretendard Variable', Pretendard, sans-serif",
             fontSize: '0.95rem',
           }}
           {...props}
@@ -557,7 +557,7 @@ export const createMarkdownComponents = (translations?: Partial<MarkdownTranslat
         style={{
           fontStyle: 'italic',
           color: 'var(--text-secondary)',
-          fontFamily: 'var(--font-crimson), Georgia, serif',
+          fontFamily: "'Pretendard Variable', Pretendard, sans-serif",
         }}
         {...props}
       >
