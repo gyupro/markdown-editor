@@ -189,7 +189,8 @@ const EditorSectionComponent: React.FC<EditorSectionProps> = ({
 
         <textarea
           ref={textareaRef}
-          className="w-full h-full p-4 text-sm font-mono leading-6 text-gray-800 dark:text-gray-100 bg-white dark:bg-gray-900 resize-none focus:outline-none border-none"
+          className="w-full h-full p-4 text-sm leading-6 resize-none focus:outline-none border-none"
+          style={{ background: 'var(--background)', color: 'var(--text-primary)', fontFamily: 'var(--font-jetbrains), monospace' }}
           value={markdown}
           onChange={(e) => onMarkdownChange(e.target.value)}
           onFocus={handleFocus}
