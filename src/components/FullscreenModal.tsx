@@ -44,21 +44,32 @@ export const FullscreenModal: React.FC<FullscreenModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-gradient-to-br from-white to-gray-100 dark:from-gray-900 dark:to-gray-800"
+      className="fixed inset-0 z-50"
+      style={{
+        background: 'var(--background)',
+      }}
       role="dialog"
       aria-modal="true"
       aria-labelledby="fullscreen-title"
     >
       <div className="flex flex-col h-full">
-        <header className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 py-3 md:py-4" role="banner">
+        <header
+          className="backdrop-blur-sm px-4 md:px-6 py-3 md:py-4"
+          style={{
+            background: 'var(--surface-elevated)',
+            borderBottom: '1px solid var(--border)',
+          }}
+          role="banner"
+        >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 md:gap-4">
-              <h1 id="fullscreen-title" className="text-lg md:text-xl font-semibold text-gray-800 dark:text-white">{t('title')}</h1>
+              <h1 id="fullscreen-title" className="text-lg md:text-xl font-semibold" style={{ color: 'var(--text-primary)' }}>{t('title')}</h1>
               <a
                 href="https://github.com/gyupro/markdown-editor"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 text-sm items-center gap-1"
+                className="flex transition-colors duration-200 text-sm items-center gap-1"
+                style={{ color: 'var(--text-muted)' }}
                 title="GitHub Repository"
                 aria-label={t('openSourceLabel')}
               >
@@ -70,7 +81,12 @@ export const FullscreenModal: React.FC<FullscreenModalProps> = ({
               <button
                 onClick={onExportPDF}
                 disabled={isExporting}
-                className="px-3 md:px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-green-400 transition-colors shadow-md hover:shadow-lg text-sm"
+                className="px-3 md:px-4 py-2 text-white rounded-lg transition-colors shadow-md hover:shadow-lg text-sm"
+                style={{
+                  background: 'var(--accent)',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.9'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
                 aria-label={isExporting ? t('exportingPDF') : t('exportPDF')}
               >
                 {isExporting ? (
@@ -89,7 +105,12 @@ export const FullscreenModal: React.FC<FullscreenModalProps> = ({
               </button>
               <button
                 onClick={onClose}
-                className="px-3 md:px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors shadow-md hover:shadow-lg text-sm"
+                className="px-3 md:px-4 py-2 text-white rounded-lg transition-colors shadow-md hover:shadow-lg text-sm"
+                style={{
+                  background: 'var(--text-secondary)',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.opacity = '0.9'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.opacity = '1'; }}
                 aria-label={t('exitLabel')}
               >
                 <span className="text-xs md:text-base"></span>
@@ -99,7 +120,7 @@ export const FullscreenModal: React.FC<FullscreenModalProps> = ({
             </nav>
           </div>
         </header>
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto" style={{ background: 'var(--background)' }}>
           {isClient ? (
             <article className="max-w-4xl mx-auto p-4 md:p-8" aria-label={t('previewLabel')}>
               <ReactMarkdown
@@ -110,7 +131,7 @@ export const FullscreenModal: React.FC<FullscreenModalProps> = ({
               </ReactMarkdown>
             </article>
           ) : (
-            <div className="text-gray-500 dark:text-gray-400" role="status" aria-live="polite">
+            <div role="status" aria-live="polite" style={{ color: 'var(--text-muted)' }}>
               {t('loadingPreview')}
             </div>
           )}
