@@ -3,6 +3,7 @@ import { MarkdownComponents } from '@/types/markdown';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { oneDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+import MermaidBlock from './MermaidBlock';
 
 // Translation interface for markdown components
 export interface MarkdownTranslations {
@@ -153,7 +154,20 @@ const extractLanguage = (codeElement: React.ReactNode): string => {
   return '';
 };
 
+// Extract code text from children recursively
+const extractCodeText = (node: React.ReactNode): string => {
+  if (typeof node === 'string') return node;
+  if (Array.isArray(node)) return node.map(extractCodeText).join('');
+  if (React.isValidElement(node)) {
+    const props = node.props as { children?: React.ReactNode };
+    return extractCodeText(props.children);
+  }
+  return '';
+};
+
 const CodeBlock: React.FC<{ children: React.ReactNode; translations: MarkdownTranslations }> = ({ children: codeElementAsNode, translations }) => {
+  const { isCopied, copyToClipboard } = useCopyToClipboard();
+
   let actualCodeText = '';
   let language = '';
 
@@ -161,35 +175,13 @@ const CodeBlock: React.FC<{ children: React.ReactNode; translations: MarkdownTra
     actualCodeText = codeElementAsNode;
   } else if (React.isValidElement(codeElementAsNode)) {
     language = extractLanguage(codeElementAsNode);
-    const elementProps = codeElementAsNode.props as { children?: React.ReactNode };
-
-    if (typeof elementProps.children === 'string') {
-      actualCodeText = elementProps.children;
-    } else if (Array.isArray(elementProps.children)) {
-      actualCodeText = elementProps.children
-        .map((childNode: React.ReactNode): string => {
-          if (typeof childNode === 'string') {
-            return childNode;
-          }
-          if (React.isValidElement(childNode)) {
-            const childElementProps = childNode.props as { children?: React.ReactNode };
-            if (typeof childElementProps.children === 'string') {
-              return childElementProps.children;
-            }
-          }
-          return '';
-        })
-        .join('');
-    } else if (React.isValidElement(elementProps.children)) {
-      const innerElement = elementProps.children;
-      const innerElementProps = innerElement.props as { children?: React.ReactNode };
-      if (typeof innerElementProps.children === 'string') {
-        actualCodeText = innerElementProps.children;
-      }
-    }
+    actualCodeText = extractCodeText(codeElementAsNode);
   }
 
-  const { isCopied, copyToClipboard } = useCopyToClipboard();
+  // Mermaid diagram support
+  if (language === 'mermaid') {
+    return <MermaidBlock code={actualCodeText.trim()} />;
+  }
 
   const handleCopy = async () => {
     await copyToClipboard(actualCodeText);
@@ -308,6 +300,55 @@ export const createMarkdownComponents = (translations?: Partial<MarkdownTranslat
       <HeadingWithAnchor level={3} props={props} translations={t}>
         {children}
       </HeadingWithAnchor>
+    ),
+    h4: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => {
+      const text = extractText(children);
+      const id = createSlug(text);
+      return (
+        <h4
+          id={id}
+          className="group relative scroll-mt-20 mt-6 md:mt-8 mb-2 md:mb-3 leading-[1.3]"
+          style={{
+            fontFamily: "'Pretendard Variable', Pretendard, sans-serif",
+            fontSize: 'clamp(1rem, 2vw, 1.25rem)',
+            fontWeight: 600,
+            color: 'var(--text-primary)',
+          }}
+          {...props}
+        >
+          {children}
+        </h4>
+      );
+    },
+    h5: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
+      <h5
+        className="mt-5 md:mt-6 mb-2 leading-[1.3]"
+        style={{
+          fontFamily: "'Pretendard Variable', Pretendard, sans-serif",
+          fontSize: 'clamp(0.95rem, 1.8vw, 1.1rem)',
+          fontWeight: 600,
+          color: 'var(--text-secondary)',
+        }}
+        {...props}
+      >
+        {children}
+      </h5>
+    ),
+    h6: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
+      <h6
+        className="mt-4 md:mt-5 mb-2 leading-[1.3]"
+        style={{
+          fontFamily: "'Pretendard Variable', Pretendard, sans-serif",
+          fontSize: 'clamp(0.875rem, 1.6vw, 1rem)',
+          fontWeight: 600,
+          color: 'var(--text-muted)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.05em',
+        }}
+        {...props}
+      >
+        {children}
+      </h6>
     ),
     p: ({ children, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => (
       <p
@@ -589,6 +630,104 @@ export const createMarkdownComponents = (translations?: Partial<MarkdownTranslat
       }
       return <input type={type} checked={checked} {...props} />;
     },
+    // Highlight ==text== via rehype-raw <mark>
+    mark: ({ children, ...props }: React.HTMLAttributes<HTMLElement>) => (
+      <mark
+        className="px-1 py-0.5 rounded-sm"
+        style={{
+          background: 'var(--accent-subtle, rgba(255, 213, 79, 0.3))',
+          color: 'var(--text-primary)',
+          borderBottom: '2px solid var(--accent)',
+        }}
+        {...props}
+      >
+        {children}
+      </mark>
+    ),
+    // Superscript
+    sup: ({ children, ...props }: React.HTMLAttributes<HTMLElement>) => (
+      <sup
+        className="text-[0.75em] leading-none"
+        style={{ color: 'var(--accent)' }}
+        {...props}
+      >
+        {children}
+      </sup>
+    ),
+    // Subscript
+    sub: ({ children, ...props }: React.HTMLAttributes<HTMLElement>) => (
+      <sub
+        className="text-[0.75em] leading-none"
+        style={{ color: 'var(--accent)' }}
+        {...props}
+      >
+        {children}
+      </sub>
+    ),
+    // Footnote section (generated by remark-gfm)
+    section: ({ children, ...props }: React.HTMLAttributes<HTMLElement>) => {
+      const dataFootnotes = (props as Record<string, unknown>)['data-footnotes'];
+      if (dataFootnotes) {
+        return (
+          <section
+            className="mt-12 pt-6"
+            style={{
+              borderTop: '2px solid var(--border)',
+              fontSize: '0.875rem',
+              color: 'var(--text-muted)',
+            }}
+            {...props}
+          >
+            <div
+              className="text-xs font-semibold uppercase tracking-wider mb-3"
+              style={{ color: 'var(--text-muted)' }}
+            >
+              Footnotes
+            </div>
+            {children}
+          </section>
+        );
+      }
+      return <section {...props}>{children}</section>;
+    },
+    // Strikethrough
+    del: ({ children, ...props }: React.HTMLAttributes<HTMLElement>) => (
+      <del
+        className="line-through"
+        style={{
+          color: 'var(--text-muted)',
+          textDecorationColor: 'var(--text-muted)',
+        }}
+        {...props}
+      >
+        {children}
+      </del>
+    ),
+    // Details/Summary (collapsible via rehype-raw)
+    details: ({ children, ...props }: React.HTMLAttributes<HTMLDetailsElement>) => (
+      <details
+        className="my-4 rounded-lg overflow-hidden"
+        style={{
+          border: '1px solid var(--border)',
+          background: 'var(--blockquote-bg)',
+        }}
+        {...props}
+      >
+        {children}
+      </details>
+    ),
+    summary: ({ children, ...props }: React.HTMLAttributes<HTMLElement>) => (
+      <summary
+        className="px-4 py-3 cursor-pointer font-medium select-none"
+        style={{
+          color: 'var(--text-primary)',
+          background: 'var(--surface-elevated)',
+        }}
+        {...props}
+      >
+        {children}
+      </summary>
+    ),
   };
 };
 

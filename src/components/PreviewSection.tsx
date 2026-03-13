@@ -3,9 +3,13 @@
 import React, { useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import remarkEmoji from 'remark-emoji';
 import rehypeRaw from 'rehype-raw';
+import rehypeKatex from 'rehype-katex';
 import { useTranslations } from 'next-intl';
 import { createMarkdownComponents } from './MarkdownComponents';
+import { preprocessMarkdown } from '@/lib/markdownPreprocess';
 
 interface PreviewSectionProps {
   isVisible: boolean;
@@ -35,16 +39,19 @@ const PreviewSectionComponent: React.FC<PreviewSectionProps> = ({
     codeCopiedAriaLabel: t('codeCopiedAriaLabel'),
   }), [t]);
 
+  // Preprocess markdown for extended syntax (==highlight==, ^sup^, ~sub~)
+  const processedMarkdown = useMemo(() => preprocessMarkdown(markdown), [markdown]);
+
   // Memoize markdown rendering for performance
   const renderedMarkdown = useMemo(() => (
     <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
-      rehypePlugins={[rehypeRaw]}
+      remarkPlugins={[remarkGfm, remarkMath, [remarkEmoji, { accessible: true }]]}
+      rehypePlugins={[rehypeRaw, rehypeKatex]}
       components={markdownComponents}
     >
-      {markdown}
+      {processedMarkdown}
     </ReactMarkdown>
-  ), [markdown, markdownComponents]);
+  ), [processedMarkdown, markdownComponents]);
 
   return (
     <section

@@ -339,6 +339,9 @@ export default async function LocaleLayout({
           }}
         />
 
+        {/* KaTeX CSS for math rendering */}
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css" crossOrigin="anonymous" />
+
         {/* Pretendard font */}
         <link rel="stylesheet" as="style" crossOrigin="anonymous" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
 

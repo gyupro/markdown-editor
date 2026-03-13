@@ -9,7 +9,12 @@ import { useTheme } from '@/hooks/useTheme';
 import { Document } from '@/lib/supabase';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import remarkEmoji from 'remark-emoji';
+import rehypeRaw from 'rehype-raw';
+import rehypeKatex from 'rehype-katex';
 import { createMarkdownComponents } from '@/components/MarkdownComponents';
+import { preprocessMarkdown } from '@/lib/markdownPreprocess';
 
 // Default translations for non-locale shared route (Korean)
 const markdownComponents = createMarkdownComponents({
@@ -178,10 +183,11 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
   const renderedMarkdown = useMemo(() => (
     document ? (
       <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
+        remarkPlugins={[remarkGfm, remarkMath, [remarkEmoji, { accessible: true }]]}
+        rehypePlugins={[rehypeRaw, rehypeKatex]}
         components={markdownComponents}
       >
-        {document.content}
+        {preprocessMarkdown(document.content)}
       </ReactMarkdown>
     ) : null
   ), [document]);
