@@ -1,0 +1,61 @@
+[  103506ms] [ERROR] ./src/lib/markdownPreprocess.ts
+Error:   × `protected` cannot be used as an identifier in strict mode
+    ╭─[/home/ubuntu/바탕화면/markdown-editor/src/lib/markdownPreprocess.ts:17:1]
+ 14 │   if (!markdown) return markdown;
+ 15 │ 
+ 16 │   // Protect code blocks and inline code/math from transformation
+ 17 │   const protected: Array<{ placeholder: string; original: string }> = [];
+    ·         ─────────
+ 18 │   let counter = 0;
+ 19 │ 
+ 20 │   const protect = (match: string): string => {
+    ╰────
+  × Expression expected
+    ╭─[/home/ubuntu/바탕화면/markdown-editor/src/lib/markdownPreprocess.ts:22:1]
+ 19 │ 
+ 20 │   const protect = (match: string): string => {
+ 21 │     const placeholder = `\x00PROTECT${counter++}\x00`;
+ 22 │     protected.push({ placeholder, original: match });
+    ·     ─────────
+ 23 │     return placeholder;
+ 24 │   };
+    ╰────
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/lib/markdownPreprocess.ts
+./src/components/PreviewSection.tsx
+./src/app/[locale]/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  118309ms] [ERROR] ./src/lib/markdownPreprocess.ts
+Error:   × `protected` cannot be used as an identifier in strict mode
+    ╭─[/home/ubuntu/바탕화면/markdown-editor/src/lib/markdownPreprocess.ts:17:1]
+ 14 │   if (!markdown) return markdown;
+ 15 │ 
+ 16 │   // Protect code blocks and inline code/math from transformation
+ 17 │   const protected: Array<{ placeholder: string; original: string }> = [];
+    ·         ─────────
+ 18 │   let counter = 0;
+ 19 │ 
+ 20 │   const protect = (match: string): string => {
+    ╰────
+  × Expression expected
+    ╭─[/home/ubuntu/바탕화면/markdown-editor/src/lib/markdownPreprocess.ts:22:1]
+ 19 │ 
+ 20 │   const protect = (match: string): string => {
+ 21 │     const placeholder = `\x00PROTECT${counter++}\x00`;
+ 22 │     protected.push({ placeholder, original: match });
+    ·     ─────────
+ 23 │     return placeholder;
+ 24 │   };
+    ╰────
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/lib/markdownPreprocess.ts
+./src/components/PreviewSection.tsx
+./src/app/[locale]/page.tsx @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/globals/intercept-console-error.js:49
+[  143099ms] [ERROR] A component is changing an uncontrolled input to be controlled. This is likely caused by the value changing from undefined to a defined value, which should not happen. Decide between using a controlled or uncontrolled input element for the lifetime of the component. More info: https://react.dev/link/controlled-components @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/globals/intercept-console-error.js:49

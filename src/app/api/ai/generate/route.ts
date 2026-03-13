@@ -39,19 +39,34 @@ export async function POST(request: NextRequest) {
     });
 
     /* ------------------------- Prompt Construction ------------------------ */
+    const extendedSyntaxGuide = `
+You can use these extended Markdown features:
+- LaTeX math: inline $E=mc^2$ or block $$\\int f(x)dx$$
+- Mermaid diagrams: \`\`\`mermaid code blocks
+- Emoji shortcodes: :rocket: :star: :heart:
+- Footnotes: text[^1] with [^1]: definition
+- Highlight: ==highlighted text==
+- Superscript/Subscript: <sup>2</sup> <sub>2</sub>
+- Collapsible: <details><summary>Title</summary>Content</details>
+- Tables, checklists, strikethrough, code blocks with syntax highlighting
+`;
+
     const prompt = replaceMode && currentMarkdown.trim()
       ? `You are a skilled technical writer.
 
-Revise AND expand the following Markdown while preserving its original structure. 
-– Make the content clearer, richer, and more actionable.  
-– Do NOT add greetings, meta-comments, or redundant Markdown fences.  
+Revise AND expand the following Markdown while preserving its original structure.
+– Make the content clearer, richer, and more actionable.
+– Do NOT add greetings, meta-comments, or redundant Markdown fences.
 – Return ONLY the improved Markdown.
-
+– Use extended markdown features when appropriate.
+${extendedSyntaxGuide}
 ${userPrompt.trim() ? `Additional instructions: ${userPrompt}\n` : ''}
 ${currentMarkdown}`
       : `${userPrompt.trim() ? `Create a concise Markdown document about: ${userPrompt}` : 'Create a well-structured Markdown document'}
 
-Keep it brief and focused. Use appropriate headings, lists, and formatting. Aim for 200-500 words maximum unless user prompt is provided. Return only clean Markdown content.`;
+Keep it brief and focused. Use appropriate headings, lists, and formatting. Aim for 200-500 words maximum unless user prompt is provided. Return only clean Markdown content.
+Use extended markdown features when they add value:
+${extendedSyntaxGuide}`;
 
     /* -------------------------- Streaming Response -------------------------- */
     const encoder = new TextEncoder();

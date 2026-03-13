@@ -1,22 +1,47 @@
 /**
  * Markdown preprocessing for extended syntax that rehype-raw can handle.
- * Transforms custom syntax into HTML tags before ReactMarkdown processes them.
+ * Protects math blocks ($$..$$, $..$) and code blocks (```...```, `...`) from transformation.
  */
 
 /**
  * Preprocess markdown to support extended syntax:
  * - ==highlight== → <mark>highlight</mark>
- * - ^superscript^ → <sup>superscript</sup>  (but not ^^)
- * - ~subscript~ → <sub>subscript</sub>  (but not ~~strikethrough~~)
+ *
+ * Note: ^superscript^ and ~subscript~ are NOT preprocessed because they
+ * conflict with LaTeX math (^) and strikethrough (~~). Use <sup>/<sub> HTML instead.
  */
 export const preprocessMarkdown = (markdown: string): string => {
   if (!markdown) return markdown;
 
-  return markdown
+  // Protect code blocks and inline code/math from transformation
+  const preserved: Array<{ placeholder: string; original: string }> = [];
+  let counter = 0;
+
+  const protect = (match: string): string => {
+    const placeholder = `\x00PROTECT${counter++}\x00`;
+    preserved.push({ placeholder, original: match });
+    return placeholder;
+  };
+
+  let result = markdown
+    // Protect fenced code blocks (```...```)
+    .replace(/```[\s\S]*?```/g, protect)
+    // Protect inline code (`...`)
+    .replace(/`[^`\n]+`/g, protect)
+    // Protect block math ($$...$$)
+    .replace(/\$\$[\s\S]*?\$\$/g, protect)
+    // Protect inline math ($...$)
+    .replace(/\$[^$\n]+\$/g, protect);
+
+  // Apply transformations on unpreserved text
+  result = result
     // ==highlight== → <mark>
-    .replace(/==((?:(?!==).)+)==/g, '<mark>$1</mark>')
-    // ^superscript^ → <sup> (single carets only, not inside code blocks)
-    .replace(/\^((?:(?!\^).)+)\^/g, '<sup>$1</sup>')
-    // ~single subscript~ → <sub> (only single tildes, avoid ~~strikethrough~~)
-    .replace(/(?<![~])~(?!~)((?:(?!~).)+)~(?!~)/g, '<sub>$1</sub>');
+    .replace(/==((?:(?!==).)+)==/g, '<mark>$1</mark>');
+
+  // Restore preserved content
+  for (const { placeholder, original } of preserved) {
+    result = result.replace(placeholder, original);
+  }
+
+  return result;
 };

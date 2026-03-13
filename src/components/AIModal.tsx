@@ -1,7 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import remarkEmoji from 'remark-emoji';
+import rehypeRaw from 'rehype-raw';
+import rehypeKatex from 'rehype-katex';
+import { createMarkdownComponents } from './MarkdownComponents';
+import { preprocessMarkdown } from '@/lib/markdownPreprocess';
 
 interface AIModalProps {
   isOpen: boolean;
@@ -22,6 +30,9 @@ export const AIModal: React.FC<AIModalProps> = ({
   const [error, setError] = useState('');
   const [userPrompt, setUserPrompt] = useState('');
   const [selectedMode, setSelectedMode] = useState<'create' | 'improve' | null>(null);
+  const [previewMode, setPreviewMode] = useState(false);
+
+  const markdownComponents = useMemo(() => createMarkdownComponents(), []);
 
   if (!isOpen) return null;
 
@@ -260,13 +271,37 @@ export const AIModal: React.FC<AIModalProps> = ({
 
           {generatedContent && (
             <div className="mt-6">
-              <h3 className="font-semibold text-gray-800 dark:text-white mb-3">
-                {t('modal.generatedContent')}
-              </h3>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-semibold text-gray-800 dark:text-white">
+                  {t('modal.generatedContent')}
+                </h3>
+                <button
+                  onClick={() => setPreviewMode(!previewMode)}
+                  className="px-3 py-1 text-xs rounded-md transition-colors"
+                  style={{
+                    background: previewMode ? 'var(--accent)' : 'var(--accent-subtle)',
+                    color: previewMode ? '#fff' : 'var(--text-secondary)',
+                  }}
+                >
+                  {previewMode ? 'Markdown' : 'Preview'}
+                </button>
+              </div>
               <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg border max-h-60 overflow-y-auto">
-                <pre className="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300">
-                  {generatedContent}
-                </pre>
+                {previewMode ? (
+                  <div className="prose prose-sm dark:prose-invert max-w-none">
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm, remarkMath, [remarkEmoji, { accessible: true }]]}
+                      rehypePlugins={[rehypeRaw, rehypeKatex]}
+                      components={markdownComponents}
+                    >
+                      {preprocessMarkdown(generatedContent)}
+                    </ReactMarkdown>
+                  </div>
+                ) : (
+                  <pre className="whitespace-pre-wrap text-sm text-gray-700 dark:text-gray-300">
+                    {generatedContent}
+                  </pre>
+                )}
               </div>
 
               <div className="flex gap-3 mt-4">
