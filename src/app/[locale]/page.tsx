@@ -228,7 +228,7 @@ export default function HomePage() {
   }), [insertHeading, insertFormatting, insertAtCursor, insertTable, selectAll, handleCopyMarkdown, handleExportToPDF, undo, redo, canUndo, canRedo, handleSave, currentDocumentId, lastAutoSaved]);
 
   return (
-    <div className="h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
+    <div className="h-screen flex flex-col overflow-hidden bg-gray-50 dark:bg-gray-900">
       {/* Shared document load notice */}
       {showSharedNotice && (
         <div className="bg-green-50 dark:bg-green-900/20 border-b border-green-200 dark:border-green-800 px-4 py-2">

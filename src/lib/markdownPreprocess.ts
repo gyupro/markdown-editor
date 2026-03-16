@@ -35,6 +35,9 @@ export const preprocessMarkdown = (markdown: string): string => {
 
   // Apply transformations on unpreserved text
   result = result
+    // **bold** → <strong> (handles CJK edge cases where CommonMark
+    // right-flanking delimiter rules fail, e.g. **52주(1년)**까지)
+    .replace(/\*\*((?:(?!\*\*).)+?)\*\*/g, '<strong>$1</strong>')
     // ==highlight== → <mark>
     .replace(/==((?:(?!==).)+)==/g, '<mark>$1</mark>');
 

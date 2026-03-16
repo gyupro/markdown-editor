@@ -24,7 +24,12 @@ const MermaidBlock: React.FC<MermaidBlockProps> = ({ code }) => {
 
         const id = `mermaid-${Math.random().toString(36).substring(2, 9)}`;
         const { svg: renderedSvg } = await mermaid.render(id, code);
-        setSvg(renderedSvg);
+        // Post-process: convert ==text== to highlighted text in SVG
+        const processedSvg = renderedSvg.replace(
+          /==([^=]+)==/g,
+          '<tspan font-weight="bold" fill="#ffd54f">$1</tspan>'
+        );
+        setSvg(processedSvg);
         setError('');
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Mermaid rendering failed');

@@ -444,14 +444,15 @@ export const createMarkdownComponents = (translations?: Partial<MarkdownTranslat
         {children}
       </ul>
     ),
-    ol: ({ children, ...props }: React.HTMLAttributes<HTMLOListElement>) => {
+    ol: ({ children, start, ...props }: React.HTMLAttributes<HTMLOListElement> & { start?: number }) => {
+      const startIndex = (start ?? 1) - 1; // start attribute is 1-based
       let index = 0;
       const numberedChildren = React.Children.map(children, (child) => {
-        if (React.isValidElement(child) && (child.type === 'li' || (child.props as { node?: unknown }).node)) {
+        if (React.isValidElement(child)) {
           const currentIndex = index;
           index++;
           return React.cloneElement(child as React.ReactElement<{ 'data-index'?: number; 'data-ordered'?: boolean }>, {
-            'data-index': currentIndex,
+            'data-index': startIndex + currentIndex,
             'data-ordered': true,
           });
         }
