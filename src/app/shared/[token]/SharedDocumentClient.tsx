@@ -231,8 +231,8 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
   }
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--background)' }}>
-      <header className="shadow-sm px-4 md:px-6 py-3 md:py-4" style={{ background: 'var(--surface-elevated)', borderBottom: '1px solid var(--border)' }} role="banner">
+    <div className="h-screen flex flex-col" style={{ background: 'var(--background)' }}>
+      <header className="shadow-sm px-4 md:px-6 py-3 md:py-4 flex-shrink-0" style={{ background: 'var(--surface-elevated)', borderBottom: '1px solid var(--border)' }} role="banner">
         <div className="max-w-4xl mx-auto">
           {/* 헤더 영역 - 모바일 최적화 */}
           <div className="space-y-3">
