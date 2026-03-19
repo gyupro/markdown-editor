@@ -423,15 +423,15 @@ export const createMarkdownComponents = (translations?: Partial<MarkdownTranslat
         href={href}
         className="underline decoration-1 underline-offset-3 transition-all duration-200 font-medium"
         style={{
-          color: 'var(--link-hover)',
-          textDecorationColor: 'var(--accent-light)',
+          color: 'var(--link-color)',
+          textDecorationColor: 'var(--link-color)',
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.color = 'var(--accent)';
+          e.currentTarget.style.color = 'var(--link-hover)';
           e.currentTarget.style.textDecorationThickness = '2px';
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.color = 'var(--link-hover)';
+          e.currentTarget.style.color = 'var(--link-color)';
           e.currentTarget.style.textDecorationThickness = '1px';
         }}
         {...props}
