@@ -1,3 +1,0 @@
-[   39139ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/webpack/436bd3b07261f2b0.webpack.hot-update.json:0
-[   60855ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3001/_next/static/webpack/f73ff1cd3a390ea8.webpack.hot-update.json:0
-[  100657ms] [ERROR] WebSocket connection to 'ws://localhost:3001/_next/webpack-hmr' failed:  @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/components/react-dev-overlay/utils/use-websocket.js:41
