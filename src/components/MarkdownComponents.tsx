@@ -552,7 +552,7 @@ export const createMarkdownComponents = (translations?: Partial<MarkdownTranslat
         className="px-4 md:px-5 py-3 md:py-3.5 text-left text-xs font-bold tracking-[0.15em] uppercase"
         style={{
           fontFamily: 'var(--font-jetbrains), monospace',
-          color: '#fff',
+          color: 'var(--accent)',
           background: 'var(--table-header)',
           borderBottom: '2px solid var(--accent)',
         }}
