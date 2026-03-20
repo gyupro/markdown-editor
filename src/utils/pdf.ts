@@ -47,27 +47,32 @@ export const exportToPDF = async (
   }
 
   try {
-    // pdf-printing 클래스를 body에 추가하여 print CSS 활성화
+    // pdf-printing 클래스를 html과 body 모두에 추가하여 print CSS 활성화
+    // html 요소도 overflow/height 리셋이 필요하므로 반드시 둘 다 추가
+    document.documentElement.classList.add('pdf-printing');
     document.body.classList.add('pdf-printing');
 
     // beforeprint/afterprint 이벤트로 클래스 정리 보장
     const cleanup = () => {
+      document.documentElement.classList.remove('pdf-printing');
       document.body.classList.remove('pdf-printing');
       window.removeEventListener('afterprint', cleanup);
     };
     window.addEventListener('afterprint', cleanup);
 
     // 브라우저의 기본 인쇄 기능을 사용하여 PDF 생성
-    // @media print + body.pdf-printing CSS가 globals.css에 정의되어 있어
+    // @media print + .pdf-printing CSS가 globals.css에 정의되어 있어
     // 미리보기 영역만 출력되고 에디터/헤더는 숨겨집니다.
     window.print();
 
     // 사용자가 인쇄 대화상자를 취소한 경우를 위한 폴백 정리
     // afterprint 이벤트가 발생하지 않는 브라우저를 위해
     setTimeout(() => {
+      document.documentElement.classList.remove('pdf-printing');
       document.body.classList.remove('pdf-printing');
     }, 1000);
   } catch (error) {
+    document.documentElement.classList.remove('pdf-printing');
     document.body.classList.remove('pdf-printing');
     console.error('PDF 생성 중 오류:', error);
     throw error;

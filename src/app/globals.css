@@ -85,8 +85,8 @@ body {
 }
 
 /* ===== PDF Print Styles ===== */
-/* body.pdf-printing: added by exportToPDF() before window.print() */
-/* Mimics the fullscreen preview - background fills edge to edge */
+/* .pdf-printing class is added to BOTH <html> and <body> by exportToPDF() */
+/* before window.print(). Mimics fullscreen preview layout. */
 
 @media print {
   @page {
@@ -101,8 +101,63 @@ body {
   }
 }
 
+/* ---- Reset viewport constraints for printing ---- */
+/* html.pdf-printing: critical! html element has overflow:hidden/height:100% */
+/* that clips content to viewport. Must reset on html itself. */
+html.pdf-printing {
+  overflow: visible !important;
+  height: auto !important;
+  background: var(--background) !important;
+}
+
+body.pdf-printing {
+  overflow: visible !important;
+  height: auto !important;
+  /* body는 투명하게 두어 html 배경이 @page 마진 영역까지 전파되도록 함 */
+  background: transparent !important;
+}
+
+/* Reset ALL fixed/overflow/height containers so content flows across pages */
+body.pdf-printing .fixed,
+body.pdf-printing [class*="fixed"] {
+  position: static !important;
+}
+
+body.pdf-printing .overflow-hidden,
+body.pdf-printing .overflow-auto,
+body.pdf-printing .overflow-y-auto,
+body.pdf-printing .overflow-x-auto,
+body.pdf-printing [class*="overflow-hidden"],
+body.pdf-printing [class*="overflow-auto"] {
+  overflow: visible !important;
+  height: auto !important;
+  max-height: none !important;
+}
+
+body.pdf-printing .h-full,
+body.pdf-printing .h-screen,
+body.pdf-printing [class*="h-screen"],
+body.pdf-printing [class*="h-full"] {
+  height: auto !important;
+}
+
+body.pdf-printing .flex-1 {
+  flex: none !important;
+}
+
+body.pdf-printing .flex {
+  display: block !important;
+}
+
+/* When fullscreen dialog is open, hide page-level main to avoid duplicate content */
+body.pdf-printing main[role="main"]:has(~ [role="dialog"]) {
+  display: none !important;
+}
+
 /* ---- Hide UI chrome ---- */
 body.pdf-printing [role="banner"],
+body.pdf-printing [role="alert"],
+body.pdf-printing [class*="bg-green-"],
 body.pdf-printing [aria-label="편집 도구"],
 body.pdf-printing [aria-label="Editing tools"],
 body.pdf-printing [aria-label="編集ツール"] {
@@ -114,15 +169,10 @@ body.pdf-printing .md\:hidden {
   display: none !important;
 }
 
-body.pdf-printing .h-screen,
-body.pdf-printing [class*="h-screen"] {
-  height: auto !important;
-  overflow: visible !important;
-}
-
 body.pdf-printing [role="main"] {
   display: block !important;
   overflow: visible !important;
+  height: auto !important;
 }
 
 /* Hide editor section */
@@ -149,6 +199,7 @@ body.pdf-printing section[aria-label="预览"] {
   width: 100% !important;
   flex: none !important;
   overflow: visible !important;
+  height: auto !important;
 }
 
 /* Hide preview section header label */
@@ -162,19 +213,38 @@ body.pdf-printing section[aria-label="预览"] > header {
   display: none !important;
 }
 
-/* ---- Document layout ---- */
-
-/* Preview scroll container */
-body.pdf-printing section[aria-label] > .overflow-auto {
+/* ---- Fullscreen modal: handle PDF export from fullscreen mode ---- */
+body.pdf-printing [role="dialog"] {
+  position: static !important;
+  z-index: auto !important;
   overflow: visible !important;
   height: auto !important;
 }
 
+body.pdf-printing [role="dialog"] > div {
+  height: auto !important;
+}
+
+body.pdf-printing [role="dialog"] header[role="banner"] {
+  display: none !important;
+}
+
+body.pdf-printing [role="dialog"] main {
+  overflow: visible !important;
+  height: auto !important;
+}
+
+/* ---- Document layout ---- */
+
 /* Article: centered with padding (page margin is 0, padding creates spacing) */
-body.pdf-printing section[aria-label] article {
+/* @page margin은 항상 흰색이므로 0으로 두고, padding으로 여백을 만들어 배경색이 끝까지 칠해지게 함 */
+body.pdf-printing article {
   max-width: 56rem !important;
   margin: 0 auto !important;
-  padding: 2rem 2.5rem !important;
+  padding: 1.2cm 3rem !important;
+  /* padding이 매 페이지 fragment마다 반복되도록 clone 처리 */
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 
 /* ---- Hide interactive elements ---- */
@@ -217,4 +287,9 @@ body.pdf-printing img {
 body.pdf-printing .overflow-x-auto {
   box-shadow: none !important;
   overflow: visible !important;
+}
+
+/* ---- Ensure all nested containers are unclipped ---- */
+body.pdf-printing div {
+  max-height: none !important;
 }
