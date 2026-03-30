@@ -7,6 +7,7 @@ interface MobileMenuProps {
   isExporting: boolean;
   onExportPDF: () => void;
   onFullscreen: () => void;
+  onShare: () => void;
   theme: 'light' | 'dark';
   onThemeToggle: () => void;
 }
@@ -15,10 +16,12 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
   isExporting,
   onExportPDF,
   onFullscreen,
+  onShare,
   theme,
   onThemeToggle
 }) => {
   const t = useTranslations('mobileMenu');
+  const tHeader = useTranslations('header');
   const tShortcuts = useTranslations('shortcuts');
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -50,7 +53,8 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
       {/* Hamburger button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 transition-colors"
+        className="p-2 transition-colors"
+        style={{ color: 'var(--text-secondary)' }}
         aria-label={t('open')}
         aria-expanded={isOpen}
       >
@@ -80,11 +84,23 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
 
       {/* Dropdown menu */}
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
+        <div className="absolute right-0 top-full mt-2 w-56 rounded-lg shadow-lg py-2 z-50" style={{ background: 'var(--surface-elevated)', border: '1px solid var(--border)' }}>
+          <button
+            onClick={() => handleMenuAction(onShare)}
+            className="w-full px-4 py-3 text-left text-sm hover:opacity-80 flex items-center gap-3"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+            </svg>
+            <span>{tHeader('shareDocument')}</span>
+          </button>
+
           <button
             onClick={() => handleMenuAction(onExportPDF)}
             disabled={isExporting}
-            className="w-full px-4 py-3 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3"
+            className="w-full px-4 py-3 text-left text-sm hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3"
+            style={{ color: 'var(--text-primary)' }}
           >
             {isExporting ? (
               <>
@@ -105,7 +121,8 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
 
           <button
             onClick={() => handleMenuAction(onFullscreen)}
-            className="w-full px-4 py-3 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3"
+            className="w-full px-4 py-3 text-left text-sm hover:opacity-80 flex items-center gap-3"
+            style={{ color: 'var(--text-primary)' }}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/>
@@ -115,7 +132,8 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
 
           <button
             onClick={() => handleMenuAction(onThemeToggle)}
-            className="w-full px-4 py-3 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-3"
+            className="w-full px-4 py-3 text-left text-sm hover:opacity-80 flex items-center gap-3"
+            style={{ color: 'var(--text-primary)' }}
           >
             {theme === 'light' ? (
               <>
@@ -134,10 +152,10 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
             )}
           </button>
 
-          <hr className="my-2 border-gray-200 dark:border-gray-600" />
+          <hr className="my-2" style={{ borderColor: 'var(--border)' }} />
 
           <div className="px-4 py-2">
-            <p className="text-xs text-gray-500 dark:text-gray-400">
+            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
               {tShortcuts('hint')}
             </p>
           </div>

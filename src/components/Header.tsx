@@ -75,7 +75,7 @@ export const Header: React.FC<HeaderProps> = ({ isExporting, onExportPDF, onFull
 
           <button
             onClick={onThemeToggle}
-            className="p-2 rounded-lg transition-colors duration-200"
+            className="hidden md:flex p-2 rounded-lg transition-colors duration-200"
             style={{ color: 'var(--text-secondary)' }}
             onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--accent-subtle)'; e.currentTarget.style.color = 'var(--accent)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
@@ -93,15 +93,14 @@ export const Header: React.FC<HeaderProps> = ({ isExporting, onExportPDF, onFull
           </button>
           <button
             onClick={onShare}
-            className="px-3 md:px-4 py-1.5 rounded-md transition-all duration-150 flex items-center gap-1 md:gap-2 text-sm flex-shrink-0"
+            className="hidden md:flex px-4 py-1.5 rounded-md transition-all duration-150 items-center gap-2 text-sm flex-shrink-0"
             style={{ color: 'var(--text-secondary)', border: '1px solid var(--border)' }}
             onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--text-secondary)'; e.currentTarget.style.background = 'var(--surface)'; }}
             onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'transparent'; }}
             aria-label={t('shareDocument')}
           >
             <span className="text-sm" aria-hidden="true">🌐</span>
-            <span className="hidden sm:inline">{t('shareDocument')}</span>
-            <span className="sm:hidden">{t('share')}</span>
+            <span>{t('shareDocument')}</span>
           </button>
           <div className="hidden md:flex gap-2">
             <button
@@ -142,6 +141,7 @@ export const Header: React.FC<HeaderProps> = ({ isExporting, onExportPDF, onFull
               isExporting={isExporting}
               onExportPDF={onExportPDF}
               onFullscreen={onFullscreen}
+              onShare={onShare}
               theme={theme}
               onThemeToggle={onThemeToggle}
             />
