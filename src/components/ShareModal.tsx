@@ -129,9 +129,9 @@ const ShareModalComponent: React.FC<ShareModalProps> = ({
                     type="text"
                     value={shareUrl}
                     readOnly
-                    className="flex-1 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded px-3 py-2 text-sm text-gray-900 dark:text-gray-100"
+                    className="flex-1 min-w-0 bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded px-3 py-2 text-sm text-gray-900 dark:text-gray-100"
                   />
-                  <div className="relative">
+                  <div className="relative flex-shrink-0">
                     <button
                       onClick={handleCopyLink}
                       className={`px-3 py-2 rounded text-sm transition-all duration-200 ${
@@ -144,7 +144,7 @@ const ShareModalComponent: React.FC<ShareModalProps> = ({
                       {isCopied ? '✓' : '📋'}
                     </button>
                     {isCopied && (
-                      <div className="absolute top-1/2 left-full ml-2 transform -translate-y-1/2 bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded shadow-lg animate-pulse whitespace-nowrap">
+                      <div className="absolute bottom-full right-0 mb-2 bg-gray-900 dark:bg-gray-700 text-white text-xs px-2 py-1 rounded shadow-lg animate-pulse whitespace-nowrap">
                         {t('copied')}
                       </div>
                     )}
