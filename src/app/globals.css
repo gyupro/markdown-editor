@@ -2,6 +2,13 @@
 
 @variant dark (.dark &);
 
+/* Mobile virtual keyboard: prevent layout from staying pushed up */
+@supports (height: 100dvh) {
+  .h-dvh {
+    height: 100dvh !important;
+  }
+}
+
 :root {
   --background: #f0ebe3;
   --foreground: #1a1a1a;
@@ -136,7 +143,9 @@ body.pdf-printing [class*="overflow-auto"] {
 
 body.pdf-printing .h-full,
 body.pdf-printing .h-screen,
+body.pdf-printing .h-dvh,
 body.pdf-printing [class*="h-screen"],
+body.pdf-printing [class*="h-dvh"],
 body.pdf-printing [class*="h-full"] {
   height: auto !important;
 }
