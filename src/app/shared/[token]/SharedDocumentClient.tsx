@@ -231,7 +231,7 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
   }
 
   return (
-    <div className="h-screen flex flex-col" style={{ background: 'var(--background)' }}>
+    <div className="h-screen flex flex-col overflow-x-hidden" style={{ background: 'var(--background)' }}>
       <header className="shadow-sm px-4 md:px-6 py-3 md:py-4 flex-shrink-0" style={{ background: 'var(--surface-elevated)', borderBottom: '1px solid var(--border)' }} role="banner">
         <div className="max-w-4xl mx-auto">
           {/* 헤더 영역 - 모바일 최적화 */}
@@ -398,7 +398,7 @@ export default function SharedDocumentClient({ initialToken }: SharedDocumentCli
 
       <main className="flex-1 overflow-auto" style={{ background: 'var(--background)' }}>
         <article
-          className="max-w-4xl mx-auto p-4 md:p-8"
+          className="max-w-4xl mx-auto p-4 md:p-8 overflow-x-auto"
           aria-label="공유된 마크다운 문서 미리보기"
         >
           {renderedMarkdown}
